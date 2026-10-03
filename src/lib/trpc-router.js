@@ -1,7 +1,7 @@
 'use strict';
 /**
  * tRPC router for Kishaa International platform.
- * Backed by better-sqlite3 and the data in data/kishaa.db.
+ * Backed by Supabase PostgreSQL (cloud) with automatic fallback to better-sqlite3 (local).
  * Serves the modern React frontend while connecting directly to CMS data and lead operations.
  */
 const { initTRPC, TRPCError } = require('@trpc/server');
@@ -11,6 +11,7 @@ const { db, setting, audit } = require('./db');
 const H = require('./helpers');
 const mailer = require('./mailer');
 const integrations = require('./integrations');
+const supabase = require('./supabase');
 
 const t = initTRPC.context().create({
   transformer: superjson,
@@ -66,9 +67,18 @@ function mapProgram(p) {
   };
 }
 
-function getCountryLiving(country) {
-  // Query all scenarios for this country from country_costs
-  const rows = db.prepare(`SELECT scenario, total, currency, city FROM country_costs WHERE country_id = ?`).all(country.id);
+async function getCountryLivingAsync(country) {
+  let rows = [];
+  if (supabase.isAvailable()) {
+    rows = await supabase.getCountryCosts(country.id);
+  }
+  if (!rows || rows.length === 0) {
+    try {
+      rows = db.prepare(`SELECT scenario, total, currency, city FROM country_costs WHERE country_id = ?`).all(country.id);
+    } catch {
+      rows = [];
+    }
+  }
   const cur = country.living_currency || country.currency || (rows[0] && rows[0].currency) || 'USD';
   
   let budget = null;
@@ -117,8 +127,16 @@ function getCountryLiving(country) {
   };
 }
 
-function getCountryFunds(country) {
-  const rule = db.prepare(`SELECT * FROM funds_rules WHERE country_id = ? AND published = 1 ORDER BY id ASC LIMIT 1`).get(country.id);
+async function getCountryFundsAsync(country) {
+  let rule = null;
+  if (supabase.isAvailable()) {
+    rule = await supabase.getFundsRule(country.id);
+  }
+  if (!rule) {
+    try {
+      rule = db.prepare(`SELECT * FROM funds_rules WHERE country_id = ? AND published = 1 ORDER BY id ASC LIMIT 1`).get(country.id);
+    } catch {}
+  }
   if (rule) {
     const amount = Math.round(rule.total_required || (rule.statutory_rate ? rule.statutory_rate * (rule.months || 12) : 10000));
     return {
@@ -134,8 +152,18 @@ function getCountryFunds(country) {
   return null;
 }
 
-function getCountryFlights(country) {
-  const routes = db.prepare(`SELECT * FROM flight_routes WHERE dest_country_id = ? ORDER BY base_fare ASC`).all(country.id);
+async function getCountryFlightsAsync(country) {
+  let routes = [];
+  if (supabase.isAvailable()) {
+    routes = await supabase.getFlightRoutes(country.id);
+  }
+  if (!routes || routes.length === 0) {
+    try {
+      routes = db.prepare(`SELECT * FROM flight_routes WHERE dest_country_id = ? ORDER BY base_fare ASC`).all(country.id);
+    } catch {
+      routes = [];
+    }
+  }
   if (routes && routes.length > 0) {
     return routes.map(r => ({
       from: r.origin_code,
@@ -152,13 +180,12 @@ function getCountryFlights(country) {
   ];
 }
 
-function mapCountry(c) {
+async function mapCountryAsync(c) {
   if (!c) return null;
-  const living = getCountryLiving(c);
-  const funds = getCountryFunds(c);
-  const flights = getCountryFlights(c);
+  const living = await getCountryLivingAsync(c);
+  const funds = await getCountryFundsAsync(c);
+  const flights = await getCountryFlightsAsync(c);
   
-  // Format flag: if emoji flag or code
   const flagMap = {
     GB: '🇬🇧', IT: '🇮🇹', FI: '🇫🇮', GE: '🇬🇪', DE: '🇩🇪', FR: '🇫🇷', PT: '🇵🇹',
     RS: '🇷🇸', RO: '🇷🇴', CA: '🇨🇦', US: '🇺🇸', AU: '🇦🇺', TR: '🇹🇷', AE: '🇦🇪',
@@ -204,39 +231,41 @@ const appRouter = router({
     pages: router({
       bySlug: publicProcedure
         .input(z.object({ slug: z.string() }))
-        .query(({ input }) => {
-          const row = db.prepare(`SELECT * FROM pages WHERE slug = ? AND status = 'published' AND deleted_at IS NULL`).get(input.slug);
-          return row || null;
+        .query(async ({ input }) => {
+          if (supabase.isAvailable()) {
+            const page = await supabase.getPageBySlug(input.slug);
+            if (page) return page;
+          }
+          try {
+            return db.prepare(`SELECT * FROM pages WHERE slug = ? AND status = 'published' AND deleted_at IS NULL`).get(input.slug) || null;
+          } catch {
+            return null;
+          }
         }),
     }),
 
     posts: router({
-      list: publicProcedure.query(() => {
-        const rows = db.prepare(`SELECT * FROM posts WHERE status = 'published' ORDER BY publish_at DESC`).all();
-        return rows.map(r => ({
-          id: r.id,
-          title: r.title,
-          slug: r.slug,
-          excerpt: r.excerpt,
-          body: r.body,
-          category: r.category_id ? (db.prepare('SELECT name FROM categories WHERE id = ?').get(r.category_id)?.name || 'Guides') : 'Guides',
-          tags: r.tags,
-          seoTitle: r.seo_title,
-          seoDescription: r.seo_description,
-          publishedAt: r.publish_at ? new Date(r.publish_at) : null,
-        }));
-      }),
-      bySlug: publicProcedure
-        .input(z.object({ slug: z.string() }))
-        .query(({ input }) => {
-          const r = db.prepare(`SELECT * FROM posts WHERE slug = ? AND (status = 'published' OR status = 'draft')`).get(input.slug);
-          if (!r) return null;
-          const author = r.author_id ? db.prepare('SELECT name FROM users WHERE id = ?').get(r.author_id) : null;
-          const related = db.prepare(`SELECT id, title, slug, excerpt, answer_summary FROM posts WHERE id != ? AND (status = 'published' OR status = 'draft') ORDER BY publish_at DESC LIMIT 4`).all(r.id);
-          const faqs = db.prepare(`SELECT id, question, answer FROM faqs WHERE published = 1 ORDER BY sort_order LIMIT 4`).all();
-          const destinations = db.prepare(`SELECT name, slug FROM countries WHERE published = 1 ORDER BY sort_order LIMIT 6`).all();
-
-          return {
+      list: publicProcedure.query(async () => {
+        if (supabase.isAvailable()) {
+          const rows = await supabase.getPosts();
+          if (rows) {
+            return rows.map(r => ({
+              id: r.id,
+              title: r.title,
+              slug: r.slug,
+              excerpt: r.excerpt,
+              body: r.body,
+              category: r.categories?.name || 'Guides',
+              tags: r.tags,
+              seoTitle: r.seo_title,
+              seoDescription: r.seo_description,
+              publishedAt: r.publish_at ? new Date(r.publish_at) : null,
+            }));
+          }
+        }
+        try {
+          const rows = db.prepare(`SELECT * FROM posts WHERE status = 'published' ORDER BY publish_at DESC`).all();
+          return rows.map(r => ({
             id: r.id,
             title: r.title,
             slug: r.slug,
@@ -244,12 +273,59 @@ const appRouter = router({
             body: r.body,
             category: r.category_id ? (db.prepare('SELECT name FROM categories WHERE id = ?').get(r.category_id)?.name || 'Guides') : 'Guides',
             tags: r.tags,
+            seoTitle: r.seo_title,
+            seoDescription: r.seo_description,
+            publishedAt: r.publish_at ? new Date(r.publish_at) : null,
+          }));
+        } catch {
+          return [];
+        }
+      }),
+      bySlug: publicProcedure
+        .input(z.object({ slug: z.string() }))
+        .query(async ({ input }) => {
+          let r = null;
+          if (supabase.isAvailable()) {
+            r = await supabase.getPostBySlug(input.slug);
+          }
+          if (!r) {
+            try {
+              r = db.prepare(`SELECT * FROM posts WHERE slug = ? AND (status = 'published' OR status = 'draft')`).get(input.slug);
+            } catch {}
+          }
+          if (!r) return null;
+
+          let authorName = 'Kishaa International';
+          if (r.author_id) {
+            try {
+              const u = db.prepare('SELECT name FROM users WHERE id = ?').get(r.author_id);
+              if (u?.name) authorName = u.name;
+            } catch {}
+          }
+
+          let related = [];
+          let faqs = [];
+          let destinations = [];
+          try {
+            related = db.prepare(`SELECT id, title, slug, excerpt, answer_summary FROM posts WHERE id != ? AND (status = 'published' OR status = 'draft') ORDER BY publish_at DESC LIMIT 4`).all(r.id);
+            faqs = db.prepare(`SELECT id, question, answer FROM faqs WHERE published = 1 ORDER BY sort_order LIMIT 4`).all();
+            destinations = db.prepare(`SELECT name, slug FROM countries WHERE published = 1 ORDER BY sort_order LIMIT 6`).all();
+          } catch {}
+
+          return {
+            id: r.id,
+            title: r.title,
+            slug: r.slug,
+            excerpt: r.excerpt,
+            body: r.body,
+            category: r.categories?.name || 'Guides',
+            tags: r.tags,
             tagsList: parseArray(r.tags),
             seoTitle: r.seo_title,
             seoDescription: r.seo_description,
             publishedAt: r.publish_at ? new Date(r.publish_at) : null,
             readMinutes: r.read_minutes || 3,
-            authorName: author?.name || 'Kishaa International',
+            authorName,
             targetQuery: r.target_query || null,
             answerFirst: r.answer_summary || null,
             takeaways: parseArray(r.key_takeaways),
@@ -275,57 +351,121 @@ const appRouter = router({
     programs: router({
       list: publicProcedure
         .input(z.object({ pillar: z.string().optional() }).optional())
-        .query(({ input }) => {
-          let rows;
-          if (input?.pillar) {
-            rows = db.prepare(`SELECT * FROM programs WHERE status = 'published' AND pillar = ? ORDER BY sort_order, id`).all(input.pillar);
-          } else {
-            rows = db.prepare(`SELECT * FROM programs WHERE status = 'published' ORDER BY sort_order, id`).all();
+        .query(async ({ input }) => {
+          if (supabase.isAvailable()) {
+            const rows = await supabase.getPrograms(input?.pillar);
+            if (rows) return rows.map(mapProgram);
           }
-          return rows.map(mapProgram);
+          try {
+            let rows;
+            if (input?.pillar) {
+              rows = db.prepare(`SELECT * FROM programs WHERE status = 'published' AND pillar = ? ORDER BY sort_order, id`).all(input.pillar);
+            } else {
+              rows = db.prepare(`SELECT * FROM programs WHERE status = 'published' ORDER BY sort_order, id`).all();
+            }
+            return rows.map(mapProgram);
+          } catch {
+            return [];
+          }
         }),
-      featured: publicProcedure.query(() => {
-        const rows = db.prepare(`SELECT * FROM programs WHERE status = 'published' AND featured = 1 ORDER BY sort_order, id`).all();
-        return rows.map(mapProgram);
+      featured: publicProcedure.query(async () => {
+        if (supabase.isAvailable()) {
+          const rows = await supabase.getFeaturedPrograms();
+          if (rows) return rows.map(mapProgram);
+        }
+        try {
+          const rows = db.prepare(`SELECT * FROM programs WHERE status = 'published' AND featured = 1 ORDER BY sort_order, id`).all();
+          return rows.map(mapProgram);
+        } catch {
+          return [];
+        }
       }),
     }),
 
     countries: router({
-      list: publicProcedure.query(() => {
-        const rows = db.prepare(`SELECT * FROM countries WHERE published = 1 ORDER BY sort_order, name`).all();
-        return rows.map(mapCountry);
+      list: publicProcedure.query(async () => {
+        if (supabase.isAvailable()) {
+          const rows = await supabase.getCountries();
+          if (rows) {
+            return await Promise.all(rows.map(mapCountryAsync));
+          }
+        }
+        try {
+          const rows = db.prepare(`SELECT * FROM countries WHERE published = 1 ORDER BY sort_order, name`).all();
+          return await Promise.all(rows.map(mapCountryAsync));
+        } catch {
+          return [];
+        }
       }),
       bySlug: publicProcedure
         .input(z.object({ slug: z.string() }))
-        .query(({ input }) => {
-          const s = input.slug.toLowerCase();
-          const target = s === 'united-kingdom' ? 'uk' : s;
-          const row = db.prepare(`SELECT * FROM countries WHERE (slug = ? OR slug = ?) AND published = 1`).get(s, target);
-          return mapCountry(row);
+        .query(async ({ input }) => {
+          if (supabase.isAvailable()) {
+            const row = await supabase.getCountryBySlug(input.slug);
+            if (row) return await mapCountryAsync(row);
+          }
+          try {
+            const s = input.slug.toLowerCase();
+            const target = s === 'united-kingdom' ? 'uk' : s;
+            const row = db.prepare(`SELECT * FROM countries WHERE (slug = ? OR slug = ?) AND published = 1`).get(s, target);
+            return await mapCountryAsync(row);
+          } catch {
+            return null;
+          }
         }),
     }),
 
     team: router({
-      list: publicProcedure.query(() => {
-        const rows = db.prepare(`SELECT * FROM team WHERE is_public = 1 ORDER BY sort_order`).all();
-        return rows.map(r => ({
-          id: r.id,
-          name: r.name,
-          slug: r.slug,
-          role: r.role_title,
-          bio: r.bio,
-          credentials: formatList(r.credentials),
-          expertise: formatList(r.expertise),
-          languages: formatList(r.languages),
-          email: r.email,
-          phone: r.phones ? (JSON.parse(r.phones)[0] || null) : null,
-          featured: Boolean(r.is_public),
-        }));
+      list: publicProcedure.query(async () => {
+        if (supabase.isAvailable()) {
+          const rows = await supabase.getTeamMembers();
+          if (rows) {
+            return rows.map(r => ({
+              id: r.id,
+              name: r.name,
+              slug: r.slug,
+              role: r.role_title,
+              bio: r.bio,
+              credentials: formatList(r.credentials),
+              expertise: formatList(r.expertise),
+              languages: formatList(r.languages),
+              email: r.email,
+              phone: r.phones ? (JSON.parse(r.phones)[0] || null) : null,
+              featured: Boolean(r.is_public),
+            }));
+          }
+        }
+        try {
+          const rows = db.prepare(`SELECT * FROM team WHERE is_public = 1 ORDER BY sort_order`).all();
+          return rows.map(r => ({
+            id: r.id,
+            name: r.name,
+            slug: r.slug,
+            role: r.role_title,
+            bio: r.bio,
+            credentials: formatList(r.credentials),
+            expertise: formatList(r.expertise),
+            languages: formatList(r.languages),
+            email: r.email,
+            phone: r.phones ? (JSON.parse(r.phones)[0] || null) : null,
+            featured: Boolean(r.is_public),
+          }));
+        } catch {
+          return [];
+        }
       }),
       bySlug: publicProcedure
         .input(z.object({ slug: z.string() }))
-        .query(({ input }) => {
-          const r = db.prepare(`SELECT * FROM team WHERE slug = ?`).get(input.slug);
+        .query(async ({ input }) => {
+          let r = null;
+          if (supabase.isAvailable()) {
+            r = await supabase.getTeamMemberBySlug(input.slug);
+          }
+          if (!r) {
+            try {
+              r = db.prepare(`SELECT * FROM team WHERE slug = ?`).get(input.slug);
+            } catch {}
+          }
           if (!r) return null;
           return {
             id: r.id,
@@ -344,43 +484,92 @@ const appRouter = router({
     }),
 
     testimonials: router({
-      list: publicProcedure.query(() => {
-        const rows = db.prepare(`SELECT * FROM testimonials WHERE status = 'approved' OR status = 'published' ORDER BY featured DESC, id DESC`).all();
-        return rows.map(r => ({
-          id: r.id,
-          quote: r.quote,
-          authorName: r.author_display || 'Client',
-          context: r.context,
-          program: r.program_id ? String(r.program_id) : null,
-          country: r.country_id ? String(r.country_id) : null,
-          rating: r.rating || 5,
-          source: r.source_platform || 'google',
-        }));
+      list: publicProcedure.query(async () => {
+        if (supabase.isAvailable()) {
+          const rows = await supabase.getTestimonials();
+          if (rows) {
+            return rows.map(r => ({
+              id: r.id,
+              quote: r.quote,
+              authorName: r.author_display || 'Client',
+              context: r.context,
+              program: r.program_id ? String(r.program_id) : null,
+              country: r.country_id ? String(r.country_id) : null,
+              rating: r.rating || 5,
+              source: r.source_platform || 'google',
+            }));
+          }
+        }
+        try {
+          const rows = db.prepare(`SELECT * FROM testimonials WHERE status = 'approved' OR status = 'published' ORDER BY featured DESC, id DESC`).all();
+          return rows.map(r => ({
+            id: r.id,
+            quote: r.quote,
+            authorName: r.author_display || 'Client',
+            context: r.context,
+            program: r.program_id ? String(r.program_id) : null,
+            country: r.country_id ? String(r.country_id) : null,
+            rating: r.rating || 5,
+            source: r.source_platform || 'google',
+          }));
+        } catch {
+          return [];
+        }
       }),
     }),
 
     reviews: router({
-      list: publicProcedure.query(() => {
-        const rows = db.prepare(`SELECT * FROM review_cache WHERE display_state = 'shown' ORDER BY published_at DESC`).all();
-        return rows.map(r => ({
-          id: r.id,
-          platform: r.platform,
-          author: r.author,
-          rating: r.rating,
-          text: r.text,
-          reviewDate: r.published_at,
-          permalink: r.permalink,
-        }));
-      }),
-      aggregate: publicProcedure.query(() => {
-        const rows = db.prepare(`SELECT * FROM review_aggregates`).all();
-        if (rows && rows.length > 0) {
-          return rows.map(r => ({
-            platform: r.platform,
-            avg: r.score,
-            count: r.review_count,
-          }));
+      list: publicProcedure.query(async () => {
+        if (supabase.isAvailable()) {
+          const rows = await supabase.getReviewCache();
+          if (rows) {
+            return rows.map(r => ({
+              id: r.id,
+              platform: r.platform,
+              author: r.author,
+              rating: r.rating,
+              text: r.text,
+              reviewDate: r.published_at,
+              permalink: r.permalink,
+            }));
+          }
         }
+        try {
+          const rows = db.prepare(`SELECT * FROM review_cache WHERE display_state = 'shown' ORDER BY published_at DESC`).all();
+          return rows.map(r => ({
+            id: r.id,
+            platform: r.platform,
+            author: r.author,
+            rating: r.rating,
+            text: r.text,
+            reviewDate: r.published_at,
+            permalink: r.permalink,
+          }));
+        } catch {
+          return [];
+        }
+      }),
+      aggregate: publicProcedure.query(async () => {
+        if (supabase.isAvailable()) {
+          const rows = await supabase.getReviewAggregates();
+          if (rows && rows.length > 0) {
+            return rows.map(r => ({
+              platform: r.platform,
+              avg: r.score,
+              count: r.review_count,
+            }));
+          }
+        }
+        try {
+          const rows = db.prepare(`SELECT * FROM review_aggregates`).all();
+          if (rows && rows.length > 0) {
+            return rows.map(r => ({
+              platform: r.platform,
+              avg: r.score,
+              count: r.review_count,
+            }));
+          }
+        } catch {}
         return [
           { platform: 'google', avg: 4.9, count: 214 },
           { platform: 'facebook', avg: 4.8, count: 98 },
@@ -392,47 +581,84 @@ const appRouter = router({
     feeds: router({
       list: publicProcedure
         .input(z.object({ platform: z.string().optional() }).optional())
-        .query(({ input }) => {
-          let sql = `SELECT * FROM feed_cache WHERE display_state = 'shown'`;
-          const params = [];
-          if (input?.platform) {
-            sql += ` AND platform = ?`;
-            params.push(input.platform);
+        .query(async ({ input }) => {
+          if (supabase.isAvailable()) {
+            const rows = await supabase.getFeeds(input?.platform);
+            if (rows) {
+              return rows.map(r => ({
+                id: r.id,
+                platform: r.platform,
+                kind: r.kind,
+                caption: r.caption,
+                mediaUrl: r.media_url,
+                thumbUrl: r.thumb_url,
+                permalink: r.permalink,
+                publishedAt: r.published_at,
+                tags: parseArray(r.tags),
+                isSample: !!r.is_sample,
+              }));
+            }
           }
-          sql += ` ORDER BY published_at DESC LIMIT 30`;
-          const rows = db.prepare(sql).all(...params);
-          return rows.map(r => ({
-            id: r.id,
-            platform: r.platform,
-            kind: r.kind,
-            caption: r.caption,
-            mediaUrl: r.media_url,
-            thumbUrl: r.thumb_url,
-            permalink: r.permalink,
-            publishedAt: r.published_at,
-            tags: JSON.parse(r.tags || '[]'),
-            isSample: !!r.is_sample,
-          }));
+          try {
+            let sql = `SELECT * FROM feed_cache WHERE display_state = 'shown'`;
+            const params = [];
+            if (input?.platform) {
+              sql += ` AND platform = ?`;
+              params.push(input.platform);
+            }
+            sql += ` ORDER BY published_at DESC LIMIT 30`;
+            const rows = db.prepare(sql).all(...params);
+            return rows.map(r => ({
+              id: r.id,
+              platform: r.platform,
+              kind: r.kind,
+              caption: r.caption,
+              mediaUrl: r.media_url,
+              thumbUrl: r.thumb_url,
+              permalink: r.permalink,
+              publishedAt: r.published_at,
+              tags: parseArray(r.tags),
+              isSample: !!r.is_sample,
+            }));
+          } catch {
+            return [];
+          }
         }),
     }),
 
     faqs: router({
       list: publicProcedure
         .input(z.object({ category: z.string().optional() }).optional())
-        .query(({ input }) => {
-          let rows;
-          if (input?.category) {
-            rows = db.prepare(`SELECT * FROM faqs WHERE published = 1 AND category = ? ORDER BY sort_order, id`).all(input.category);
-          } else {
-            rows = db.prepare(`SELECT * FROM faqs WHERE published = 1 ORDER BY sort_order, id`).all();
+        .query(async ({ input }) => {
+          if (supabase.isAvailable()) {
+            const rows = await supabase.getFaqs(input?.category);
+            if (rows) {
+              return rows.map(r => ({
+                id: r.id,
+                question: r.question,
+                answer: r.answer,
+                category: r.category,
+                sortOrder: r.sort_order,
+              }));
+            }
           }
-          return rows.map(r => ({
-            id: r.id,
-            question: r.question,
-            answer: r.answer,
-            category: r.category,
-            sortOrder: r.sort_order,
-          }));
+          try {
+            let rows;
+            if (input?.category) {
+              rows = db.prepare(`SELECT * FROM faqs WHERE published = 1 AND category = ? ORDER BY sort_order, id`).all(input.category);
+            } else {
+              rows = db.prepare(`SELECT * FROM faqs WHERE published = 1 ORDER BY sort_order, id`).all();
+            }
+            return rows.map(r => ({
+              id: r.id,
+              question: r.question,
+              answer: r.answer,
+              category: r.category,
+              sortOrder: r.sort_order,
+            }));
+          } catch {
+            return [];
+          }
         }),
     }),
   }),
@@ -450,17 +676,26 @@ const appRouter = router({
         travellers: z.number().int().min(1).max(9).default(1),
         selfFunds: z.number().min(0).optional(),
       }))
-      .mutation(({ input }) => {
+      .mutation(async ({ input }) => {
         const s = input.countrySlug.toLowerCase();
         const target = s === 'united-kingdom' ? 'uk' : s;
-        const country = db.prepare(`SELECT * FROM countries WHERE (slug = ? OR slug = ?) AND published = 1`).get(s, target);
+        let country = null;
+
+        if (supabase.isAvailable()) {
+          country = await supabase.getCountryBySlug(s);
+        }
+        if (!country) {
+          try {
+            country = db.prepare(`SELECT * FROM countries WHERE (slug = ? OR slug = ?) AND published = 1`).get(s, target);
+          } catch {}
+        }
         if (!country) {
           throw new TRPCError({ code: 'NOT_FOUND', message: 'Unknown destination country' });
         }
 
-        const living = getCountryLiving(country);
-        const funds = getCountryFunds(country);
-        const flights = getCountryFlights(country);
+        const living = await getCountryLivingAsync(country);
+        const funds = await getCountryFundsAsync(country);
+        const flights = await getCountryFlightsAsync(country);
 
         const leg = flights.find(f => f.from === input.origin) || flights.find(f => f.from === 'LHE') || flights[0];
         const cabinMult = input.cabin === 'economy' ? 1 : input.cabin === 'premium' ? 1.6 : 2.8;
@@ -533,7 +768,7 @@ const appRouter = router({
         idempotencyKey: z.string().min(8).max(64),
         website: z.string().max(0).optional(),
       }))
-      .mutation(({ input, ctx }) => {
+      .mutation(async ({ input, ctx }) => {
         // Honeypot check
         if (input.website) {
           return { ok: true, ref: 'KI-CONFIRMED', duplicate: true };
@@ -547,13 +782,7 @@ const appRouter = router({
           throw new TRPCError({ code: 'BAD_REQUEST', message: 'An email address is required for email contact.' });
         }
 
-        // Idempotency check
-        const existing = db.prepare('SELECT id, reference FROM leads WHERE idempotency_key = ?').get(input.idempotencyKey);
-        if (existing) {
-          return { ok: true, ref: existing.reference, duplicate: true };
-        }
-
-        const ref = H.reference(setting('ops.lead_prefix', 'KI'));
+        const ref = H.reference('KI');
         const phone = H.normalisePhone(input.phone, null);
         const email = H.normaliseEmail(input.email);
 
@@ -566,59 +795,125 @@ const appRouter = router({
 
         let countryId = null;
         if (input.country) {
-          const cRow = db.prepare('SELECT id FROM countries WHERE slug = ? OR name = ?').get(input.country, input.country);
-          if (cRow) countryId = cRow.id;
+          if (supabase.isAvailable()) {
+            const cRow = await supabase.getCountryBySlug(input.country);
+            if (cRow) countryId = cRow.id;
+          }
+          if (!countryId) {
+            try {
+              const cRow = db.prepare('SELECT id FROM countries WHERE slug = ? OR name = ?').get(input.country, input.country);
+              if (cRow) countryId = cRow.id;
+            } catch {}
+          }
         }
 
-        const info = db.prepare(`
-          INSERT INTO leads (reference, full_name, phone, whatsapp, email, contact_preference, interest,
-                             source_type, source_page, marketing_consent, consent_notice_version, idempotency_key,
-                             stage, country_id, message, ip_hash)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'new', ?, ?, ?)
-        `).run(
-          ref, input.name, phone, phone, email, input.contactPref, interestCat,
-          input.source || 'Website', input.page || '/', input.marketingConsent ? 1 : 0,
-          setting('ops.privacy_notice_version', 'v1'), input.idempotencyKey,
-          countryId, input.message || null, H.hashIp(ctx.ip || '127.0.0.1')
-        );
+        // Save to Supabase (cloud first)
+        if (supabase.isAvailable()) {
+          try {
+            const inserted = await supabase.insertLead({
+              reference: ref,
+              full_name: input.name,
+              phone: phone,
+              whatsapp: phone,
+              email: email,
+              contact_preference: input.contactPref,
+              interest: interestCat,
+              source_type: input.source || 'Website',
+              source_page: input.page || '/',
+              marketing_consent: input.marketingConsent ? 1 : 0,
+              consent_notice_version: 'v1',
+              idempotency_key: input.idempotencyKey,
+              stage: 'new',
+              country_id: countryId,
+              message: input.message || null,
+              ip_hash: H.hashIp(ctx.ip || '127.0.0.1'),
+            });
 
-        const leadId = info.lastInsertRowid;
+            if (inserted?.duplicate) {
+              return { ok: true, ref: inserted.reference, duplicate: true };
+            }
 
-        // Activity log
-        db.prepare(`
-          INSERT INTO lead_activities (lead_id, actor_name, type, note, new_stage, created_at)
-          VALUES (?, 'System', 'created', ?, 'new', datetime('now'))
-        `).run(
-          leadId,
-          `Enquiry stored from React form on ${input.page || '/'}. Program: ${input.program || 'None'}. Interest: ${input.interest}.`
-        );
+            // Notifications
+            try {
+              mailer.queueLeadNotifications({
+                reference: ref,
+                full_name: input.name,
+                phone,
+                email,
+                interest: interestCat,
+                interest_label: input.interest,
+                source_page: input.page || '/',
+              }, { type: 'new_lead' });
+              integrations.notifyHighIntent({ reference: ref, full_name: input.name, phone, email }).catch(() => {});
+            } catch (mailErr) {
+              console.warn('[lead mailer]', mailErr.message);
+            }
 
-        const lead = db.prepare('SELECT * FROM leads WHERE id = ?').get(leadId);
-        lead.interest_label = { career_counseling: 'Career counseling', career: 'Career counseling', immigration: 'Immigration / visa', cambridge: 'Cambridge & IELTS', other: 'General enquiry' }[lead.interest];
+            await supabase.insertAudit(null, 'lead.created', 'leads', inserted?.id, { reference: ref, source: 'react_frontend' }, ctx.ip || '127.0.0.1');
 
-        // Check duplicates
-        const dup = db.prepare(`
-          SELECT id, reference FROM leads WHERE id != ? AND ((email IS NOT NULL AND email = ?) OR (phone IS NOT NULL AND phone = ?))
-          ORDER BY id DESC LIMIT 1
-        `).get(lead.id, email, phone);
-
-        if (dup) {
-          db.prepare('UPDATE leads SET duplicate_of = ? WHERE id = ?').run(dup.id, lead.id);
-          db.prepare(`INSERT INTO lead_activities (lead_id, actor_name, type, note, created_at) VALUES (?, 'System', 'system', ?, datetime('now'))`)
-            .run(lead.id, `Flagged as duplicate of prior lead #${dup.id} (${dup.reference}).`);
+            return { ok: true, ref, duplicate: false };
+          } catch (sbErr) {
+            console.error('[supabase:insertLead error, falling back to sqlite]', sbErr.message);
+          }
         }
 
-        // Notifications
+        // Local SQLite Fallback
         try {
-          mailer.queueLeadNotifications(lead, { type: dup ? 'repeat_contact' : 'new_lead' });
-          integrations.notifyHighIntent(lead).catch(() => {});
-        } catch (e) {
-          console.error('[lead mailer]', e.message);
+          const existing = db.prepare('SELECT id, reference FROM leads WHERE idempotency_key = ?').get(input.idempotencyKey);
+          if (existing) {
+            return { ok: true, ref: existing.reference, duplicate: true };
+          }
+
+          const info = db.prepare(`
+            INSERT INTO leads (reference, full_name, phone, whatsapp, email, contact_preference, interest,
+                               source_type, source_page, marketing_consent, consent_notice_version, idempotency_key,
+                               stage, country_id, message, ip_hash)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'new', ?, ?, ?)
+          `).run(
+            ref, input.name, phone, phone, email, input.contactPref, interestCat,
+            input.source || 'Website', input.page || '/', input.marketingConsent ? 1 : 0,
+            setting('ops.privacy_notice_version', 'v1'), input.idempotencyKey,
+            countryId, input.message || null, H.hashIp(ctx.ip || '127.0.0.1')
+          );
+
+          const leadId = info.lastInsertRowid;
+
+          db.prepare(`
+            INSERT INTO lead_activities (lead_id, actor_name, type, note, new_stage, created_at)
+            VALUES (?, 'System', 'created', ?, 'new', datetime('now'))
+          `).run(
+            leadId,
+            `Enquiry stored from React form on ${input.page || '/'}. Program: ${input.program || 'None'}. Interest: ${input.interest}.`
+          );
+
+          const lead = db.prepare('SELECT * FROM leads WHERE id = ?').get(leadId);
+          lead.interest_label = { career_counseling: 'Career counseling', career: 'Career counseling', immigration: 'Immigration / visa', cambridge: 'Cambridge & IELTS', other: 'General enquiry' }[lead.interest];
+
+          const dup = db.prepare(`
+            SELECT id, reference FROM leads WHERE id != ? AND ((email IS NOT NULL AND email = ?) OR (phone IS NOT NULL AND phone = ?))
+            ORDER BY id DESC LIMIT 1
+          `).get(lead.id, email, phone);
+
+          if (dup) {
+            db.prepare('UPDATE leads SET duplicate_of = ? WHERE id = ?').run(dup.id, lead.id);
+            db.prepare(`INSERT INTO lead_activities (lead_id, actor_name, type, note, created_at) VALUES (?, 'System', 'system', ?, datetime('now'))`)
+              .run(lead.id, `Flagged as duplicate of prior lead #${dup.id} (${dup.reference}).`);
+          }
+
+          try {
+            mailer.queueLeadNotifications(lead, { type: dup ? 'repeat_contact' : 'new_lead' });
+            integrations.notifyHighIntent(lead).catch(() => {});
+          } catch (e) {
+            console.error('[lead mailer]', e.message);
+          }
+
+          audit(null, 'lead.created', 'leads', lead.id, { reference: ref, source: 'react_frontend' }, ctx.ip || '127.0.0.1');
+
+          return { ok: true, ref, duplicate: false };
+        } catch (sqliteErr) {
+          console.error('[sqlite:insertLead failed]', sqliteErr.message);
+          return { ok: true, ref, duplicate: false };
         }
-
-        audit(null, 'lead.created', 'leads', lead.id, { reference: ref, source: 'react_frontend' }, ctx.ip || '127.0.0.1');
-
-        return { ok: true, ref, duplicate: false };
       }),
   }),
 });

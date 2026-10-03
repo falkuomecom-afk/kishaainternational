@@ -1260,10 +1260,6 @@ router.get('/preview/posts/:id', requirePermission('content.view'), (req, res) =
 router.get('/preview/pages/:id', requirePermission('content.view'), (req, res) => {
   const page = db.prepare('SELECT * FROM pages WHERE id = ?').get(Number(req.params.id));
   if (!page) return res.status(404).send('Not found');
-  if (!req.query.raw) {
-    if (page.slug === 'home') return res.redirect('/');
-    return res.redirect(`/${page.slug}`);
-  }
   res.set('X-Robots-Tag', 'noindex, nofollow');
   res.set('Cache-Control', 'private, no-store, max-age=0');
   res.render('site/page', {

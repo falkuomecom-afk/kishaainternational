@@ -21,6 +21,7 @@
   "license": "ISC",
   "description": "Kishaa International — website, CMS, lead operations, destination cost intelligence and SEO/AEO/GEO/AIO engine.",
   "dependencies": {
+    "@supabase/supabase-js": "^2.117.2",
     "@trpc/server": "^11.19.0",
     "better-sqlite3": "^12.11.1",
     "dotenv": "^18.0.5",

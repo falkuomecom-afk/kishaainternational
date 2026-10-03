@@ -3,28 +3,49 @@ const Database = require('better-sqlite3');
 const fs = require('fs');
 const path = require('path');
 
-const DATA_DIR = path.join(__dirname, '..', '..', 'data');
+const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+const DATA_DIR = isServerless ? '/tmp/data' : path.join(__dirname, '..', '..', 'data');
 const DB_PATH = process.env.DATABASE_PATH || path.join(DATA_DIR, 'kishaa.db');
-if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 
-const db = new Database(DB_PATH);
-db.pragma('journal_mode = WAL');
-db.pragma('foreign_keys = ON');
-db.pragma('busy_timeout = 5000');
+let db;
+try {
+  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+  db = new Database(DB_PATH);
+  db.pragma('journal_mode = WAL');
+  db.pragma('foreign_keys = ON');
+  db.pragma('busy_timeout = 5000');
+} catch (e) {
+  console.warn('[db:sqlite] SQLite file storage unavailable, running in cloud-first mode:', e.message);
+  db = {
+    prepare: () => ({ all: () => [], get: () => null, run: () => ({ lastInsertRowid: 1 }) }),
+    transaction: (fn) => fn,
+    exec: () => {},
+    pragma: () => {},
+  };
+}
 
 function migrate() {
-  const sql = fs.readFileSync(path.join(__dirname, '..', 'schema.sql'), 'utf8');
-  db.exec(sql);
-  // Idempotent column additions for evolving installs
-  const addColumn = (table, col, def) => {
-    const cols = db.prepare(`PRAGMA table_info(${table})`).all().map(c => c.name);
-    if (!cols.includes(col)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${col} ${def}`);
-  };
-  addColumn('fee_versions', 'note', 'TEXT');
-  addColumn('posts', 'geo_summary', 'TEXT');
-  addColumn('posts', 'primary_pillar', "TEXT DEFAULT 'resources'");
-  addColumn('leads', 'region', 'TEXT');
-  addColumn('site_settings', 'group_name', "TEXT DEFAULT 'general'");
+  if (!db || typeof db.exec !== 'function') return;
+  try {
+    const schemaFile = path.join(__dirname, '..', 'schema.sql');
+    if (!fs.existsSync(schemaFile)) return;
+    const sql = fs.readFileSync(schemaFile, 'utf8');
+    db.exec(sql);
+    // Idempotent column additions for evolving installs
+    const addColumn = (table, col, def) => {
+      try {
+        const cols = db.prepare(`PRAGMA table_info(${table})`).all().map(c => c.name);
+        if (!cols.includes(col)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${col} ${def}`);
+      } catch {}
+    };
+    addColumn('fee_versions', 'note', 'TEXT');
+    addColumn('posts', 'geo_summary', 'TEXT');
+    addColumn('posts', 'primary_pillar', "TEXT DEFAULT 'resources'");
+    addColumn('leads', 'region', 'TEXT');
+    addColumn('site_settings', 'group_name', "TEXT DEFAULT 'general'");
+  } catch (err) {
+    console.warn('[db:migrate] Skipped SQLite migration:', err.message);
+  }
 }
 
 const q = {

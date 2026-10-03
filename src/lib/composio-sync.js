@@ -6,6 +6,7 @@
  */
 require('dotenv').config();
 const { db } = require('./db');
+const supabase = require('./supabase');
 
 const COMPOSIO_ENDPOINT = 'https://connect.composio.dev/mcp';
 const FB_PAGE_ID = process.env.FB_PAGE_ID || '287203676427581'; // Kishaa International Facebook Page
@@ -135,6 +136,23 @@ async function syncInstagram() {
       pubAt,
       tags
     );
+
+    if (supabase.isAvailable()) {
+      await supabase.upsertFeedItem({
+        platform: 'instagram',
+        external_id: String(item.id),
+        kind,
+        caption,
+        media_url: media,
+        thumb_url: thumb,
+        permalink: item.permalink || 'https://www.instagram.com/kishaainternational',
+        published_at: pubAt,
+        tags,
+        display_state: 'shown',
+        is_sample: 0,
+      });
+    }
+
     count++;
   }
 
@@ -190,6 +208,23 @@ async function syncFacebook() {
       pubAt,
       tags
     );
+
+    if (supabase.isAvailable()) {
+      await supabase.upsertFeedItem({
+        platform: 'facebook',
+        external_id: String(post.id),
+        kind,
+        caption,
+        media_url: media,
+        thumb_url: thumb,
+        permalink: post.permalink_url || `https://www.facebook.com/${FB_PAGE_ID}`,
+        published_at: pubAt,
+        tags,
+        display_state: 'shown',
+        is_sample: 0,
+      });
+    }
+
     count++;
   }
 
