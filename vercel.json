@@ -3,7 +3,12 @@
   "services": {
     "app": {
       "root": ".",
-      "framework": "express"
+      "framework": "express",
+      "includeFiles": [
+        "views/**",
+        "public/**",
+        "src/schema.sql"
+      ]
     },
     "client": {
       "root": "client",
@@ -18,6 +23,14 @@
       ]
     }
   },
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "views/**"
+    },
+    "src/server.js": {
+      "includeFiles": "views/**"
+    }
+  },
   "rewrites": [
     {
       "source": "/api/(.*)",
@@ -27,6 +40,24 @@
     },
     {
       "source": "/admin(.*)",
+      "destination": {
+        "service": "app"
+      }
+    },
+    {
+      "source": "/css/(.*)",
+      "destination": {
+        "service": "app"
+      }
+    },
+    {
+      "source": "/js/(.*)",
+      "destination": {
+        "service": "app"
+      }
+    },
+    {
+      "source": "/uploads/(.*)",
       "destination": {
         "service": "app"
       }

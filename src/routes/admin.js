@@ -13,6 +13,7 @@ const integrations = require('../lib/integrations');
 const mailer = require('../lib/mailer');
 const authLib = require('../lib/auth');
 const { ROLES, PERMISSIONS, can, leadScope, requirePermission } = require('../lib/permissions');
+const supabase = require('../lib/supabase');
 
 const router = express.Router();
 const UPLOAD_DIR = path.join(__dirname, '..', '..', 'public', 'uploads');
@@ -59,7 +60,7 @@ router.get('/login', (req, res) => {
   res.render('admin/login', { layout: false, error: null, notice: null, email: '', csrf: res.locals.csrf || '', user: null });
 });
 
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
   const ip = req.ip || 'unknown';
   // Only failed attempts consume the allowance: a shared office IP should not lock itself out
   // by signing in successfully.
@@ -70,7 +71,20 @@ router.post('/login', (req, res) => {
   if (!gate.allowed) return fail(`Too many failed attempts. Try again in ${gate.retryAfter} seconds.`);
   const email = String(req.body.email || '').trim().toLowerCase();
   const password = String(req.body.password || '');
-  const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+  let user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+  if (!user && supabase.isAvailable()) {
+    try {
+      const { data: sbUser } = await supabase.getClient().from('users').select('*').eq('email', email).maybeSingle();
+      if (sbUser) {
+        db.prepare(`INSERT OR REPLACE INTO users (id, name, email, password_hash, role, status, mfa_enabled, phone, team, last_login_at, failed_logins, locked_until, created_at, updated_at)
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+          .run(sbUser.id, sbUser.name, sbUser.email, sbUser.password_hash, sbUser.role, sbUser.status, sbUser.mfa_enabled || 0, sbUser.phone || null, sbUser.team || null, sbUser.last_login_at || null, sbUser.failed_logins || 0, sbUser.locked_until || null, sbUser.created_at, sbUser.updated_at);
+        user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+      }
+    } catch (e) {
+      console.warn('[admin:login] Supabase user fetch error:', e.message);
+    }
+  }
   if (!user || user.status !== 'active') {
     audit(null, 'auth.failed', 'users', null, { email, reason: 'unknown_or_disabled' }, ip);
     return fail('Those credentials did not match an active account.');
@@ -678,7 +692,37 @@ router.post('/funds-rules/:id/review', requirePermission('rules.approve'), (req,
 });
 
 /* =========================================================== LEADS ====== */
-router.get('/leads', requirePermission('leads.view'), (req, res) => {
+router.get('/leads', requirePermission('leads.view'), async (req, res) => {
+  if (supabase.isAvailable()) {
+    try {
+      const { data: sbLeads } = await supabase.getClient().from('leads').select('*').order('created_at', { ascending: false }).limit(200);
+      if (sbLeads && sbLeads.length > 0) {
+        const insLead = db.prepare(`INSERT OR REPLACE INTO leads (
+          id, reference, idempotency_key, full_name, email, phone, whatsapp,
+          contact_preference, best_time, destination_intent, country_id, program_id,
+          timeline, budget_band, notes, source_type, source_page, utm_source,
+          utm_medium, utm_campaign, utm_term, utm_content, referrer, ip_hash,
+          user_agent, consent_notice_version, marketing_consent, status, stage,
+          stage_reason, score, owner_id, priority, first_response_at, next_follow_up_at,
+          last_activity_at, region, created_at, updated_at
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
+        for (const l of sbLeads) {
+          insLead.run(
+            l.id, l.reference, l.idempotency_key, l.full_name, l.email, l.phone, l.whatsapp,
+            l.contact_preference, l.best_time, l.destination_intent, l.country_id, l.program_id,
+            l.timeline, l.budget_band, l.notes, l.source_type, l.source_page, l.utm_source,
+            l.utm_medium, l.utm_campaign, l.utm_term, l.utm_content, l.referrer, l.ip_hash,
+            l.user_agent, l.consent_notice_version, l.marketing_consent, l.status, l.stage,
+            l.stage_reason, l.score, l.owner_id, l.priority, l.first_response_at, l.next_follow_up_at,
+            l.last_activity_at, l.region, l.created_at, l.updated_at
+          );
+        }
+      }
+    } catch (e) {
+      console.warn('[admin:leads] sync from supabase error:', e.message);
+    }
+  }
+
   const u = req.user;
   const scope = leadScope(u);
   const where = [scope.clause];

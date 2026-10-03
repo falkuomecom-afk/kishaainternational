@@ -2,6 +2,7 @@
 const crypto = require('crypto');
 const { db } = require('./db');
 const { ROLES } = require('./permissions');
+const supabase = require('./supabase');
 
 const SESSION_COOKIE = 'ki_session';
 const CSRF_COOKIE = 'ki_csrf';
@@ -27,18 +28,53 @@ function createSession(userId, req) {
   const raw = crypto.randomBytes(32).toString('hex');
   const csrf = crypto.randomBytes(24).toString('hex');
   const expires = new Date(Date.now() + SESSION_HOURS * 3600e3).toISOString();
-  db.prepare(`INSERT INTO sessions (id, user_id, csrf, ip, user_agent, expires_at)
-              VALUES (?,?,?,?,?,?)`)
-    .run(sha256(raw), userId, csrf, req.ip || null, (req.get('user-agent') || '').slice(0, 250), expires);
+  const sid = sha256(raw);
+  const ip = req?.ip || null;
+  const ua = (req?.get?.('user-agent') || '').slice(0, 250);
+
+  try {
+    db.prepare(`INSERT INTO sessions (id, user_id, csrf, ip, user_agent, expires_at)
+                VALUES (?,?,?,?,?,?)`)
+      .run(sid, userId, csrf, ip, ua, expires);
+  } catch (e) {}
+
+  if (supabase.isAvailable()) {
+    try {
+      supabase.getClient().from('sessions').insert({
+        id: sid,
+        user_id: userId,
+        csrf,
+        ip,
+        user_agent: ua,
+        expires_at: expires,
+      }).then(() => {}).catch(() => {});
+    } catch (e) {}
+  }
+
   return { token: raw, csrf, expires };
 }
 
 function destroySession(token) {
   if (!token) return;
-  db.prepare('UPDATE sessions SET revoked_at = datetime(\'now\') WHERE id = ?').run(sha256(token));
+  const sid = sha256(token);
+  try {
+    db.prepare('UPDATE sessions SET revoked_at = datetime(\'now\') WHERE id = ?').run(sid);
+  } catch (e) {}
+  if (supabase.isAvailable()) {
+    try {
+      supabase.getClient().from('sessions').update({ revoked_at: new Date().toISOString() }).eq('id', sid)
+        .then(() => {}).catch(() => {});
+    } catch (e) {}
+  }
 }
 function revokeAllForUser(userId) {
   db.prepare("UPDATE sessions SET revoked_at = datetime('now') WHERE user_id = ? AND revoked_at IS NULL").run(userId);
+  if (supabase.isAvailable()) {
+    try {
+      supabase.getClient().from('sessions').update({ revoked_at: new Date().toISOString() }).eq('user_id', userId)
+        .then(() => {}).catch(() => {});
+    } catch (e) {}
+  }
 }
 function sessionUser(token) {
   if (!token) return null;
@@ -50,6 +86,52 @@ function sessionUser(token) {
   if (new Date(row.expires_at).getTime() < Date.now()) return null;
   return { id: row.id, name: row.name, email: row.email, role: row.role, team: row.team, phone: row.phone,
            csrf: row.csrf, sessionId: row.sid, roleLabel: ROLES[row.role]?.label || row.role };
+}
+
+async function sessionUserSupabase(token) {
+  if (!token || !supabase.isAvailable()) return null;
+  try {
+    const sb = supabase.getClient();
+    if (!sb) return null;
+    const sid = sha256(token);
+    const { data: sess, error } = await sb.from('sessions')
+      .select('id, user_id, csrf, expires_at, revoked_at')
+      .eq('id', sid)
+      .limit(1)
+      .maybeSingle();
+    if (error || !sess || sess.revoked_at) return null;
+    if (new Date(sess.expires_at).getTime() < Date.now()) return null;
+
+    const { data: u, error: uErr } = await sb.from('users')
+      .select('id, name, email, role, status, team, phone')
+      .eq('id', sess.user_id)
+      .limit(1)
+      .maybeSingle();
+    if (uErr || !u || u.status !== 'active') return null;
+
+    try {
+      db.prepare(`INSERT OR IGNORE INTO users (id, name, email, password_hash, role, status, phone, team)
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?)`)
+        .run(u.id, u.name, u.email, '', u.role, u.status, u.phone || null, u.team || null);
+      db.prepare(`INSERT OR REPLACE INTO sessions (id, user_id, csrf, expires_at, revoked_at)
+                  VALUES (?, ?, ?, ?, ?)`)
+        .run(sess.id, sess.user_id, sess.csrf, sess.expires_at, sess.revoked_at || null);
+    } catch (e) {}
+
+    return {
+      id: u.id,
+      name: u.name,
+      email: u.email,
+      role: u.role,
+      team: u.team,
+      phone: u.phone,
+      csrf: sess.csrf,
+      sessionId: sess.id,
+      roleLabel: ROLES[u.role]?.label || u.role,
+    };
+  } catch (e) {
+    return null;
+  }
 }
 
 // Simple in-memory token buckets (documented as needing Redis/durable store for multi-instance)
@@ -79,14 +161,21 @@ function rateLimit(key, max, windowMs) {
 setInterval(() => { const now = Date.now(); for (const [k, v] of buckets) if (now > v.reset + 60e3) buckets.delete(k); }, 60e3).unref?.();
 
 function middleware() {
-  return (req, res, next) => {
-    const token = req.cookies ? req.cookies[SESSION_COOKIE] : parseCookie(req)[SESSION_COOKIE];
-    const user = sessionUser(token);
-    req.user = user;
-    res.locals.user = user;
-    res.locals.can = (perm) => !!(user && (ROLES[user.role]?.permissions || []).includes(perm));
-    res.locals.ROLES = ROLES;
-    next();
+  return async (req, res, next) => {
+    try {
+      const token = req.cookies ? req.cookies[SESSION_COOKIE] : parseCookie(req)[SESSION_COOKIE];
+      let user = sessionUser(token);
+      if (!user && token && supabase.isAvailable()) {
+        user = await sessionUserSupabase(token);
+      }
+      req.user = user;
+      res.locals.user = user;
+      res.locals.can = (perm) => !!(user && (ROLES[user.role]?.permissions || []).includes(perm));
+      res.locals.ROLES = ROLES;
+      next();
+    } catch (err) {
+      next(err);
+    }
   };
 }
 

@@ -10,12 +10,23 @@ const { register } = require('./lib/viewhelpers');
 const renderer = require('./render');
 const mailer = require('./lib/mailer');
 
-const ROOT = path.join(__dirname, '..');
+const ROOT = fs.existsSync(path.join(__dirname, '..', 'views'))
+  ? path.join(__dirname, '..')
+  : process.cwd();
 const VIEWS = path.join(ROOT, 'views');
 const PORT = Number(process.env.PORT || 3000);
 const HOST = process.env.HOST || '0.0.0.0';
 
 migrate();
+try {
+  const userCount = db.prepare('SELECT COUNT(*) AS n FROM users').get()?.n || 0;
+  if (userCount === 0) {
+    const { seed } = require('./seed');
+    seed();
+  }
+} catch (e) {
+  console.warn('[server:init] seeder warning:', e.message);
+}
 const viewHelpers = register(renderer.registerHelpers);
 
 const app = express();
