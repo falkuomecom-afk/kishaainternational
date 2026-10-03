@@ -4,11 +4,14 @@
     "app": {
       "root": ".",
       "framework": "express",
-      "includeFiles": [
-        "views/**",
-        "public/**",
-        "src/schema.sql"
-      ]
+      "functions": {
+        "src/**": {
+          "includeFiles": "views/**"
+        },
+        "api/**": {
+          "includeFiles": "views/**"
+        }
+      }
     },
     "client": {
       "root": "client",
@@ -21,14 +24,6 @@
           "env": "APP_URL"
         }
       ]
-    }
-  },
-  "functions": {
-    "api/index.js": {
-      "includeFiles": "views/**"
-    },
-    "src/server.js": {
-      "includeFiles": "views/**"
     }
   },
   "rewrites": [

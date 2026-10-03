@@ -5,23 +5,33 @@ const path = require('path');
 
 const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
 const DATA_DIR = isServerless ? '/tmp/data' : path.join(__dirname, '..', '..', 'data');
-const DB_PATH = process.env.DATABASE_PATH || path.join(DATA_DIR, 'kishaa.db');
+let DB_PATH = process.env.DATABASE_PATH;
+if (!DB_PATH || (isServerless && !DB_PATH.startsWith('/tmp'))) {
+  DB_PATH = path.join(DATA_DIR, 'kishaa.db');
+}
 
 let db;
 try {
-  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+  const dir = path.dirname(path.resolve(DB_PATH));
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   db = new Database(DB_PATH);
   db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');
   db.pragma('busy_timeout = 5000');
 } catch (e) {
-  console.warn('[db:sqlite] SQLite file storage unavailable, running in cloud-first mode:', e.message);
-  db = {
-    prepare: () => ({ all: () => [], get: () => null, run: () => ({ lastInsertRowid: 1 }) }),
-    transaction: (fn) => fn,
-    exec: () => {},
-    pragma: () => {},
-  };
+  console.warn('[db:sqlite] File database failed, falling back to in-memory SQLite:', e.message);
+  try {
+    db = new Database(':memory:');
+    db.pragma('foreign_keys = ON');
+  } catch (memErr) {
+    console.error('[db:sqlite] In-memory SQLite failed:', memErr.message);
+    db = {
+      prepare: () => ({ all: () => [], get: () => ({ n: 0 }), run: () => ({ lastInsertRowid: 1 }) }),
+      transaction: (fn) => fn,
+      exec: () => {},
+      pragma: () => {},
+    };
+  }
 }
 
 function migrate() {

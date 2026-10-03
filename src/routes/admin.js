@@ -16,8 +16,15 @@ const { ROLES, PERMISSIONS, can, leadScope, requirePermission } = require('../li
 const supabase = require('../lib/supabase');
 
 const router = express.Router();
-const UPLOAD_DIR = path.join(__dirname, '..', '..', 'public', 'uploads');
-if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+const UPLOAD_DIR = isServerless 
+  ? path.join('/tmp', 'uploads')
+  : path.join(__dirname, '..', '..', 'public', 'uploads');
+try {
+  if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+} catch (e) {
+  console.warn('[admin:uploads] Directory creation skipped:', e.message);
+}
 
 /** Media rows carry a reference count so editors can see what is safe to delete. */
 const MEDIA_SELECT = `SELECT m.*, u.name AS uploader,
@@ -1243,11 +1250,11 @@ router.post('/tools/reindex', requirePermission('tools.run'), (req, res) => {
   res.redirect('/admin/tools?saved=reindexed');
 });
 router.post('/tools/backup', requirePermission('tools.run'), (req, res) => {
-  const dir = path.join(__dirname, '..', '..', 'data', 'backups');
-  fs.mkdirSync(dir, { recursive: true });
-  const stamp = new Date().toISOString().replace(/[:.]/g, '-');
-  const target = path.join(dir, `kishaa-${stamp}.db`);
+  const dir = isServerless ? path.join('/tmp', 'backups') : path.join(__dirname, '..', '..', 'data', 'backups');
   try {
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const target = path.join(dir, `kishaa-${stamp}.db`);
     db.prepare('VACUUM INTO ?').run(target);
     audit(req.user, 'tools.backup', 'database', null, { file: path.basename(target) }, req.ip);
     res.redirect('/admin/tools?saved=backup');
