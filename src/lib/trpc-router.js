@@ -389,6 +389,33 @@ const appRouter = router({
       }),
     }),
 
+    feeds: router({
+      list: publicProcedure
+        .input(z.object({ platform: z.string().optional() }).optional())
+        .query(({ input }) => {
+          let sql = `SELECT * FROM feed_cache WHERE display_state = 'shown'`;
+          const params = [];
+          if (input?.platform) {
+            sql += ` AND platform = ?`;
+            params.push(input.platform);
+          }
+          sql += ` ORDER BY published_at DESC LIMIT 30`;
+          const rows = db.prepare(sql).all(...params);
+          return rows.map(r => ({
+            id: r.id,
+            platform: r.platform,
+            kind: r.kind,
+            caption: r.caption,
+            mediaUrl: r.media_url,
+            thumbUrl: r.thumb_url,
+            permalink: r.permalink,
+            publishedAt: r.published_at,
+            tags: JSON.parse(r.tags || '[]'),
+            isSample: !!r.is_sample,
+          }));
+        }),
+    }),
+
     faqs: router({
       list: publicProcedure
         .input(z.object({ category: z.string().optional() }).optional())

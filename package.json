@@ -13,6 +13,7 @@
     "seed": "node src/seed/index.js",
     "seed:force": "node src/seed/index.js --force",
     "snapshot": "node src/scripts/snapshot.js",
+    "sync:feeds": "node src/lib/composio-sync.js",
     "test": "node src/scripts/test.js"
   },
   "keywords": [],

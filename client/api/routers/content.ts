@@ -304,6 +304,24 @@ export const contentRouter = createRouter({
       return rows;
     }),
   }),
+  feeds: createRouter({
+    list: publicQuery
+      .input(z.object({ platform: z.string().optional() }).optional())
+      .query(async () => {
+        return [] as Array<{
+          id: number;
+          platform: string;
+          kind: string;
+          caption: string;
+          mediaUrl: string | null;
+          thumbUrl: string | null;
+          permalink: string;
+          publishedAt: string;
+          tags: string[];
+          isSample: boolean;
+        }>;
+      }),
+  }),
   settings: createRouter({
     get: publicQuery.input(z.object({ key: z.string() })).query(async ({ input }) => {
       const rows = await getDb()

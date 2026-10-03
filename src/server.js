@@ -170,6 +170,15 @@ function startScheduler() {
       }
     } catch (e) { console.error('scheduler', e.message); }
   }, 60e3).unref();
+
+  // On startup, if COMPOSIO_API_KEY is present, refresh Composio feeds in background
+  if (process.env.COMPOSIO_API_KEY) {
+    setTimeout(() => {
+      try {
+        require('./lib/composio-sync').syncAll().catch(e => console.error('Startup composio sync:', e.message));
+      } catch (e) {}
+    }, 2000).unref();
+  }
 }
 
 if (require.main === module) {

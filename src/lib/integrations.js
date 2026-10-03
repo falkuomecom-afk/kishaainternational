@@ -15,9 +15,9 @@ const { db, setting } = require('./db');
 
 const PROVIDERS = {
   google:      { kind: 'reviews', label: 'Google Business Profile', env: ['GOOGLE_BUSINESS_TOKEN'], docs: 'business.google.com' },
-  facebook:    { kind: 'reviews', label: 'Facebook Business Page',  env: ['META_PAGE_TOKEN'], docs: 'developers.facebook.com' },
+  facebook:    { kind: 'reviews', label: 'Facebook Business Page',  env: ['META_PAGE_TOKEN', 'COMPOSIO_API_KEY'], docs: 'developers.facebook.com' },
   trustpilot:  { kind: 'reviews', label: 'Trustpilot Profile',      env: ['TRUSTPILOT_API_KEY'], docs: 'developers.trustpilot.com' },
-  instagram:   { kind: 'feeds',   label: 'Instagram Reels & Posts', env: ['META_PAGE_TOKEN'], docs: 'developers.facebook.com' },
+  instagram:   { kind: 'feeds',   label: 'Instagram Reels & Posts', env: ['META_PAGE_TOKEN', 'COMPOSIO_API_KEY'], docs: 'developers.facebook.com' },
   youtube:     { kind: 'feeds',   label: 'YouTube Shorts & Videos', env: ['YOUTUBE_API_KEY'], docs: 'developers.google.com/youtube' },
   flights:     { kind: 'flights', label: 'Flight aggregator (Travelpayouts / Amadeus)', env: ['FLIGHT_API_KEY'], docs: 'travelpayouts.com' },
   composio:    { kind: 'automation', label: 'Composio managed integrations', env: ['COMPOSIO_API_KEY'], docs: 'composio.dev' },
@@ -55,6 +55,17 @@ function refreshProvider(key) {
 
   db.prepare('INSERT INTO audit_log (actor, action, entity, meta) VALUES (?,?,?,?)')
     .run('system', 'integration.refresh', key, JSON.stringify({ configured: result.configured }));
+
+  if (result.configured && (key === 'composio' || key === 'facebook' || key === 'instagram') && process.env.COMPOSIO_API_KEY) {
+    try {
+      const composioSync = require('./composio-sync');
+      if (key === 'instagram') composioSync.syncInstagram().catch(err => console.error('Composio instagram sync error:', err.message));
+      else if (key === 'facebook') composioSync.syncFacebook().catch(err => console.error('Composio facebook sync error:', err.message));
+      else composioSync.syncAll().catch(err => console.error('Composio syncAll error:', err.message));
+    } catch (e) {
+      console.error('Error invoking composio sync:', e.message);
+    }
+  }
 
   return {
     ok: true, provider: key, label: p.label, mode: result.configured ? 'live' : 'cache',
