@@ -117,10 +117,22 @@ app.get('/healthz', (req, res) => res.json({ ok: true, uptime: process.uptime(),
 
 /* ------------------------------------------------------------- tRPC API */
 const { fetchRequestHandler } = require('@trpc/server/adapters/fetch');
-const { appRouter } = require('./lib/trpc-router');
+let cachedRouter = null;
+function getAppRouter() {
+  if (!cachedRouter) {
+    const trpcModule = require('./lib/trpc-router');
+    cachedRouter = trpcModule.appRouter || trpcModule;
+  }
+  return cachedRouter;
+}
 
 async function handleTrpc(req, res) {
   try {
+    const router = getAppRouter();
+    if (!router || !router._def) {
+      throw new Error(`tRPC router unavailable (keys: ${Object.keys(require('./lib/trpc-router'))})`);
+    }
+
     const proto = req.headers['x-forwarded-proto'] || req.protocol || 'https';
     const host = req.headers['x-forwarded-host'] || req.headers.host || 'localhost';
     const url = new URL(req.originalUrl || req.url, `${proto}://${host}`);
@@ -134,10 +146,12 @@ async function handleTrpc(req, res) {
     }
 
     const request = new Request(url.href, init);
+    const endpoint = (url.pathname.startsWith('/api/trpc') || req.baseUrl?.startsWith('/api/trpc')) ? '/api/trpc' : '/trpc';
+
     const response = await fetchRequestHandler({
-      endpoint: req.originalUrl?.includes('/api/trpc') ? '/api/trpc' : '/trpc',
+      endpoint,
       req: request,
-      router: appRouter,
+      router,
       createContext: () => ({
         user: req.user || null,
         ip: req.ip || req.headers['x-forwarded-for'] || '127.0.0.1',
