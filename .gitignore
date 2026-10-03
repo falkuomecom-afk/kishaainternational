@@ -18,6 +18,7 @@ data/
 *.sqlite3
 backups/
 data/backups/
+supabase-seed.sql
 
 # Environment variables & Secrets
 .env
