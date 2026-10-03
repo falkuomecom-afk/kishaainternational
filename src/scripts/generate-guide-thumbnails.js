@@ -160,8 +160,27 @@ const GUIDES = [
   }
 ];
 
+function escXml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
 function generateSvg(guide) {
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img" aria-label="${guide.titleLine1} ${guide.titleLine2} - Kishaa International">
+  const t1 = escXml(guide.titleLine1);
+  const t2 = escXml(guide.titleLine2);
+  const cat = escXml(guide.category);
+  const top = escXml(guide.topic);
+  const bdg = escXml(guide.badge);
+  const sLab = escXml(guide.statLabel);
+  const sVal = escXml(guide.statValue);
+  const ariaLabel = escXml(`${guide.titleLine1} ${guide.titleLine2} - Kishaa International`);
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img" aria-label="${ariaLabel}">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#040e1d"/>
@@ -211,7 +230,7 @@ function generateSvg(guide) {
   <!-- Top Right Topic / Authority Badge -->
   <g transform="translate(980, 54)">
     <rect width="156" height="42" rx="3" fill="#0a1d36" stroke="#c9a227" stroke-width="1" stroke-opacity="0.4"/>
-    <text x="78" y="26" font-family="'Inter', -apple-system, sans-serif" font-size="13" font-weight="700" letter-spacing="1.5" fill="#f3d87f" text-anchor="middle">${guide.badge}</text>
+    <text x="78" y="26" font-family="'Inter', -apple-system, sans-serif" font-size="13" font-weight="700" letter-spacing="1.5" fill="#f3d87f" text-anchor="middle">${bdg}</text>
   </g>
 
   <!-- Large Country / Topic Seal & Flag -->
@@ -225,14 +244,14 @@ function generateSvg(guide) {
   <g transform="translate(64, 180)">
     <!-- Category Pill -->
     <rect width="210" height="30" rx="3" fill="#c9a227" fill-opacity="0.15" stroke="#c9a227" stroke-width="1" stroke-opacity="0.6"/>
-    <text x="14" y="20" font-family="'Inter', -apple-system, sans-serif" font-size="11" font-weight="700" letter-spacing="2" fill="#f3d87f">${guide.category}</text>
+    <text x="14" y="20" font-family="'Inter', -apple-system, sans-serif" font-size="11" font-weight="700" letter-spacing="2" fill="#f3d87f">${cat}</text>
 
     <!-- Subtitle / Topic Breadcrumb -->
-    <text x="0" y="66" font-family="'Inter', -apple-system, sans-serif" font-size="14" font-weight="600" letter-spacing="3" fill="#94a3b8">${guide.topic}</text>
+    <text x="0" y="66" font-family="'Inter', -apple-system, sans-serif" font-size="14" font-weight="600" letter-spacing="3" fill="#94a3b8">${top}</text>
 
     <!-- Main Headline Lines -->
-    <text x="0" y="132" font-family="'Fraunces', Georgia, serif" font-size="52" font-weight="600" fill="#ffffff" letter-spacing="-0.5">${guide.titleLine1}</text>
-    <text x="0" y="196" font-family="'Fraunces', Georgia, serif" font-size="52" font-weight="600" fill="#ffffff" letter-spacing="-0.5">${guide.titleLine2}</text>
+    <text x="0" y="132" font-family="'Fraunces', Georgia, serif" font-size="52" font-weight="600" fill="#ffffff" letter-spacing="-0.5">${t1}</text>
+    <text x="0" y="196" font-family="'Fraunces', Georgia, serif" font-size="52" font-weight="600" fill="#ffffff" letter-spacing="-0.5">${t2}</text>
   </g>
 
   <!-- Highlight Stat Card at Bottom -->
@@ -241,10 +260,10 @@ function generateSvg(guide) {
     <rect x="0" y="0" width="6" height="130" rx="2" fill="url(#gold)"/>
 
     <!-- Stat Label -->
-    <text x="32" y="42" font-family="'Inter', -apple-system, sans-serif" font-size="12" font-weight="700" letter-spacing="2.5" fill="#f3d87f">${guide.statLabel}</text>
+    <text x="32" y="42" font-family="'Inter', -apple-system, sans-serif" font-size="12" font-weight="700" letter-spacing="2.5" fill="#f3d87f">${sLab}</text>
 
     <!-- Stat Value -->
-    <text x="32" y="86" font-family="'Fraunces', Georgia, serif" font-size="27" font-weight="500" fill="#ffffff">${guide.statValue}</text>
+    <text x="32" y="86" font-family="'Fraunces', Georgia, serif" font-size="27" font-weight="500" fill="#ffffff">${sVal}</text>
 
     <!-- Verified Timestamp Badge -->
     <text x="1040" y="68" font-family="'Inter', -apple-system, sans-serif" font-size="11" font-weight="600" letter-spacing="1.5" fill="#94a3b8" text-anchor="end">2026 EDITION · VERIFIED</text>
