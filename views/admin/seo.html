@@ -98,6 +98,67 @@
   </div>
 
   <div class="stack">
+    <div class="card" id="gsc">
+      <header>
+        <h2>Google Search Console & Live Indexing</h2>
+        <div class="spacer"></div>
+        <span class="badge ok">Verified Owner</span>
+      </header>
+      <div class="body tiny" style="display:flex;flex-direction:column;gap:12px">
+        {{#if eq gscMsg 'sitemap_ok'}}
+          <div class="alert ok" style="padding:8px 12px;background:#ecfdf5;color:#065f46;border-radius:4px">✓ Sitemap successfully submitted and refreshed in Google Search Console!</div>
+        {{/if}}
+        {{#if eq gscMsg 'indexing_ok'}}
+          <div class="alert ok" style="padding:8px 12px;background:#ecfdf5;color:#065f46;border-radius:4px">✓ URLs submitted to Google Indexing API. Google will prioritize crawling them.</div>
+        {{/if}}
+        {{#if eq gscMsg 'indexing_err'}}
+          <div class="alert warn" style="padding:8px 12px;background:#fef3c7;color:#92400e;border-radius:4px">Notice: Enable Web Search Indexing API in Google Cloud Console if not yet activated.</div>
+        {{/if}}
+
+        <div class="kv"><span>Connected Property</span><b class="mono">{{gscSite}}</b></div>
+        <div class="kv"><span>Service Account</span><span class="mono tiny muted">{{gscEmail}}</span></div>
+        <div class="kv"><span>Sitemap URL</span><a href="{{sitemapUrl}}" target="_blank" class="mono tiny">{{sitemapUrl}}</a></div>
+
+        <div style="display:flex;gap:8px;margin-top:4px">
+          <form method="post" action="/admin/seo/gsc/sitemap" style="flex:1">
+            <input type="hidden" name="_csrf" value="{{csrf}}">
+            <button class="btn sm" type="submit" style="width:100%">Submit Sitemap to GSC</button>
+          </form>
+          <form method="post" action="/admin/seo/gsc/index-all" style="flex:1">
+            <input type="hidden" name="_csrf" value="{{csrf}}">
+            <button class="btn sm gold" type="submit" style="width:100%">Publish to Indexing API</button>
+          </form>
+        </div>
+
+        <div style="border-top:1px solid rgba(0,0,0,0.08);padding-top:12px;margin-top:4px">
+          <b style="display:block;margin-bottom:6px">Live URL Inspection</b>
+          <form method="post" action="/admin/seo/gsc/inspect" class="row" style="gap:6px">
+            <input type="hidden" name="_csrf" value="{{csrf}}">
+            <input type="url" name="url" value="{{inspectUrlValue}}" placeholder="https://www.kishaainternational.com/..." required style="flex:1;padding:6px 10px;font-size:12px">
+            <button class="btn sm" type="submit">Inspect</button>
+          </form>
+
+          {{#if inspectResult}}
+            <div style="margin-top:10px;padding:10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px">
+              {{#if inspectResult.ok}}
+                <div class="kv"><span>Verdict</span>
+                  {{#if eq inspectResult.verdict 'PASS'}}<span class="badge ok">PASS · Indexed</span>{{else}}<span class="badge warn">{{inspectResult.verdict}}</span>{{/if}}
+                </div>
+                <div class="kv"><span>Coverage</span><b>{{inspectResult.coverageState}}</b></div>
+                <div class="kv"><span>Robots State</span><span class="badge ok">{{inspectResult.robotsTxtState}}</span></div>
+                <div class="kv"><span>Last Crawl</span><span>{{inspectResult.lastCrawlTime}}</span></div>
+                {{#if inspectResult.inspectionResultLink}}
+                  <div style="margin-top:6px"><a href="{{inspectResult.inspectionResultLink}}" target="_blank" rel="noopener" class="tiny" style="color:#0284c7">Open in Search Console ↗</a></div>
+                {{/if}}
+              {{else}}
+                <div class="alert warn tiny">{{inspectResult.error}}</div>
+              {{/if}}
+            </div>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+
     <div class="card">
       <header><h3>Machine-readable surfaces</h3></header>
       <div class="body tiny">

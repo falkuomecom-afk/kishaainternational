@@ -101,6 +101,8 @@ app.use((req, res, next) => {
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+  res.setHeader('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
   if (!req.path.startsWith('/admin')) {
     res.setHeader('Content-Security-Policy',
       "default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self' 'unsafe-inline'; " +
@@ -114,18 +116,52 @@ app.use((req, res, next) => {
 app.get('/healthz', (req, res) => res.json({ ok: true, uptime: process.uptime(), db: 'ok' }));
 
 /* ------------------------------------------------------------- tRPC API */
-const { createExpressMiddleware } = require('@trpc/server/adapters/express');
+const { fetchRequestHandler } = require('@trpc/server/adapters/fetch');
 const { appRouter } = require('./lib/trpc-router');
 
-app.use('/api/trpc', createExpressMiddleware({
-  router: appRouter,
-  createContext: ({ req, res }) => ({
-    user: req.user || null,
-    ip: req.ip || '127.0.0.1',
-    req,
-    res,
-  }),
-}));
+async function handleTrpc(req, res) {
+  try {
+    const proto = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+    const host = req.headers['x-forwarded-host'] || req.headers.host || 'localhost';
+    const url = new URL(req.originalUrl || req.url, `${proto}://${host}`);
+
+    const init = {
+      method: req.method,
+      headers: req.headers,
+    };
+    if (req.method !== 'GET' && req.method !== 'HEAD' && req.body) {
+      init.body = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
+    }
+
+    const request = new Request(url.href, init);
+    const response = await fetchRequestHandler({
+      endpoint: req.originalUrl?.includes('/api/trpc') ? '/api/trpc' : '/trpc',
+      req: request,
+      router: appRouter,
+      createContext: () => ({
+        user: req.user || null,
+        ip: req.ip || req.headers['x-forwarded-for'] || '127.0.0.1',
+        req,
+        res,
+      }),
+    });
+
+    res.status(response.status);
+    for (const [key, value] of response.headers.entries()) {
+      res.setHeader(key, value);
+    }
+    const text = await response.text();
+    res.send(text);
+  } catch (err) {
+    console.error('[trpc handler error]', err);
+    if (!res.headersSent) {
+      res.status(500).json({ error: { message: err.message } });
+    }
+  }
+}
+
+app.all('/api/trpc*', handleTrpc);
+app.all('/trpc*', handleTrpc);
 
 /* ------------------------------------------------------------------ routes */
 app.use('/admin', require('./routes/admin'));

@@ -14,6 +14,7 @@ const mailer = require('../lib/mailer');
 const authLib = require('../lib/auth');
 const { ROLES, PERMISSIONS, can, leadScope, requirePermission } = require('../lib/permissions');
 const supabase = require('../lib/supabase');
+const gsc = require('../lib/google-search-console');
 
 const router = express.Router();
 const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
@@ -368,7 +369,15 @@ router.post('/pages/:id/status', requirePermission('content.publish'), (req, res
   if (!page) return res.status(404).render('admin/error', { title: 'Not found', status: 404, message: 'Page not found.' });
   db.prepare("UPDATE pages SET status=?, deleted_at = CASE WHEN ? = 'trashed' THEN datetime('now') ELSE NULL END, updated_by=?, updated_at=datetime('now') WHERE id=?")
     .run(status, status, req.user.id, page.id);
-  if (status === 'published') reindexPage(page.id); else searchRemove('page', page.id);
+  if (status === 'published') {
+    reindexPage(page.id);
+    gsc.publishIndexingNotification(`${seo.siteBase(req)}/${page.slug}`, 'URL_UPDATED').catch(() => {});
+  } else {
+    searchRemove('page', page.id);
+    if (status === 'trashed') {
+      gsc.publishIndexingNotification(`${seo.siteBase(req)}/${page.slug}`, 'URL_DELETED').catch(() => {});
+    }
+  }
   audit(req.user, 'page.status', 'pages', page.id, { from: page.status, to: status }, req.ip);
   res.redirect(req.get('referer') || '/admin/pages');
 });
@@ -482,7 +491,15 @@ router.post('/posts/:id/status', requirePermission('content.publish'), (req, res
   if (!post) return res.status(404).render('admin/error', { title: 'Not found', status: 404, message: 'Post not found.' });
   db.prepare(`UPDATE posts SET status=?, deleted_at = CASE WHEN ? = 'trashed' THEN datetime('now') ELSE NULL END,
               publish_at = COALESCE(publish_at, datetime('now')) WHERE id=?`).run(status, status, post.id);
-  if (status === 'published') reindexPost(post.id); else searchRemove('post', post.id);
+  if (status === 'published') {
+    reindexPost(post.id);
+    gsc.publishIndexingNotification(`${seo.siteBase(req)}/resources/${post.slug}`, 'URL_UPDATED').catch(() => {});
+  } else {
+    searchRemove('post', post.id);
+    if (status === 'trashed') {
+      gsc.publishIndexingNotification(`${seo.siteBase(req)}/resources/${post.slug}`, 'URL_DELETED').catch(() => {});
+    }
+  }
   audit(req.user, 'post.status', 'posts', post.id, { from: post.status, to: status }, req.ip);
   res.redirect(req.get('referer') || '/admin/posts');
 });
@@ -1093,7 +1110,7 @@ router.post('/users/:id/role', requirePermission('users.manage'), (req, res) => 
 });
 
 /* ========================================================= SEO TOOLS ==== */
-router.get('/seo', requirePermission('seo.manage'), (req, res) => {
+router.get('/seo', requirePermission('seo.manage'), async (req, res) => {
   const pages = db.prepare(`SELECT id, title, slug, seo_title, seo_description, noindex, status, updated_at FROM pages ORDER BY sort_order`).all();
   const posts = db.prepare(`SELECT id, title, slug, seo_title, seo_description, target_query, answer_summary, noindex, status FROM posts ORDER BY publish_at DESC`).all();
   const missing = [...pages.filter(p => !p.seo_title || !p.seo_description).map(p => ({ kind: 'page', ...p })),
@@ -1101,11 +1118,45 @@ router.get('/seo', requirePermission('seo.manage'), (req, res) => {
   const programMissing = db.prepare(`SELECT id, name, slug FROM programs WHERE seo_title IS NULL OR seo_description IS NULL`).all();
   const redirects = db.prepare('SELECT * FROM redirects ORDER BY hits DESC, id').all();
   const orphans = pages.filter(p => p.status === 'published' && !p.seo_description).length;
+
+  let inspectResult = null;
+  if (req.query.inspect_url) {
+    try {
+      inspectResult = await gsc.inspectUrl(req.query.inspect_url);
+    } catch (e) {
+      inspectResult = { ok: false, error: e.message };
+    }
+  }
+
   view(res, 'seo', { title: 'SEO & AI optimisation', pageTitle: 'SEO · AEO · GEO · AIO control centre',
     pages, posts, missing, programMissing, redirects, orphans,
     sitemapUrl: seo.siteBase(req) + '/sitemap.xml', llmsUrl: seo.siteBase(req) + '/llms.txt',
     feedUrl: seo.siteBase(req) + '/feed.xml',
+    gscEmail: gsc.CLIENT_EMAIL,
+    gscSite: gsc.SEARCH_CONSOLE_SITE,
+    inspectResult,
+    inspectUrlValue: req.query.inspect_url || (seo.siteBase(req) + '/'),
+    gscMsg: req.query.gsc_msg || null,
     eventCounts: db.prepare('SELECT name, COUNT(*) AS n FROM analytics_events GROUP BY name ORDER BY n DESC LIMIT 12').all() });
+});
+
+router.post('/seo/gsc/inspect', requirePermission('seo.manage'), (req, res) => {
+  const url = String(req.body.url || '').trim();
+  res.redirect(`/admin/seo?inspect_url=${encodeURIComponent(url)}#gsc`);
+});
+
+router.post('/seo/gsc/sitemap', requirePermission('seo.manage'), async (req, res) => {
+  const sitemapUrl = seo.siteBase(req) + '/sitemap.xml';
+  const result = await gsc.submitSitemap(sitemapUrl);
+  audit(req.user, 'seo.sitemap_submit', 'seo', null, { sitemapUrl, status: result.status }, req.ip);
+  res.redirect(`/admin/seo?gsc_msg=${result.ok ? 'sitemap_ok' : 'sitemap_err'}#gsc`);
+});
+
+router.post('/seo/gsc/index-all', requirePermission('seo.manage'), async (req, res) => {
+  const baseUrl = seo.siteBase(req);
+  const result = await gsc.indexAllPublishedUrls(baseUrl);
+  audit(req.user, 'seo.index_all', 'seo', null, { total: result.total, submitted: result.submitted }, req.ip);
+  res.redirect(`/admin/seo?gsc_msg=${result.ok ? 'indexing_ok' : 'indexing_err'}#gsc`);
 });
 router.get('/redirects', requirePermission('seo.manage'), (req, res) => res.redirect('/admin/seo#redirects'));
 router.post('/redirects', requirePermission('seo.manage'), (req, res) => {

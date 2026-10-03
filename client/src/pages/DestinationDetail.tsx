@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router";
 import { ArrowLeft, ArrowRight, Plane, Wallet, Landmark, ExternalLink } from "lucide-react";
 import { trpc } from "@/providers/trpc";
@@ -7,16 +8,38 @@ import NotFound from "./NotFound";
 
 export default function DestinationDetail() {
   const { slug } = useParams<{ slug: string }>();
-  const { data: c, isLoading, isError } = trpc.content.countries.bySlug.useQuery(
+  const [fallbackData, setFallbackData] = useState<any>(null);
+  const [isFetchingFallback, setIsFetchingFallback] = useState(false);
+
+  const { data: trpcData, isLoading, isError } = trpc.content.countries.bySlug.useQuery(
     { slug: slug ?? "" },
     { retry: 1 }
   );
-  useReveal(c);
 
-  if (isLoading) {
+  useEffect(() => {
+    if ((isError || (!isLoading && !trpcData)) && slug && !fallbackData) {
+      setIsFetchingFallback(true);
+      fetch(`/api/content/countries/${encodeURIComponent(slug)}`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (data?.ok && data?.country) {
+            setFallbackData(data.country);
+          }
+        })
+        .catch(() => {})
+        .finally(() => setIsFetchingFallback(false));
+    }
+  }, [isError, isLoading, trpcData, slug, fallbackData]);
+
+  const active = trpcData || fallbackData;
+  useReveal(active);
+
+  if (isLoading || isFetchingFallback) {
     return <div className="mx-auto max-w-7xl px-4 py-24 text-navy/50">Loading destination…</div>;
   }
-  if (isError || !c) return <NotFound />;
+  if (!active) return <NotFound />;
+
+  const c = active;
 
   let living: any = null;
   let funds: any = null;

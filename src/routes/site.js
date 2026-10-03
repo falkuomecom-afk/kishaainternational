@@ -658,6 +658,27 @@ router.get('/api/planner/countries', (req, res) => {
     cities: planner.cities(c.id), currency: c.currency, living_total: c.living_total,
     processing_time: c.processing_time, rule_count: c.rule_count })) });
 });
+router.get('/api/content/countries', async (req, res) => {
+  try {
+    const trpcRouter = require('../lib/trpc-router');
+    const caller = trpcRouter.appRouter.createCaller({ user: null, ip: req.ip || '127.0.0.1' });
+    const countries = await caller.content.countries.list();
+    res.json({ ok: true, countries });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+router.get('/api/content/countries/:slug', async (req, res) => {
+  try {
+    const trpcRouter = require('../lib/trpc-router');
+    const caller = trpcRouter.appRouter.createCaller({ user: null, ip: req.ip || '127.0.0.1' });
+    const country = await caller.content.countries.bySlug({ slug: req.params.slug });
+    if (!country) return res.status(404).json({ ok: false, error: 'not_found' });
+    res.json({ ok: true, country });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
 router.post('/api/planner/plan', express.json({ limit: '32kb' }), (req, res) => {
   const gate = rl('plan:' + H.hashIp(req.ip || ''), 60, 60e3);
   if (!gate.allowed) return res.status(429).json({ ok: false, error: 'rate_limited' });

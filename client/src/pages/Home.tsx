@@ -42,6 +42,18 @@ const TRIAD = [
   },
 ];
 
+const DEFAULT_COUNTRIES_PREVIEW = [
+  { name: "United Kingdom", slug: "united-kingdom", flag: "🇬🇧", fundsRule: '{"currency":"GBP","amount":13347,"note":"London £1,483/mo · Outside London £1,136/mo (up to 9 months)"}', livingCosts: '{"currency":"GBP","budget":1100,"standard":1350,"comfortable":1800,"note":"London average £1,400–1,800/mo; regional UK £900–1,200/mo"}' },
+  { name: "Italy", slug: "italy", flag: "🇮🇹", fundsRule: '{"currency":"EUR","amount":6000,"note":"PKR 4.5–5.5M in personal/parent bank account"}', livingCosts: '{"currency":"EUR","budget":700,"standard":900,"comfortable":1200,"note":"Regional Italian university cities average €700–900/mo"}' },
+  { name: "Finland", slug: "finland", flag: "🇫🇮", fundsRule: '{"currency":"EUR","amount":9600,"note":"€9,600/yr (covers applicant + spouse/dependants)"}', livingCosts: '{"currency":"EUR","budget":750,"standard":900,"comfortable":1250,"note":"Helsinki higher; Tampere/Oulu €750–900/mo"}' },
+  { name: "Georgia", slug: "georgia", flag: "🇬🇪", fundsRule: '{"currency":"USD","amount":5000,"note":"Proof of tuition deposit + living support"}', livingCosts: '{"currency":"USD","budget":500,"standard":700,"comfortable":1100,"note":"Tbilisi student housing & living ~USD 500–700/mo"}' },
+  { name: "Germany", slug: "germany", flag: "🇩🇪", fundsRule: '{"currency":"EUR","amount":11904,"note":"€11,904 in blocked account (Sperrkonto)"}', livingCosts: '{"currency":"EUR","budget":850,"standard":992,"comfortable":1300,"note":"Monthly statutory cap €992/mo"}' },
+  { name: "Canada", slug: "canada", flag: "🇨🇦", fundsRule: '{"currency":"CAD","amount":20635,"note":"IRCC cost-of-living financial threshold"}', livingCosts: '{"currency":"CAD","budget":1300,"standard":1600,"comfortable":2200,"note":"Toronto/Vancouver higher; other provinces CAD 1,400/mo"}' },
+  { name: "United States", slug: "united-states", flag: "🇺🇸", fundsRule: '{"currency":"USD","amount":25000,"note":"Form I-20 financial declaration requirement"}', livingCosts: '{"currency":"USD","budget":1200,"standard":1800,"comfortable":2500,"note":"Varies by university and state location"}' },
+  { name: "Australia", slug: "australia", flag: "🇦🇺", fundsRule: '{"currency":"AUD","amount":29710,"note":"Department of Home Affairs annual living index"}', livingCosts: '{"currency":"AUD","budget":1800,"standard":2400,"comfortable":3200,"note":"Sydney/Melbourne AUD 2,200–2,600/mo"}' },
+  { name: "United Arab Emirates", slug: "united-arab-emirates", flag: "🇦🇪", fundsRule: '{"currency":"AED","amount":10000,"note":"Entry permit and security deposit requirement"}', livingCosts: '{"currency":"AED","budget":2800,"standard":4200,"comfortable":6500,"note":"Dubai shared/studio living AED 3,500–4,500/mo"}' },
+];
+
 export default function Home() {
   const { data: featured } = trpc.content.programs.featured.useQuery();
   const { data: countries } = trpc.content.countries.list.useQuery();
@@ -51,9 +63,10 @@ export default function Home() {
   const [teaserCountry, setTeaserCountry] = useState("united-kingdom");
   useReveal(featured);
 
+  const countryList = (countries && countries.length > 0) ? countries : DEFAULT_COUNTRIES_PREVIEW;
   const career = (featured ?? []).filter((p: Program) => p.pillar === "career").slice(0, 4);
   const immigration = (featured ?? []).filter((p: Program) => p.pillar === "immigration").slice(0, 3);
-  const selected = countries?.find((c) => c.slug === teaserCountry) || countries?.[0];
+  const selected = countryList.find((c) => c.slug === teaserCountry) || countryList[0];
   let selectedFunds: { currency?: string; amount?: number; note?: string } | null = null;
   let selectedLiving: { currency?: string; budget?: number; standard?: number; comfortable?: number; note?: string } | null = null;
   try {
@@ -168,9 +181,9 @@ export default function Home() {
               id="teaser-country"
               value={teaserCountry}
               onChange={(e) => setTeaserCountry(e.target.value)}
-              className="mt-3 w-full border border-navy/20 px-4 py-3 text-[15px] text-navy outline-none focus:border-gold"
+              className="mt-3 w-full border border-navy/20 px-4 py-3 text-[15px] text-navy outline-none focus:border-gold bg-white"
             >
-              {(countries ?? []).map((c) => (
+              {countryList.map((c) => (
                 <option key={c.slug} value={c.slug}>
                   {c.flag} {c.name}
                 </option>
