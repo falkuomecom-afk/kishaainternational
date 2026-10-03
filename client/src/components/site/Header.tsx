@@ -5,19 +5,19 @@ import { SITE } from "@/lib/site";
 
 export function Wordmark({ light = false }: { light?: boolean }) {
   return (
-    <Link to="/" className="flex items-center gap-2 shrink-0" aria-label="Kishaa International — home">
+    <Link to="/" className="flex items-center gap-1.5 xl:gap-2 shrink-0" aria-label="Kishaa International — home">
       <img
         src="/img/logo.png"
         alt="Kishaa International"
-        width={34}
-        height={34}
-        className="h-8 w-8 xl:h-8.5 xl:w-8.5 object-contain rounded-full shadow-[0_0_10px_rgba(201,162,39,0.3)] shrink-0"
+        width={32}
+        height={32}
+        className="h-7.5 w-7.5 xl:h-8 xl:w-8 object-contain rounded-full shadow-[0_0_8px_rgba(201,162,39,0.3)] shrink-0"
       />
       <div className="leading-tight">
-        <span className={`block font-serif text-[13px] xl:text-[14px] font-semibold tracking-tight whitespace-nowrap ${light ? "text-white" : "text-navy"}`}>
+        <span className={`block font-serif text-[12px] xl:text-[13px] 2xl:text-[14px] font-semibold tracking-tight whitespace-nowrap ${light ? "text-white" : "text-navy"}`}>
           Kishaa International
         </span>
-        <span className={`block text-[6.5px] xl:text-[7px] uppercase tracking-[0.18em] font-semibold mt-0.5 whitespace-nowrap ${light ? "text-[#93a7c3]" : "text-navy/60"}`}>
+        <span className={`block text-[6px] xl:text-[6.5px] uppercase tracking-[0.16em] font-semibold mt-0.5 whitespace-nowrap ${light ? "text-[#93a7c3]" : "text-navy/60"}`}>
           Gateway to Global Careers
         </span>
       </div>
@@ -88,20 +88,20 @@ export function Header() {
           visible ? "translate-y-0 shadow-[0_4px_25px_rgba(2,12,28,0.5)]" : "-translate-y-full"
         }`}
       >
-        <div className="w-full max-w-[1920px] mx-auto px-2 sm:px-4 xl:px-6">
-          <div className="flex h-15 sm:h-16 items-center justify-between gap-1 xl:gap-2">
+        <div className="w-full max-w-[1920px] mx-auto px-2 sm:px-3 xl:px-5">
+          <div className="flex h-14 sm:h-15 xl:h-16 items-center justify-between gap-1 xl:gap-2">
             {/* Left: Brand with official circular logo */}
             <Wordmark light />
 
             {/* Center: All 8 Navigation Links */}
-            <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1 2xl:gap-2 shrink-0" aria-label="Primary">
+            <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1 shrink-0" aria-label="Primary">
               {NAV_ITEMS.map((item) => (
                 <NavLink
                   key={item.to}
                   to={item.to}
                   end={item.to === "/"}
                   className={({ isActive }) =>
-                    `relative px-1 xl:px-1.5 2xl:px-2 py-1 text-[9.5px] xl:text-[10px] 2xl:text-[11.5px] font-medium transition-colors whitespace-nowrap ${
+                    `relative px-1 xl:px-1.5 2xl:px-2 py-0.5 text-[8.5px] lg:text-[9px] xl:text-[9.5px] 2xl:text-[10.5px] font-medium transition-colors whitespace-nowrap ${
                       isActive
                         ? "text-white font-semibold"
                         : "text-white/80 hover:text-white"
@@ -112,7 +112,7 @@ export function Header() {
                     <>
                       <span>{item.label}</span>
                       {isActive && (
-                        <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 h-[2px] w-3.5 rounded-full bg-[#E5B54F]" />
+                        <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 h-[2px] w-3 rounded-full bg-[#E5B54F]" />
                       )}
                     </>
                   )}
@@ -121,9 +121,9 @@ export function Header() {
             </nav>
 
             {/* Right Action Area: Phone Capsule & Request Consultation Button */}
-            <div className="hidden md:flex items-center gap-1.5 xl:gap-2 shrink-0">
+            <div className="hidden md:flex items-center gap-1 xl:gap-1.5 2xl:gap-2 shrink-0">
               {/* Phone Capsule */}
-              <div className="flex items-center gap-1 rounded-full bg-[#020b18]/85 border border-white/10 px-2 py-0.5 text-[8.5px] sm:text-[9px] xl:text-[9.5px] text-white/95 whitespace-nowrap shadow-inner">
+              <div className="flex items-center gap-1 rounded-full bg-[#020b18]/85 border border-white/10 px-1.5 xl:px-2 py-0.5 text-[8px] xl:text-[8.5px] 2xl:text-[9px] text-white/95 whitespace-nowrap shadow-inner">
                 <a
                   href="tel:+971588828099"
                   className="flex items-center gap-1 hover:text-[#ECC248] transition-colors font-medium"
@@ -147,14 +147,15 @@ export function Header() {
                   <span className="flex h-3 w-3 items-center justify-center rounded-full bg-[#25D366] text-white shrink-0">
                     <WhatsAppIcon className="h-1.5 w-1.5" />
                   </span>
-                  <span>+92 312 552 6099</span>
+                  <span className="hidden xl:inline">+92 312 552 6099</span>
+                  <span className="xl:hidden">WhatsApp</span>
                 </a>
               </div>
 
               {/* Request Consultation Pill Button */}
               <Link
                 to="/contact"
-                className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#F5C344] via-[#F1BE3B] to-[#E5A720] px-2.5 xl:px-3 py-1 text-[9.5px] xl:text-[10px] 2xl:text-[10.5px] font-bold text-[#06162D] shadow-[0_2px_10px_rgba(245,195,68,0.25)] hover:brightness-105 active:scale-[0.98] transition-all whitespace-nowrap shrink-0"
+                className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#F5C344] via-[#F1BE3B] to-[#E5A720] px-2 xl:px-2.5 2xl:px-3 py-1 text-[8.5px] lg:text-[9px] xl:text-[9.5px] 2xl:text-[10px] font-bold text-[#06162D] shadow-[0_2px_10px_rgba(245,195,68,0.25)] hover:brightness-105 active:scale-[0.98] transition-all whitespace-nowrap shrink-0"
               >
                 <Calendar className="h-2.5 w-2.5 xl:h-3 xl:w-3 text-[#06162D] shrink-0" />
                 <span>Request Consultation</span>
