@@ -17,6 +17,7 @@ import About from "./pages/About";
 import Resources from "./pages/Resources";
 import ResourceDetail from "./pages/ResourceDetail";
 import Contact from "./pages/Contact";
+import BankStatements from "./pages/BankStatements";
 import { Privacy, Terms } from "./pages/Legal";
 import NotFound from "./pages/NotFound";
 
@@ -67,6 +68,7 @@ export default function App() {
         <Route path="/about-us" element={<About />} />
         <Route path="/resources" element={<Resources />} />
         <Route path="/resources/:slug" element={<ResourceDetail />} />
+        <Route path="/bank-statements" element={<BankStatements />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/terms" element={<Terms />} />

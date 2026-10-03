@@ -14,6 +14,16 @@ let db;
 try {
   const dir = path.dirname(path.resolve(DB_PATH));
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+
+  const seedDb = path.join(__dirname, '..', '..', 'data', 'kishaa.db');
+  if (isServerless && !fs.existsSync(DB_PATH) && fs.existsSync(seedDb)) {
+    try {
+      fs.copyFileSync(seedDb, DB_PATH);
+    } catch (copyErr) {
+      console.warn('[db:sqlite] Failed to copy seed DB to /tmp:', copyErr.message);
+    }
+  }
+
   db = new Database(DB_PATH);
   db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');

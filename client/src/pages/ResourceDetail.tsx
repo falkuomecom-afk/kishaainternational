@@ -8,10 +8,13 @@ import NotFound from "./NotFound";
 
 export default function ResourceDetail() {
   const { slug } = useParams<{ slug: string }>();
-  const { data: post, isLoading } = trpc.content.posts.bySlug.useQuery({ slug: slug ?? "" });
+  const { data: post, isLoading, isError } = trpc.content.posts.bySlug.useQuery(
+    { slug: slug ?? "" },
+    { retry: 1 }
+  );
 
   if (isLoading) return <div className="mx-auto max-w-3xl px-4 py-24 text-navy/50">Loading…</div>;
-  if (!post) return <NotFound />;
+  if (isError || !post) return <NotFound />;
 
   const formattedDate = post.publishedAt
     ? new Date(post.publishedAt).toLocaleDateString("en-US", {
@@ -27,6 +30,7 @@ export default function ResourceDetail() {
         title={post.seoTitle ?? post.title}
         description={post.seoDescription ?? post.excerpt ?? post.title}
         path={`/resources/${post.slug}`}
+        type="article"
         jsonLd={[
           breadcrumbJsonLd([
             { name: "Home", path: "/" },

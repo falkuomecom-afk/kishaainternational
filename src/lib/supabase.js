@@ -72,10 +72,27 @@ async function getCountries() {
   return data;
 }
 
+const SLUG_ALIASES = {
+  'united-states': 'usa',
+  'us': 'usa',
+  'america': 'usa',
+  'usa': 'usa',
+  'united-kingdom': 'uk',
+  'great-britain': 'uk',
+  'britain': 'uk',
+  'uk': 'uk',
+  'united-arab-emirates': 'uae',
+  'emirates': 'uae',
+  'dubai': 'uae',
+  'uae': 'uae',
+  'turkey': 'turkey',
+  'turkiye': 'turkey',
+};
+
 async function getCountryBySlug(slug) {
   const sb = getClient();
-  const s = slug.toLowerCase();
-  const target = s === 'united-kingdom' ? 'uk' : s;
+  const s = String(slug || '').toLowerCase().trim();
+  const target = SLUG_ALIASES[s] || s;
   const { data, error } = await sb.from('countries')
     .select('*')
     .or(`slug.eq.${s},slug.eq.${target}`)

@@ -67,25 +67,30 @@ function mapProgram(p) {
   };
 }
 
-async function getCountryLivingAsync(country) {
-  let rows = [];
-  if (supabase.isAvailable()) {
-    rows = await supabase.getCountryCosts(country.id);
-  }
-  if (!rows || rows.length === 0) {
-    try {
-      rows = db.prepare(`SELECT scenario, total, currency, city FROM country_costs WHERE country_id = ?`).all(country.id);
-    } catch {
-      rows = [];
-    }
-  }
+const SLUG_ALIASES = {
+  'united-states': 'usa',
+  'us': 'usa',
+  'america': 'usa',
+  'usa': 'usa',
+  'united-kingdom': 'uk',
+  'great-britain': 'uk',
+  'britain': 'uk',
+  'uk': 'uk',
+  'united-arab-emirates': 'uae',
+  'emirates': 'uae',
+  'dubai': 'uae',
+  'uae': 'uae',
+  'turkey': 'turkey',
+  'turkiye': 'turkey',
+};
+
+function computeLiving(country, rows) {
   const cur = country.living_currency || country.currency || (rows[0] && rows[0].currency) || 'USD';
-  
   let budget = null;
   let standard = null;
   let comfortable = null;
 
-  for (const r of rows) {
+  for (const r of (rows || [])) {
     if (r.scenario === 'budget' && (budget === null || r.total < budget)) {
       budget = Math.round(r.total);
     }
@@ -115,7 +120,7 @@ async function getCountryLivingAsync(country) {
     comfortable = 1500;
   }
 
-  const sampleCity = rows[0]?.city;
+  const sampleCity = rows?.[0]?.city;
   const note = country.cost_note || (sampleCity ? `${sampleCity} cost profile` : 'Official estimates');
 
   return {
@@ -127,43 +132,21 @@ async function getCountryLivingAsync(country) {
   };
 }
 
-async function getCountryFundsAsync(country) {
-  let rule = null;
-  if (supabase.isAvailable()) {
-    rule = await supabase.getFundsRule(country.id);
-  }
-  if (!rule) {
-    try {
-      rule = db.prepare(`SELECT * FROM funds_rules WHERE country_id = ? AND published = 1 ORDER BY id ASC LIMIT 1`).get(country.id);
-    } catch {}
-  }
-  if (rule) {
-    const amount = Math.round(rule.total_required || (rule.statutory_rate ? rule.statutory_rate * (rule.months || 12) : 10000));
-    return {
-      amount,
-      currency: rule.total_currency || rule.rate_currency || country.currency || 'EUR',
-      months: rule.months || 12,
-      holderRule: rule.holding_period || rule.family_rule || 'Applicant or sponsor',
-      note: rule.dependents_note || rule.route_name || '',
-      sourceUrl: rule.source_url || '',
-      effectiveDate: rule.effective_date || '2026-01',
-    };
-  }
-  return null;
+function computeFunds(country, rule) {
+  if (!rule) return null;
+  const amount = Math.round(rule.total_required || (rule.statutory_rate ? rule.statutory_rate * (rule.months || 12) : 10000));
+  return {
+    amount,
+    currency: rule.total_currency || rule.rate_currency || country.currency || 'EUR',
+    months: rule.months || 12,
+    holderRule: rule.holding_period || rule.family_rule || 'Applicant or sponsor',
+    note: rule.dependents_note || rule.route_name || '',
+    sourceUrl: rule.source_url || '',
+    effectiveDate: rule.effective_date || '2026-01',
+  };
 }
 
-async function getCountryFlightsAsync(country) {
-  let routes = [];
-  if (supabase.isAvailable()) {
-    routes = await supabase.getFlightRoutes(country.id);
-  }
-  if (!routes || routes.length === 0) {
-    try {
-      routes = db.prepare(`SELECT * FROM flight_routes WHERE dest_country_id = ? ORDER BY base_fare ASC`).all(country.id);
-    } catch {
-      routes = [];
-    }
-  }
+function computeFlights(routes) {
   if (routes && routes.length > 0) {
     return routes.map(r => ({
       from: r.origin_code,
@@ -180,23 +163,24 @@ async function getCountryFlightsAsync(country) {
   ];
 }
 
-async function mapCountryAsync(c) {
+function mapCountryWithPreloaded(c, preloaded = {}) {
   if (!c) return null;
-  const living = await getCountryLivingAsync(c);
-  const funds = await getCountryFundsAsync(c);
-  const flights = await getCountryFlightsAsync(c);
-  
+  const living = computeLiving(c, preloaded.costs || []);
+  const funds = computeFunds(c, preloaded.fundRule || null);
+  const flights = computeFlights(preloaded.flights || []);
+
   const flagMap = {
     GB: '🇬🇧', IT: '🇮🇹', FI: '🇫🇮', GE: '🇬🇪', DE: '🇩🇪', FR: '🇫🇷', PT: '🇵🇹',
     RS: '🇷🇸', RO: '🇷🇴', CA: '🇨🇦', US: '🇺🇸', AU: '🇦🇺', TR: '🇹🇷', AE: '🇦🇪',
     RU: '🇷🇺', KZ: '🇰🇿', KG: '🇰🇬', TJ: '🇹🇯'
   };
   const flagEmoji = flagMap[c.iso2] || flagMap[c.flag] || c.flag || '🌐';
+  const normalizedSlug = c.slug === 'uk' ? 'united-kingdom' : (c.slug === 'usa' ? 'united-states' : c.slug);
 
   return {
     id: c.id,
     name: c.name,
-    slug: c.slug === 'uk' ? 'united-kingdom' : c.slug,
+    slug: normalizedSlug,
     originalSlug: c.slug,
     region: c.region,
     flag: flagEmoji,
@@ -212,6 +196,112 @@ async function mapCountryAsync(c) {
     sortOrder: c.sort_order ?? 0,
     status: c.published ? 'published' : 'draft',
   };
+}
+
+let cachedCountriesList = {
+  data: null,
+  expiresAt: 0,
+};
+
+async function getCompiledCountriesList() {
+  const now = Date.now();
+  if (cachedCountriesList.data && now < cachedCountriesList.expiresAt) {
+    return cachedCountriesList.data;
+  }
+
+  // 1. Supabase bulk query (3 parallel requests instead of 54)
+  if (supabase.isAvailable()) {
+    try {
+      const sb = supabase.getClient();
+      const [countriesRes, costsRes, fundsRes, flightsRes] = await Promise.all([
+        sb.from('countries').select('*').eq('published', 1).order('sort_order', { ascending: true }).order('name', { ascending: true }),
+        sb.from('country_costs').select('*'),
+        sb.from('funds_rules').select('*').eq('published', 1).order('id', { ascending: true }),
+        sb.from('flight_routes').select('*').order('base_fare', { ascending: true })
+      ]);
+
+      if (countriesRes.data && countriesRes.data.length > 0) {
+        const costsByCountry = {};
+        for (const row of (costsRes.data || [])) {
+          if (!costsByCountry[row.country_id]) costsByCountry[row.country_id] = [];
+          costsByCountry[row.country_id].push(row);
+        }
+
+        const fundsByCountry = {};
+        for (const row of (fundsRes.data || [])) {
+          if (!fundsByCountry[row.country_id]) fundsByCountry[row.country_id] = row;
+        }
+
+        const flightsByCountry = {};
+        for (const row of (flightsRes.data || [])) {
+          if (!flightsByCountry[row.dest_country_id]) flightsByCountry[row.dest_country_id] = [];
+          flightsByCountry[row.dest_country_id].push(row);
+        }
+
+        const list = countriesRes.data.map(c => mapCountryWithPreloaded(c, {
+          costs: costsByCountry[c.id] || [],
+          fundRule: fundsByCountry[c.id] || null,
+          flights: flightsByCountry[c.id] || []
+        }));
+
+        cachedCountriesList = {
+          data: list,
+          expiresAt: now + 5 * 60 * 1000 // 5 minute TTL
+        };
+        return list;
+      }
+    } catch (sbErr) {
+      console.error('[trpc-router:getCompiledCountriesList] Supabase batch failed:', sbErr.message);
+    }
+  }
+
+  // 2. SQLite bulk query
+  try {
+    const countries = db.prepare(`SELECT * FROM countries WHERE published = 1 ORDER BY sort_order, name`).all();
+    const costs = db.prepare(`SELECT * FROM country_costs`).all();
+    const funds = db.prepare(`SELECT * FROM funds_rules WHERE published = 1 ORDER BY id ASC`).all();
+    const flights = db.prepare(`SELECT * FROM flight_routes ORDER BY base_fare ASC`).all();
+
+    const costsByCountry = {};
+    for (const row of costs) {
+      if (!costsByCountry[row.country_id]) costsByCountry[row.country_id] = [];
+      costsByCountry[row.country_id].push(row);
+    }
+
+    const fundsByCountry = {};
+    for (const row of funds) {
+      if (!fundsByCountry[row.country_id]) fundsByCountry[row.country_id] = row;
+    }
+
+    const flightsByCountry = {};
+    for (const row of flights) {
+      if (!flightsByCountry[row.dest_country_id]) flightsByCountry[row.dest_country_id] = [];
+      flightsByCountry[row.dest_country_id].push(row);
+    }
+
+    const list = countries.map(c => mapCountryWithPreloaded(c, {
+      costs: costsByCountry[c.id] || [],
+      fundRule: fundsByCountry[c.id] || null,
+      flights: flightsByCountry[c.id] || []
+    }));
+
+    cachedCountriesList = {
+      data: list,
+      expiresAt: now + 5 * 60 * 1000
+    };
+    return list;
+  } catch (dbErr) {
+    console.error('[trpc-router:getCompiledCountriesList] SQLite failed:', dbErr.message);
+    return [];
+  }
+}
+
+async function mapCountryAsync(c) {
+  if (!c) return null;
+  const list = await getCompiledCountriesList();
+  const found = list.find(x => x.id === c.id || x.originalSlug === c.slug);
+  if (found) return found;
+  return mapCountryWithPreloaded(c, {});
 }
 
 const appRouter = router({
@@ -384,29 +474,38 @@ const appRouter = router({
 
     countries: router({
       list: publicProcedure.query(async () => {
-        if (supabase.isAvailable()) {
-          const rows = await supabase.getCountries();
-          if (rows) {
-            return await Promise.all(rows.map(mapCountryAsync));
-          }
-        }
-        try {
-          const rows = db.prepare(`SELECT * FROM countries WHERE published = 1 ORDER BY sort_order, name`).all();
-          return await Promise.all(rows.map(mapCountryAsync));
-        } catch {
-          return [];
-        }
+        return await getCompiledCountriesList();
       }),
       bySlug: publicProcedure
         .input(z.object({ slug: z.string() }))
         .query(async ({ input }) => {
+          const s = (input.slug || '').toLowerCase().trim();
+          const target = SLUG_ALIASES[s] || s;
+          const list = await getCompiledCountriesList();
+
+          const match = list.find(c => {
+            const cSlug = (c.slug || '').toLowerCase();
+            const origSlug = (c.originalSlug || '').toLowerCase();
+            return (
+              cSlug === s ||
+              origSlug === s ||
+              cSlug === target ||
+              origSlug === target ||
+              SLUG_ALIASES[cSlug] === target ||
+              SLUG_ALIASES[origSlug] === target ||
+              SLUG_ALIASES[cSlug] === s ||
+              SLUG_ALIASES[origSlug] === s
+            );
+          });
+
+          if (match) return match;
+
+          // Fallback to single lookup if not found in list
           if (supabase.isAvailable()) {
             const row = await supabase.getCountryBySlug(input.slug);
             if (row) return await mapCountryAsync(row);
           }
           try {
-            const s = input.slug.toLowerCase();
-            const target = s === 'united-kingdom' ? 'uk' : s;
             const row = db.prepare(`SELECT * FROM countries WHERE (slug = ? OR slug = ?) AND published = 1`).get(s, target);
             return await mapCountryAsync(row);
           } catch {

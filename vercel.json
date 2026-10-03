@@ -6,10 +6,10 @@
       "framework": "express",
       "functions": {
         "src/**": {
-          "includeFiles": "views/**"
+          "includeFiles": "{views/**,data/**}"
         },
         "api/**": {
-          "includeFiles": "views/**"
+          "includeFiles": "{views/**,data/**}"
         }
       }
     },

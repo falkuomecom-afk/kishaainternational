@@ -7,13 +7,16 @@ import NotFound from "./NotFound";
 
 export default function DestinationDetail() {
   const { slug } = useParams<{ slug: string }>();
-  const { data: c, isLoading } = trpc.content.countries.bySlug.useQuery({ slug: slug ?? "" });
+  const { data: c, isLoading, isError } = trpc.content.countries.bySlug.useQuery(
+    { slug: slug ?? "" },
+    { retry: 1 }
+  );
   useReveal(c);
 
   if (isLoading) {
     return <div className="mx-auto max-w-7xl px-4 py-24 text-navy/50">Loading destination…</div>;
   }
-  if (!c) return <NotFound />;
+  if (isError || !c) return <NotFound />;
 
   let living: any = null;
   let funds: any = null;
