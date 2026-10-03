@@ -4,14 +4,16 @@ import { defineConfig } from "vite";
 
 const __dirname = import.meta.dirname;
 
+const appBackendUrl = process.env.APP_URL || "http://localhost:3001";
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
     proxy: {
-      "/api": "http://localhost:3001",
-      "/admin": "http://localhost:3001",
+      "/api": appBackendUrl,
+      "/admin": appBackendUrl,
     },
   },
   resolve: {
@@ -23,7 +25,7 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: path.resolve(__dirname, "../public/dist"),
+    outDir: "dist",
     emptyOutDir: true,
   },
 });

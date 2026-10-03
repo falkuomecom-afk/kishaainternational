@@ -1,20 +1,79 @@
 {
-  "version": 2,
-  "buildCommand": "npm run build",
-  "outputDirectory": "public/dist",
-  "functions": {
-    "api/index.js": {
-      "includeFiles": "views/**"
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "app": {
+      "root": ".",
+      "framework": "express",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "client",
+          "format": "url",
+          "env": "CLIENT_URL"
+        }
+      ]
+    },
+    "client": {
+      "root": "client",
+      "framework": "vite",
+      "bindings": [
+        {
+          "type": "service",
+          "service": "app",
+          "format": "url",
+          "env": "APP_URL"
+        }
+      ]
     }
   },
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api" },
-    { "source": "/admin(.*)", "destination": "/api" },
-    { "source": "/healthz", "destination": "/api" },
-    { "source": "/sitemap.xml", "destination": "/api" },
-    { "source": "/robots.txt", "destination": "/api" },
-    { "source": "/llms.txt", "destination": "/api" },
-    { "source": "/feed.xml", "destination": "/api" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/api/(.*)",
+      "destination": {
+        "service": "app"
+      }
+    },
+    {
+      "source": "/admin(.*)",
+      "destination": {
+        "service": "app"
+      }
+    },
+    {
+      "source": "/healthz",
+      "destination": {
+        "service": "app"
+      }
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": {
+        "service": "app"
+      }
+    },
+    {
+      "source": "/robots.txt",
+      "destination": {
+        "service": "app"
+      }
+    },
+    {
+      "source": "/llms.txt",
+      "destination": {
+        "service": "app"
+      }
+    },
+    {
+      "source": "/feed.xml",
+      "destination": {
+        "service": "app"
+      }
+    },
+    {
+      "source": "/(.*)",
+      "destination": {
+        "service": "client"
+      }
+    }
   ]
 }

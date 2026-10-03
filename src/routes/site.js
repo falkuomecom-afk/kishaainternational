@@ -13,7 +13,9 @@ const { queueLeadNotifications } = require('../lib/mailer');
 const { rateLimit: rl } = require('../lib/auth');
 
 const router = express.Router();
-const DIST_INDEX = path.join(__dirname, '..', '..', 'public', 'dist', 'index.html');
+const clientDistIndex = path.join(__dirname, '..', '..', 'client', 'dist', 'index.html');
+const publicDistIndex = path.join(__dirname, '..', '..', 'public', 'dist', 'index.html');
+const DIST_INDEX = fs.existsSync(clientDistIndex) ? clientDistIndex : publicDistIndex;
 let cachedDistHtml = null;
 
 /* ------------------------------------------------------------------ helpers */

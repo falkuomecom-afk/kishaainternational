@@ -25,7 +25,10 @@ app.set('trust proxy', 1);
 /* ------------------------------------------------------------------ basics */
 app.use(express.urlencoded({ extended: true, limit: '256kb' }));
 app.use(express.json({ limit: '256kb' }));
-app.use('/assets', express.static(path.join(ROOT, 'public/dist/assets'), { maxAge: '7d', etag: true }));
+const clientDistAssets = path.join(ROOT, 'client', 'dist', 'assets');
+const publicDistAssets = path.join(ROOT, 'public', 'dist', 'assets');
+const distAssets = fs.existsSync(clientDistAssets) ? clientDistAssets : publicDistAssets;
+app.use('/assets', express.static(distAssets, { maxAge: '7d', etag: true }));
 app.use(express.static(path.join(ROOT, 'public'), {
   index: false,
   maxAge: 0,
