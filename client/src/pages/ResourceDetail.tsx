@@ -4,6 +4,7 @@ import { trpc } from "@/providers/trpc";
 import { Seo, breadcrumbJsonLd } from "@/lib/seo";
 import { Markdown } from "@/lib/markdown";
 import { EnquiryForm } from "@/components/site/EnquiryForm";
+import { getGuideThumbnail } from "@/lib/guide-images";
 import NotFound from "./NotFound";
 
 export default function ResourceDetail() {
@@ -24,12 +25,15 @@ export default function ResourceDetail() {
       })
     : null;
 
+  const thumbnailUrl = getGuideThumbnail(post.slug, (post as any).coverImage);
+
   return (
     <>
       <Seo
         title={post.seoTitle ?? post.title}
         description={post.seoDescription ?? post.excerpt ?? post.title}
         path={`/resources/${post.slug}`}
+        image={thumbnailUrl}
         type="article"
         jsonLd={[
           breadcrumbJsonLd([
@@ -42,6 +46,7 @@ export default function ResourceDetail() {
             "@type": "Article",
             headline: post.title,
             description: post.excerpt,
+            image: `https://www.kishaainternational.com${thumbnailUrl}`,
             author: { "@id": "https://www.kishaainternational.com/#organization" },
             publisher: { "@id": "https://www.kishaainternational.com/#organization" },
             datePublished: post.publishedAt ? new Date(post.publishedAt).toISOString() : undefined,
@@ -78,6 +83,26 @@ export default function ResourceDetail() {
                     Target: {post.targetQuery}
                   </span>
                 )}
+              </div>
+
+              {/* Featured Guide Hero Thumbnail Banner */}
+              <div className="mb-8 overflow-hidden rounded-[4px] border border-navy/10 bg-[#040e1d] shadow-sm">
+                <div className="relative aspect-[16/9] sm:aspect-[21/9] w-full overflow-hidden">
+                  <img
+                    src={thumbnailUrl}
+                    alt={post.title}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-navy/10 bg-[#f7f6f2] px-4 py-2.5 text-[12px] text-navy/70">
+                  <span className="flex items-center gap-2 font-medium">
+                    <span className="inline-block h-2 w-2 rounded-full bg-gold-dark"></span>
+                    Official Advisory &amp; Regulatory Reference · Kishaa International
+                  </span>
+                  <span className="font-semibold uppercase tracking-wider text-gold-dark">
+                    {post.category || "Verified Guide"} · 2026 Edition
+                  </span>
+                </div>
               </div>
 
               {post.answerFirst && (
@@ -207,17 +232,28 @@ export default function ResourceDetail() {
                   <h4 className="font-sans text-[11px] font-bold uppercase tracking-[0.18em] text-gold-dark mb-3">
                     Related guides
                   </h4>
-                  <ul className="space-y-2.5 text-[14px]">
-                    {post.related.map((rel) => (
-                      <li key={rel.id}>
-                        <Link
-                          to={`/resources/${rel.slug}`}
-                          className="font-medium text-navy hover:text-gold-dark transition-colors leading-snug block"
-                        >
-                          {rel.title}
-                        </Link>
-                      </li>
-                    ))}
+                  <ul className="space-y-3.5 text-[14px]">
+                    {post.related.map((rel) => {
+                      const relThumb = getGuideThumbnail(rel.slug, (rel as any).coverImage);
+                      return (
+                        <li key={rel.id}>
+                          <Link
+                            to={`/resources/${rel.slug}`}
+                            className="group flex items-center gap-3 transition-colors"
+                          >
+                            <img
+                              src={relThumb}
+                              alt={rel.title}
+                              className="h-12 w-18 shrink-0 rounded-[2px] border border-navy/10 object-cover group-hover:border-gold transition-colors"
+                              loading="lazy"
+                            />
+                            <span className="font-medium text-navy group-hover:text-gold-dark transition-colors leading-snug line-clamp-2 text-[13px]">
+                              {rel.title}
+                            </span>
+                          </Link>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               )}

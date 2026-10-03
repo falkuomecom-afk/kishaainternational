@@ -3,6 +3,7 @@ import { Landmark, ArrowRight, ShieldCheck, Calculator, ExternalLink, AlertCircl
 import { Seo, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 import { PageHero } from "@/components/site/blocks";
 import { EnquiryForm } from "@/components/site/EnquiryForm";
+import { getGuideThumbnail } from "@/lib/guide-images";
 
 const STATUTORY_RULES = [
   {
@@ -313,62 +314,92 @@ export default function BankStatements() {
           <div className="grid gap-6 md:grid-cols-3">
             <Link
               to="/resources/ukvi-28-day-rule-explained-how-much-must-sit-in-the-bank-for-a-student-visa-2026"
-              className="bg-white p-6 border border-navy/10 hover:border-gold hover:shadow-md transition-all rounded-sm flex flex-col justify-between"
+              className="group bg-white border border-navy/10 hover:border-gold hover:shadow-lg transition-all rounded-[4px] flex flex-col justify-between overflow-hidden"
             >
-              <div>
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-gold-dark bg-gold/10 px-2 py-0.5 rounded">
+              <div className="relative aspect-[16/9] w-full overflow-hidden bg-navy/95 border-b border-navy/10">
+                <img
+                  src={getGuideThumbnail("ukvi-28-day-rule-explained-how-much-must-sit-in-the-bank-for-a-student-visa-2026")}
+                  alt="UKVI 28-Day Rule"
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  loading="lazy"
+                />
+                <span className="absolute top-3 left-3 text-[10px] font-semibold uppercase tracking-wider text-gold-dark bg-navy/90 backdrop-blur-md px-2 py-0.5 rounded border border-gold/30">
                   UK 2026 Regulation
                 </span>
-                <h3 className="mt-3 font-serif text-xl font-medium text-navy">
-                  UKVI 28-Day Rule: How Much Must Sit in the Bank
-                </h3>
-                <p className="mt-2 text-sm text-navy/65 line-clamp-3">
-                  London (£1,483/mo) vs outer (£1,136/mo), acceptable financial institutions in Pakistan, parent consent letters, and the 31-day statement date limit.
-                </p>
               </div>
-              <span className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-navy group-hover:text-gold-dark">
-                Read UK guide <ArrowRight className="h-3.5 w-3.5" />
-              </span>
+              <div className="p-6 flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 className="font-serif text-xl font-medium text-navy group-hover:text-gold-dark transition-colors">
+                    UKVI 28-Day Rule: How Much Must Sit in the Bank
+                  </h3>
+                  <p className="mt-2 text-sm text-navy/65 line-clamp-3">
+                    London (£1,483/mo) vs outer (£1,136/mo), acceptable financial institutions in Pakistan, parent consent letters, and the 31-day statement date limit.
+                  </p>
+                </div>
+                <span className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-navy group-hover:text-gold-dark transition-colors">
+                  Read UK guide <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                </span>
+              </div>
             </Link>
 
             <Link
               to="/resources/germany-blocked-account-sperrkonto-2026-exact-amount-and-payout-rules"
-              className="bg-white p-6 border border-navy/10 hover:border-gold hover:shadow-md transition-all rounded-sm flex flex-col justify-between"
+              className="group bg-white border border-navy/10 hover:border-gold hover:shadow-lg transition-all rounded-[4px] flex flex-col justify-between overflow-hidden"
             >
-              <div>
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-gold-dark bg-gold/10 px-2 py-0.5 rounded">
+              <div className="relative aspect-[16/9] w-full overflow-hidden bg-navy/95 border-b border-navy/10">
+                <img
+                  src={getGuideThumbnail("germany-blocked-account-sperrkonto-2026-exact-amount-and-payout-rules")}
+                  alt="Germany Blocked Account Sperrkonto"
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  loading="lazy"
+                />
+                <span className="absolute top-3 left-3 text-[10px] font-semibold uppercase tracking-wider text-gold-dark bg-navy/90 backdrop-blur-md px-2 py-0.5 rounded border border-gold/30">
                   Germany Sperrkonto
                 </span>
-                <h3 className="mt-3 font-serif text-xl font-medium text-navy">
-                  Germany Blocked Account 2026: €11,904 Payout Rules
-                </h3>
-                <p className="mt-2 text-sm text-navy/65 line-clamp-3">
-                  Why €11,904 is required, comparing Expatrio vs Fintiba vs Coracle, health insurance bundling, and tax id verification upon arrival.
-                </p>
               </div>
-              <span className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-navy group-hover:text-gold-dark">
-                Read Germany guide <ArrowRight className="h-3.5 w-3.5" />
-              </span>
+              <div className="p-6 flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 className="font-serif text-xl font-medium text-navy group-hover:text-gold-dark transition-colors">
+                    Germany Blocked Account 2026: €11,904 Payout Rules
+                  </h3>
+                  <p className="mt-2 text-sm text-navy/65 line-clamp-3">
+                    Why €11,904 is required, comparing Expatrio vs Fintiba vs Coracle, health insurance bundling, and tax id verification upon arrival.
+                  </p>
+                </div>
+                <span className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-navy group-hover:text-gold-dark transition-colors">
+                  Read Germany guide <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                </span>
+              </div>
             </Link>
 
             <Link
               to="/resources/finland-student-permit-why-9-600-covers-you-and-your-family-2026-guide"
-              className="bg-white p-6 border border-navy/10 hover:border-gold hover:shadow-md transition-all rounded-sm flex flex-col justify-between"
+              className="group bg-white border border-navy/10 hover:border-gold hover:shadow-lg transition-all rounded-[4px] flex flex-col justify-between overflow-hidden"
             >
-              <div>
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-gold-dark bg-gold/10 px-2 py-0.5 rounded">
+              <div className="relative aspect-[16/9] w-full overflow-hidden bg-navy/95 border-b border-navy/10">
+                <img
+                  src={getGuideThumbnail("finland-student-permit-why-9-600-covers-you-and-your-family-2026-guide")}
+                  alt="Finland Student Permit"
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  loading="lazy"
+                />
+                <span className="absolute top-3 left-3 text-[10px] font-semibold uppercase tracking-wider text-gold-dark bg-navy/90 backdrop-blur-md px-2 py-0.5 rounded border border-gold/30">
                   Finland Family & PR
                 </span>
-                <h3 className="mt-3 font-serif text-xl font-medium text-navy">
-                  Finland Student Permit: Why €9,600 Covers You & Family
-                </h3>
-                <p className="mt-2 text-sm text-navy/65 line-clamp-3">
-                  Migri statutory threshold (€800/mo), spouse work permit rights without quota restrictions, children education, and permanent residency rules.
-                </p>
               </div>
-              <span className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-navy group-hover:text-gold-dark">
-                Read Finland guide <ArrowRight className="h-3.5 w-3.5" />
-              </span>
+              <div className="p-6 flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 className="font-serif text-xl font-medium text-navy group-hover:text-gold-dark transition-colors">
+                    Finland Student Permit: Why €9,600 Covers You & Family
+                  </h3>
+                  <p className="mt-2 text-sm text-navy/65 line-clamp-3">
+                    Migri statutory threshold (€800/mo), spouse work permit rights without quota restrictions, children education, and permanent residency rules.
+                  </p>
+                </div>
+                <span className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-navy group-hover:text-gold-dark transition-colors">
+                  Read Finland guide <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                </span>
+              </div>
             </Link>
           </div>
         </div>

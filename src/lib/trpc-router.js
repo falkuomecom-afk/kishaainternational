@@ -133,6 +133,17 @@ const appRouter = router({
 
     posts: router({
       list: publicProcedure.query(async () => {
+        const resolvePostCover = (r) => {
+          if (r.cover_image) return r.cover_image;
+          if (r.cover_media_id) {
+            try {
+              const m = db.prepare('SELECT filename FROM media WHERE id = ?').get(r.cover_media_id);
+              if (m?.filename) return `/uploads/${m.filename}`;
+            } catch {}
+          }
+          return `/img/guides/${r.slug}.svg`;
+        };
+
         if (supabase.isAvailable()) {
           const rows = await supabase.getPosts();
           if (rows) {
@@ -144,6 +155,8 @@ const appRouter = router({
               body: r.body,
               category: r.categories?.name || 'Guides',
               tags: r.tags,
+              coverImage: resolvePostCover(r),
+              readMinutes: r.read_minutes || 4,
               seoTitle: r.seo_title,
               seoDescription: r.seo_description,
               publishedAt: r.publish_at ? new Date(r.publish_at) : null,
@@ -160,6 +173,8 @@ const appRouter = router({
             body: r.body,
             category: r.category_id ? (db.prepare('SELECT name FROM categories WHERE id = ?').get(r.category_id)?.name || 'Guides') : 'Guides',
             tags: r.tags,
+            coverImage: resolvePostCover(r),
+            readMinutes: r.read_minutes || 4,
             seoTitle: r.seo_title,
             seoDescription: r.seo_description,
             publishedAt: r.publish_at ? new Date(r.publish_at) : null,
@@ -190,11 +205,22 @@ const appRouter = router({
             } catch {}
           }
 
+          const resolvePostCover = (item) => {
+            if (item.cover_image) return item.cover_image;
+            if (item.cover_media_id) {
+              try {
+                const m = db.prepare('SELECT filename FROM media WHERE id = ?').get(item.cover_media_id);
+                if (m?.filename) return `/uploads/${m.filename}`;
+              } catch {}
+            }
+            return `/img/guides/${item.slug}.svg`;
+          };
+
           let related = [];
           let faqs = [];
           let destinations = [];
           try {
-            related = db.prepare(`SELECT id, title, slug, excerpt, answer_summary FROM posts WHERE id != ? AND (status = 'published' OR status = 'draft') ORDER BY publish_at DESC LIMIT 4`).all(r.id);
+            related = db.prepare(`SELECT id, title, slug, excerpt, answer_summary, cover_media_id FROM posts WHERE id != ? AND (status = 'published' OR status = 'draft') ORDER BY publish_at DESC LIMIT 4`).all(r.id);
             faqs = db.prepare(`SELECT id, question, answer FROM faqs WHERE published = 1 ORDER BY sort_order LIMIT 4`).all();
             destinations = db.prepare(`SELECT name, slug FROM countries WHERE published = 1 ORDER BY sort_order LIMIT 6`).all();
           } catch {}
@@ -208,10 +234,11 @@ const appRouter = router({
             category: r.categories?.name || 'Guides',
             tags: r.tags,
             tagsList: parseArray(r.tags),
+            coverImage: resolvePostCover(r),
             seoTitle: r.seo_title,
             seoDescription: r.seo_description,
             publishedAt: r.publish_at ? new Date(r.publish_at) : null,
-            readMinutes: r.read_minutes || 3,
+            readMinutes: r.read_minutes || 4,
             authorName,
             targetQuery: r.target_query || null,
             answerFirst: r.answer_summary || null,
@@ -221,6 +248,7 @@ const appRouter = router({
               title: rel.title,
               slug: rel.slug,
               excerpt: rel.excerpt,
+              coverImage: resolvePostCover(rel),
             })),
             faqs: faqs.map(f => ({
               id: f.id,
