@@ -1,0 +1,118 @@
+<div class="page-head">
+  <div>
+    <h1>Tools, backup &amp; maintenance</h1>
+    <p>Search index, notification queue, scheduled jobs and database backups. Every action here is audited.</p>
+  </div>
+  <div class="spacer"></div>
+</div>
+
+<div class="grid g4" style="margin-bottom:16px">
+  <div class="stat"><div class="k">Database size</div><div class="v">{{bytes dbSize}}</div><div class="d">{{counts.pages}} pages · {{counts.posts}} guides</div></div>
+  <div class="stat"><div class="k">Leads stored</div><div class="v">{{counts.leads}}</div><div class="d">Retention {{setting 'ops.retention_months' '24'}} months</div></div>
+  <div class="stat"><div class="k">Media files</div><div class="v">{{counts.media}}</div><div class="d">Public uploads folder</div></div>
+  <div class="stat"><div class="k">Analytics events</div><div class="v">{{counts.events}}</div><div class="d">No personal data attached</div></div>
+</div>
+
+<div class="grid g2">
+  <div class="stack">
+    <div class="card">
+      <header><h2>Maintenance actions</h2></header>
+      <div class="body stack">
+        <form method="post" action="/admin/tools/reindex" class="row between">
+          <input type="hidden" name="_csrf" value="{{csrf}}">
+          <span><b>Rebuild the search index</b><br><span class="tiny muted">Re-reads published pages, guides, programs, destinations, FAQs and team profiles.</span></span>
+          <button class="btn" type="submit">Rebuild</button>
+        </form>
+        <hr style="border:0;border-top:1px solid var(--a-line-soft)">
+        <form method="post" action="/admin/tools/process-queue" class="row between">
+          <input type="hidden" name="_csrf" value="{{csrf}}">
+          <span><b>Send queued notifications</b><br><span class="tiny muted">Processes lead alerts waiting in the delivery queue now.</span></span>
+          <button class="btn" type="submit">Process</button>
+        </form>
+        <hr style="border:0;border-top:1px solid var(--a-line-soft)">
+        <form method="post" action="/admin/tools/retry-notifications" class="row between">
+          <input type="hidden" name="_csrf" value="{{csrf}}">
+          <span><b>Retry failed notifications</b><br><span class="tiny muted">Resets failed deliveries to pending with backoff.</span></span>
+          <button class="btn" type="submit">Retry</button>
+        </form>
+        <hr style="border:0;border-top:1px solid var(--a-line-soft)">
+        <form method="post" action="/admin/tools/backup" class="row between">
+          <input type="hidden" name="_csrf" value="{{csrf}}">
+          <span><b>Create a database backup</b><br><span class="tiny muted">Writes a consistent snapshot into /data/backups.</span></span>
+          <button class="btn primary" type="submit">Back up now</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="card">
+      <header><h2>Backups</h2><div class="spacer"></div><span class="muted tiny">Newest first</span></header>
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>File</th><th class="actions">Actions</th></tr></thead>
+          <tbody>
+          {{#each backups}}
+            <tr>
+              <td class="mono tiny">{{this}}</td>
+              <td class="actions">
+                <form method="post" action="/admin/tools/rollback/{{this}}" data-confirm="Restore this backup over the live database? The current database is backed up first.">
+                  <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+                  <button class="btn sm danger" type="submit">Restore</button>
+                </form>
+              </td>
+            </tr>
+          {{else}}
+            <tr><td colspan="2" class="empty"><b>No backups yet</b>Create the first snapshot before making structural changes.</td></tr>
+          {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="stack">
+    <div class="card">
+      <header><h2>Scheduled jobs</h2><div class="spacer"></div><span class="muted tiny">Queue and retries</span></header>
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>Job</th><th>Run at</th><th>Status</th><th>Attempts</th><th>Error</th></tr></thead>
+          <tbody>
+          {{#each jobs}}
+            <tr>
+              <td class="tiny mono">{{kind}}</td>
+              <td class="tiny">{{date run_at}}</td>
+              <td><span class="badge {{#if eq status 'done'}}ok{{/if}}{{#if eq status 'failed'}}bad{{/if}}{{#if eq status 'pending'}}warn{{/if}}">{{status}}</span></td>
+              <td class="tiny">{{default attempts 0}}</td>
+              <td class="tiny muted">{{truncate last_error 60}}</td>
+            </tr>
+          {{else}}
+            <tr><td colspan="5" class="empty"><b>Queue is empty</b>Scheduled publishing, mail retries and provider refreshes appear here.</td></tr>
+          {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <header><h2>Notification log</h2></header>
+      <div class="body scroll-y">
+        {{#each notifications}}
+        <div class="kv">
+          <span><b>{{subject}}</b><br><span class="tiny muted">{{default reference 'internal'}} · {{default sent_at created_at}} · attempts {{default attempts 0}}</span></span>
+          <span class="badge {{#if eq status 'sent'}}ok{{/if}}{{#if eq status 'failed'}}bad{{/if}}{{#if eq status 'pending'}}warn{{/if}}">{{status}}</span>
+        </div>
+        {{else}}
+        <p class="muted tiny" style="margin:0">No notifications recorded.</p>
+        {{/each}}
+      </div>
+    </div>
+
+    <div class="card">
+      <header><h3>Operational notes</h3></header>
+      <div class="body tiny muted">
+        Backups use SQLite’s consistent snapshot mode, so they are safe to take while the site is serving traffic.
+        Restoring replaces the live database and keeps a rollback copy of the previous state.
+        Retention for enquiry records follows <span class="mono">ops.retention_months</span> in Settings.
+      </div>
+    </div>
+  </div>
+</div>

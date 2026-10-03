@@ -1,0 +1,23 @@
+import { PillarPage } from "@/components/site/PillarPage";
+
+export default function CareerCounseling() {
+  return (
+    <PillarPage
+      pillar="career"
+      eyebrow="Career Counseling"
+      title="Admissions & career pathways, planned end to end."
+      lede="From the UK 2027 intake with MOI acceptance to Italy's free-tuition scholarships, Finland's family route and Georgia's recognised MBBS — we plan your education like a project, with transparent fees at every step."
+      seoTitle="Career Counseling & University Admissions — UK, Italy, Finland, Georgia"
+      seoDescription="Career counseling and university admissions: UK 2027 MOI intake (no IELTS at partner universities), Italy free tuition scholarships, Finland family & PR pathway, Georgia MBBS. Dubai & Pakistan."
+      path="/career-counseling"
+      faqCategory="Admissions"
+      formTitle="Plan my admission"
+      steps={[
+        { title: "Profile review", text: "We assess your academics, budget and timeline against current admission cycles." },
+        { title: "Shortlist & strategy", text: "You receive a transparent shortlist with tuition, scholarships and deposit requirements." },
+        { title: "Application & offer", text: "We prepare documents, apply, and track offers — including scholarship applications." },
+        { title: "Visa & departure", text: "Funds planning, bank statement preparation, visa filing and pre-departure briefing." },
+      ]}
+    />
+  );
+}

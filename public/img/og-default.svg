@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="Kishaa International — Gateway to Global Careers">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#06162d"/><stop offset="55%" stop-color="#081d3b"/><stop offset="100%" stop-color="#0b254a"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#d9b43c"/><stop offset="100%" stop-color="#c9a227"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="1040" cy="110" r="210" fill="#ffffff" opacity="0.03"/>
+  <circle cx="150" cy="560" r="170" fill="#ffffff" opacity="0.02"/>
+  <g transform="translate(84,74)">
+    <rect width="88" height="88" rx="4" fill="#06162d" stroke="#c9a227" stroke-width="2"/>
+    <text x="44" y="63" font-family="'Fraunces', Georgia, serif" font-size="58" font-weight="500" fill="#c9a227" text-anchor="middle">K</text>
+  </g>
+  <text x="84" y="254" font-family="'Fraunces', Georgia, 'Times New Roman', serif" font-size="64" font-weight="500" fill="#ffffff">Kishaa International</text>
+  <text x="84" y="324" font-family="'Inter', Helvetica, Arial, sans-serif" font-size="34" fill="rgba(255,255,255,0.75)">Career counseling · Immigration consultancy · Cambridge training</text>
+  <g font-family="'Inter', Helvetica, Arial, sans-serif" font-size="26" fill="#c9a227">
+    <text x="84" y="420" letter-spacing="2">GATEWAY TO GLOBAL CAREERS · ONE COMPANY, GLOBAL SOLUTIONS</text>
+    <text x="84" y="474" fill="rgba(255,255,255,0.85)">Dubai HQ +971 58 682 6099    ·    Pakistan +92 312 552 6099</text>
+  </g>
+  <rect x="84" y="524" width="360" height="4" fill="url(#gold)"/>
+</svg>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Sign in · Kishaa CMS</title>
+<link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="head">
+      <div class="mark">KI</div>
+      <h1>Kishaa CMS</h1>
+      <p class="muted tiny" style="margin:0">Sign in to manage pages, destinations, funds rules and the lead pipeline.</p>
+    </div>
+    <form method="post" action="/admin/login" autocomplete="on">
+      <input type="hidden" name="_csrf" value="{{csrf}}">
+      {{#if error}}<div class="notice bad">{{error}}</div>{{/if}}
+      {{#if notice}}<div class="notice">{{notice}}</div>{{/if}}
+      <label class="field">
+        <span class="lab">Email address</span>
+        <input type="email" name="email" value="{{email}}" required autofocus autocomplete="username" spellcheck="false">
+      </label>
+      <label class="field">
+        <span class="lab">Password</span>
+        <input type="password" name="password" id="pw" required autocomplete="current-password">
+        <span class="hint">Sessions expire after 12 hours. Eight failed attempts lock an account for 15 minutes.</span>
+      </label>
+      {{#if next}}<input type="hidden" name="next" value="{{next}}">{{/if}}
+      <button class="btn primary block" type="submit">Sign in</button>
+      <p class="tiny muted" style="margin:12px 0 0">Protected by CSRF tokens, hashed passwords (scrypt) and per-account lockout. All sign-in attempts are written to the audit trail.</p>
+    </form>
+    <div class="foot">
+      <b>Need access?</b> Ask an administrator to create your account — roles are enforced on the server for every page and action.
+    </div>
+  </div>
+</div>
+</body>
+</html>

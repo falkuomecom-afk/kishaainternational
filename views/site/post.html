@@ -1,0 +1,97 @@
+{{> site/crumbs}}
+
+<section style="padding-top:24px;padding-bottom:60px">
+  <div class="wrap">
+    <div class="split" style="grid-template-columns:minmax(0,1fr) 320px;align-items:start">
+      <article>
+        <a href="/resources" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.16em;color:rgba(6,22,45,0.5);margin-bottom:18px;text-decoration:none">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+          All resources
+        </a>
+        <p class="eyebrow" style="color:var(--gold-700);margin-bottom:8px">{{default post.category_name 'Guide'}}</p>
+        <h1 style="font-family:var(--serif);font-size:clamp(2rem,3.8vw,2.9rem);font-weight:500;color:var(--navy);line-height:1.2;margin:0 0 16px">{{post.title}}</h1>
+        <div style="width:48px;height:2px;background:var(--gold-500);margin-bottom:20px"></div>
+
+        <div class="meta-row" style="color:var(--ink-500);font-size:13px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:24px">
+          <span>{{date post.publish_at}}</span>
+          <span>·</span>
+          <span>{{post.read_minutes}} min read</span>
+          <span>·</span>
+          <span>{{default post.author_name 'Kishaa International'}}</span>
+          {{#if post.target_query}}<span class="badge neutral" style="font-size:12px">Target: {{truncate post.target_query 44}}</span>{{/if}}
+        </div>
+
+        {{#if post.answer_first}}
+        <div class="answer-first" style="background:#faf9f6;border-left:3px solid var(--gold-600);padding:20px 24px;border-radius:2px;margin-bottom:28px">
+          <h3 style="font-family:var(--serif);font-size:1.15rem;color:var(--navy);margin:0 0 8px">Short answer</h3>
+          <p style="margin:0;color:var(--ink-700);line-height:1.65">{{post.answer_first}}</p>
+        </div>
+        {{/if}}
+
+        {{#if post.takeaways}}
+        <div class="takeaways" style="background:var(--gold-50);border:1px solid var(--gold-100);border-radius:4px;padding:22px 24px;margin-bottom:32px">
+          <h3 style="font-family:var(--serif);font-size:1.15rem;color:var(--navy);margin:0 0 12px">Key takeaways</h3>
+          <ul style="margin:0;padding-left:1.2em;color:var(--ink-700);line-height:1.6">{{#each post.takeaways}}<li>{{this}}</li>{{/each}}</ul>
+        </div>
+        {{/if}}
+
+        <div class="article-body" style="color:var(--ink-700);line-height:1.75;font-size:1.05rem">{{{post.body}}}</div>
+
+        {{#if post.tags_list}}
+        <div class="pill-row" style="margin-top:32px;display:flex;gap:8px;flex-wrap:wrap">
+          {{#each post.tags_list}}<span class="chip light" style="font-size:12px;padding:4px 10px;background:var(--line-soft);border-radius:2px;color:var(--ink-700)">{{this}}</span>{{/each}}
+        </div>
+        {{/if}}
+
+        {{#if faqs}}
+        <h2 style="margin-top:48px;font-family:var(--serif);font-size:1.8rem;color:var(--navy)">Related questions</h2>
+        <div class="accordion" style="margin-top:16px;border:1px solid var(--line);border-radius:4px">
+          {{#each faqs}}<details><summary style="font-family:var(--serif);color:var(--navy)">{{question}}</summary><div class="ans" style="line-height:1.65">{{answer}}</div></details>{{/each}}
+        </div>
+        {{/if}}
+
+        <div class="card" style="margin-top:40px;background:var(--sand);border:1px solid var(--line);border-radius:4px;padding:32px">
+          <h3 style="font-family:var(--serif);font-size:1.4rem;color:var(--navy);margin:0 0 10px">Talk this through with a consultant</h3>
+          <p style="color:var(--ink-700);margin-bottom:20px;max-width:65ch;line-height:1.65">Guides cover the general rule. Your file has specifics — profile, funds history, timing and destination. A 20-minute conversation usually saves weeks.</p>
+          <div class="row" style="gap:12px">
+            <a class="btn btn-gold" href="/contact?source=guide">Request consultation</a>
+            <a class="btn btn-outline" href="/cost-planner">Calculate costs</a>
+          </div>
+        </div>
+      </article>
+
+      <aside>
+        <div class="sidebar-card" style="background:#fff;border:1px solid var(--line);border-radius:4px;padding:22px">
+          <h4 style="font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-700);margin:0 0 12px">On this page</h4>
+          <ul class="related-list tiny muted" style="margin:0;padding-left:1.1em;line-height:1.6">
+            <li>Short answer</li>
+            <li>Key takeaways</li>
+            <li>Full detail with tables</li>
+            <li>Related questions</li>
+          </ul>
+        </div>
+        <div class="sidebar-card" style="margin-top:16px;background:#fff;border:1px solid var(--line);border-radius:4px;padding:22px">
+          <h4 style="font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-700);margin:0 0 12px">Popular destinations</h4>
+          <ul class="related-list" style="margin:0;padding:0;list-style:none">
+            {{#each @root.menus.footer_destinations}}
+              {{#if lt @index 6}}<li style="margin-bottom:8px"><a href="{{url}}" style="color:var(--navy);text-decoration:none;font-size:14px;font-weight:500">{{label}}</a></li>{{/if}}
+            {{/each}}
+          </ul>
+        </div>
+        {{#if post.related}}
+        <div class="sidebar-card" style="margin-top:16px;background:#fff;border:1px solid var(--line);border-radius:4px;padding:22px">
+          <h4 style="font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-700);margin:0 0 12px">Related guides</h4>
+          <ul class="related-list" style="margin:0;padding:0;list-style:none">
+            {{#each post.related}}<li style="margin-bottom:10px"><a href="/resources/{{slug}}" style="color:var(--navy);text-decoration:none;font-size:14px;line-height:1.4;display:block">{{title}}</a></li>{{/each}}
+          </ul>
+        </div>
+        {{/if}}
+        <div class="sidebar-card" style="margin-top:16px;background:#fff;border:1px solid var(--line);border-radius:4px;padding:22px">
+          <h4 style="font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-700);margin:0 0 8px">Consultation</h4>
+          <p class="tiny muted" style="margin:0 0 14px;line-height:1.5">Have specific questions regarding this policy or intake?</p>
+          <a class="btn btn-gold btn-block btn-sm" href="/contact">Book appointment</a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>

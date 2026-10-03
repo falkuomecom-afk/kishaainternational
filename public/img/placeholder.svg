@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="Kishaa International">
+  <rect width="800" height="500" fill="#f6f5f2"/>
+  <rect x="1" y="1" width="798" height="498" fill="none" stroke="#e2e8f0" stroke-width="2"/>
+  <g fill="#06162d">
+    <rect x="48" y="52" width="46" height="46" rx="2" fill="#06162d"/>
+    <text x="71" y="85" font-family="'Fraunces', Georgia, serif" font-size="30" font-weight="500" fill="#c9a227" text-anchor="middle">K</text>
+    <text x="112" y="84" font-family="'Fraunces', Georgia, serif" font-size="28" font-weight="500">Kishaa International</text>
+  </g>
+  <text x="48" y="290" font-family="'Inter', Helvetica, Arial, sans-serif" font-size="20" fill="#4a5a70">Image placeholder — upload media in the CMS</text>
+</svg>

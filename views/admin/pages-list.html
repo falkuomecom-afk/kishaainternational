@@ -1,0 +1,94 @@
+<div class="page-head">
+  <div>
+    <h1>Pages</h1>
+    <p>Every public page, its template, publishing state and search metadata. Blocks are edited in the page builder.</p>
+  </div>
+  <div class="spacer"></div>
+  <div class="row">
+    {{#if can 'content.create'}}<a class="btn primary" href="/admin/pages/new">+ Add new page</a>{{/if}}
+  </div>
+</div>
+
+<div class="toolbar">
+  <form class="filters" method="get" action="/admin/pages">
+    <label class="field" style="margin:0">
+      <input type="text" name="q" value="{{q}}" placeholder="Search title or slug">
+    </label>
+    <label class="field" style="margin:0">
+      <select name="status">
+        <option value="">All active statuses</option>
+        <option value="published" {{#if eq status 'published'}}selected{{/if}}>Published</option>
+        <option value="draft" {{#if eq status 'draft'}}selected{{/if}}>Draft</option>
+        <option value="review" {{#if eq status 'review'}}selected{{/if}}>In review</option>
+        <option value="trashed" {{#if eq status 'trashed'}}selected{{/if}}>Trashed</option>
+      </select>
+    </label>
+    <button class="btn" type="submit">Filter</button>
+    {{#if q}}<a class="btn ghost" href="/admin/pages">Clear</a>{{/if}}
+  </form>
+  <div class="spacer"></div>
+  <span class="muted tiny">{{count pages}} page{{plural (count pages) '' 's'}}{{#if gt trashed 0}} · {{trashed}} in trash{{/if}}</span>
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Title</th><th>Path</th><th>Template</th><th>Status</th><th>SEO</th><th>Last edited</th><th class="actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+      {{#each pages}}
+        <tr>
+          <td>
+            <b>{{title}}</b>
+            {{#if excerpt}}<br><span class="tiny muted">{{truncate excerpt 70}}</span>{{/if}}
+          </td>
+          <td class="mono tiny">/{{#if eq slug 'home'}}{{else}}{{slug}}{{/if}}</td>
+          <td><span class="badge line">{{template}}</span></td>
+          <td>
+            {{#if eq status 'published'}}<span class="badge ok">Published</span>{{/if}}
+            {{#if eq status 'draft'}}<span class="badge">Draft</span>{{/if}}
+            {{#if eq status 'review'}}<span class="badge warn">In review</span>{{/if}}
+            {{#if eq status 'trashed'}}<span class="badge bad">Trashed</span>{{/if}}
+            {{#if noindex}}<br><span class="badge line">noindex</span>{{/if}}
+          </td>
+          <td class="tiny">
+            {{#if seo_title}}<span class="badge ok">title</span>{{else}}<span class="badge warn">no title</span>{{/if}}
+            {{#if seo_description}}<span class="badge ok">desc</span>{{else}}<span class="badge warn">no desc</span>{{/if}}
+          </td>
+          <td class="tiny muted">{{ago updated_at}}<br>{{default editor_name 'unknown'}}</td>
+          <td class="actions">
+            <div class="row" style="justify-content:flex-end">
+              <a class="btn sm" href="/admin/pages/{{id}}/edit">Edit</a>
+              {{#if eq status 'published'}}<a class="btn sm ghost" href="/{{#if eq slug 'home'}}{{else}}{{slug}}{{/if}}" target="_blank" rel="noopener">View</a>{{/if}}
+              <a class="btn sm ghost" href="/admin/preview/pages/{{id}}" target="_blank" rel="noopener">Preview</a>
+              {{#if can 'content.publish'}}
+              <form method="post" action="/admin/pages/{{id}}/status">
+                <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+                <input type="hidden" name="status" value="{{#if eq status 'published'}}draft{{else}}published{{/if}}">
+                <button class="btn sm {{#if eq status 'published'}}danger{{else}}gold{{/if}}" type="submit">{{#if eq status 'published'}}Unpublish{{else}}Publish{{/if}}</button>
+              </form>
+              {{/if}}
+            </div>
+          </td>
+        </tr>
+      {{else}}
+        <tr><td colspan="7" class="empty"><b>No pages match this filter</b>Try clearing the search, or create a new page.</td></tr>
+      {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card" style="margin-top:16px">
+  <header><h3>Block library</h3><div class="spacer"></div><span class="muted tiny">Used by the page builder</span></header>
+  <div class="body">
+    <div class="grid g4">
+      {{#each BLOCK_TYPES}}
+      <div class="tiny"><b>{{label}}</b><br><span class="muted">{{help}}</span></div>
+      {{/each}}
+    </div>
+  </div>
+</div>

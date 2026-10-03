@@ -1,0 +1,165 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 215 76% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 76% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 76% 10%;
+    --primary: 215 76% 10%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 45 16% 96%;
+    --secondary-foreground: 215 76% 10%;
+    --muted: 45 16% 96%;
+    --muted-foreground: 220 10% 42%;
+    --accent: 46 67% 47%;
+    --accent-foreground: 215 76% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 14% 90%;
+    --input: 220 14% 86%;
+    --ring: 46 67% 47%;
+    --radius: 0.125rem;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+  h1, h2, h3, .font-display {
+    @apply font-serif;
+    letter-spacing: -0.015em;
+  }
+}
+
+@layer components {
+  /* Frame-style buttons — outlined, sharp, editorial */
+  .btn-frame {
+    @apply inline-flex items-center justify-center gap-2 border border-navy px-6 py-3 text-[13px] font-semibold uppercase tracking-[0.14em] text-navy transition-all duration-200 hover:bg-navy hover:text-white;
+  }
+  .btn-fill {
+    @apply inline-flex items-center justify-center gap-2 bg-navy px-6 py-3 text-[13px] font-semibold uppercase tracking-[0.14em] text-white transition-all duration-200 hover:bg-navy-light;
+  }
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 bg-gold px-6 py-3 text-[13px] font-semibold uppercase tracking-[0.14em] text-navy transition-all duration-200 hover:bg-gold-light;
+  }
+  .btn-frame-light {
+    @apply inline-flex items-center justify-center gap-2 border border-white/60 px-6 py-3 text-[13px] font-semibold uppercase tracking-[0.14em] text-white transition-all duration-200 hover:bg-white hover:text-navy;
+  }
+  /* Eyebrow label */
+  .eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.22em] text-gold-dark;
+  }
+  .eyebrow-light {
+    @apply text-[11px] font-semibold uppercase tracking-[0.22em] text-gold;
+  }
+  /* Reveal on scroll */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.8s cubic-bezier(0.77, 0, 0.175, 1),
+      transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+  /* Gold rule divider */
+  .rule-gold {
+    @apply h-px w-16 bg-gold;
+  }
+  /* Prose for CMS bodies */
+  .cms-prose {
+    @apply text-[17px] leading-relaxed text-navy/80;
+  }
+  .cms-prose h2 {
+    @apply mt-10 mb-4 font-serif text-3xl font-medium text-navy;
+  }
+  .cms-prose h3 {
+    @apply mt-8 mb-3 font-serif text-2xl font-medium text-navy;
+  }
+  .cms-prose p {
+    @apply my-4;
+  }
+  .cms-prose ul, .cms-prose ol {
+    @apply my-4 pl-6 space-y-2;
+  }
+  .cms-prose ul li {
+    @apply list-disc;
+  }
+  .cms-prose ol li {
+    @apply list-decimal;
+  }
+  .cms-prose strong {
+    @apply font-semibold text-navy;
+  }
+  .cms-prose a {
+    @apply text-gold-dark underline underline-offset-4 hover:text-navy;
+  }
+  .cms-prose table {
+    @apply my-6 w-full border-collapse border border-navy/15 text-sm;
+  }
+  .cms-prose th {
+    @apply border border-navy/15 bg-paper p-3 text-left font-serif font-medium text-navy;
+  }
+  .cms-prose td {
+    @apply border border-navy/15 p-3 text-navy/80;
+  }
+}

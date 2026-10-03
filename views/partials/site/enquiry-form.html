@@ -1,0 +1,80 @@
+<section class="{{#if eq variant 'full'}}{{else}}alt{{/if}}" id="enquiry">
+  <div class="wrap narrow">
+    {{#if heading}}<div class="sec-head"><h2>{{heading}}</h2>{{#if subheading}}<p class="lead">{{subheading}}</p>{{/if}}</div>{{/if}}
+    {{#if @root.errors}}
+    <div class="errors" role="alert" tabindex="-1" id="error-summary">
+      <h3>Please correct {{count @root.errors}} item{{plural (count @root.errors) '' 's'}} below</h3>
+      <ul>{{#each @root.errors}}<li><a href="#f-{{field}}">{{message}}</a></li>{{/each}}</ul>
+    </div>
+    {{/if}}
+    <form class="form-card" method="post" action="/contact" novalidate>
+      <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+      <input type="hidden" name="_idem" value="{{newToken}}">
+      <input type="hidden" name="source_page" value="{{@root.path}}">
+      <input type="hidden" name="source_type" value="form">
+      <input type="hidden" name="interest" value="{{#if preselect}}{{preselect}}{{else}}{{#if @root.query.interest}}{{@root.query.interest}}{{else}}other{{/if}}{{/if}}">
+      <div class="hp" aria-hidden="true">
+        <label for="website">Website</label>
+        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+      </div>
+      <div class="form-grid">
+        <div>
+          <label class="fl" for="f-full_name">Full name <span>required</span></label>
+          <input id="f-full_name" name="full_name" type="text" required autocomplete="name" maxlength="120"
+                 value="{{@root.form.full_name}}" {{#if @root.errors}}aria-invalid="true"{{/if}}>
+        </div>
+        <div>
+          <label class="fl" for="f-phone">Phone / WhatsApp <span>with country code</span></label>
+          <input id="f-phone" name="phone" type="tel" autocomplete="tel" placeholder="+92 300 0000000"
+                 value="{{@root.form.phone}}" {{#if @root.errors}}aria-invalid="true"{{/if}}>
+        </div>
+        <div>
+          <label class="fl" for="f-email">Email <span>optional unless email is your chosen channel</span></label>
+          <input id="f-email" name="email" type="email" autocomplete="email" value="{{@root.form.email}}">
+        </div>
+        <div>
+          <label class="fl" for="f-contact_preference">Preferred contact method</label>
+          <select id="f-contact_preference" name="contact_preference">
+            <option value="whatsapp" {{#if eq @root.form.contact_preference 'whatsapp'}}selected{{/if}}>WhatsApp</option>
+            <option value="phone" {{#if eq @root.form.contact_preference 'phone'}}selected{{/if}}>Phone call</option>
+            <option value="email" {{#if eq @root.form.contact_preference 'email'}}selected{{/if}}>Email</option>
+          </select>
+        </div>
+        <div>
+          <label class="fl" for="f-service">What is this about?</label>
+          <select id="f-service" name="service_context">
+            <option>Career counseling & admissions</option>
+            <option>Immigration & visa consultancy</option>
+            <option>Cambridge & IELTS training</option>
+            <option>Corporate English training</option>
+            <option>Cost planner question</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div>
+          <label class="fl" for="f-country">Destination of interest <span>optional</span></label>
+          <select id="f-country" name="country_id">
+            <option value="">Not decided yet</option>
+            {{#each @root.countries}}<option value="{{id}}">{{name}}</option>{{/each}}
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:16px">
+        <label class="fl" for="f-message">Your question <span>please do not send identity or financial documents</span></label>
+        <textarea id="f-message" name="message" maxlength="2000" placeholder="Tell us your goal, current qualification or profile, budget and timeline.">{{@root.form.message}}</textarea>
+      </div>
+      <div class="check" style="margin-top:16px">
+        <input type="checkbox" id="marketing" name="marketing_consent" value="1">
+        <label for="marketing">Send me occasional guidance updates (optional — separate from handling my enquiry, and you can withdraw at any time).</label>
+      </div>
+      <p class="tiny muted" style="margin-top:12px">
+        By submitting you confirm you have read our <a href="/privacy">privacy notice ({{setting 'ops.privacy_notice_version'}})</a>.
+        We store your enquiry privately, use it only to respond, and never publish your details. Do not include passport numbers, bank account numbers or documents in this form.
+      </p>
+      <div class="row" style="margin-top:18px">
+        <button class="btn btn-primary" type="submit">Send enquiry</button>
+        <span class="tiny muted">{{setting 'ops.response_promise'}}</span>
+      </div>
+    </form>
+  </div>
+</section>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Kishaa International">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#06162d"/><stop offset="100%" stop-color="#04101f"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#d9b43c"/><stop offset="100%" stop-color="#c9a227"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="24" fill="url(#g)"/>
+  <text x="256" y="360" font-family="'Fraunces', Georgia, serif" font-size="340" font-weight="500" fill="url(#gold)" text-anchor="middle">K</text>
+</svg>

@@ -1,0 +1,142 @@
+<div class="page-head">
+  <div>
+    <h1>Integrations &amp; connection health</h1>
+    <p>Reviews, social feeds, live fares and email delivery. Providers without credentials keep serving a clearly attributed cached snapshot.</p>
+  </div>
+  <div class="spacer"></div>
+  <div class="row">
+    <form method="post" action="/admin/integrations/refresh-all">
+      <input type="hidden" name="_csrf" value="{{csrf}}">
+      <button class="btn primary" type="submit">Poll all providers</button>
+    </form>
+  </div>
+</div>
+
+<div class="grid g4" style="margin-bottom:16px">
+  <div class="stat {{#if summary.degraded}}warn{{/if}}"><div class="k">Providers</div><div class="v">{{summary.total}}</div><div class="d">{{summary.connected}} live · {{summary.needs_attention}} cached</div></div>
+  <div class="stat"><div class="k">Cached reviews</div><div class="v">{{count reviews}}</div><div class="d">Published with platform attribution</div></div>
+  <div class="stat"><div class="k">Cached feed items</div><div class="v">{{count feeds}}</div><div class="d">Instagram, YouTube and campaigns</div></div>
+  <div class="stat {{#if gt (count jobs) 0}}warn{{/if}}"><div class="k">Background jobs</div><div class="v">{{count jobs}}</div><div class="d">Queue, retries and backoffs</div></div>
+</div>
+
+<div class="card" style="margin-bottom:16px">
+  <header><h2>Provider status</h2></header>
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th>Provider</th><th>Kind</th><th>Status</th><th>Mode</th><th>Credentials</th><th>Last sync</th><th>Notes</th><th class="actions">Actions</th></tr></thead>
+      <tbody>
+      {{#each health}}
+        <tr>
+          <td><b>{{label}}</b><br><span class="tiny muted mono">{{docs}}</span></td>
+          <td class="tiny">{{kind}}</td>
+          <td>
+            {{#if eq status 'connected'}}<span class="badge ok">Connected</span>{{/if}}
+            {{#if eq status 'not_connected'}}<span class="badge">Not connected</span>{{/if}}
+            {{#if eq status 'error'}}<span class="badge bad">Error</span>{{/if}}
+            {{#if eq status 'rate_limited'}}<span class="badge warn">Rate limited</span>{{/if}}
+          </td>
+          <td class="tiny">{{#if eq mode 'live'}}<span class="badge ok">Live</span>{{else}}<span class="badge info">Cached</span>{{/if}}</td>
+          <td class="tiny mono">{{join required_env ', '}}</td>
+          <td class="tiny">{{#if last_sync_at}}{{ago last_sync_at}}{{else}}<span class="muted">never</span>{{/if}}</td>
+          <td class="tiny muted">{{default notes '—'}}</td>
+          <td class="actions">
+            <form method="post" action="/admin/integrations/{{provider}}/refresh">
+              <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+              <button class="btn sm" type="submit">Refresh</button>
+            </form>
+          </td>
+        </tr>
+      {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="grid g2">
+  <div class="card">
+    <header><h2>Review cache</h2><div class="spacer"></div><span class="muted tiny">Moderation applies instantly</span></header>
+    <div class="table-wrap scroll-y">
+      <table class="table">
+        <thead><tr><th>Platform</th><th>Reviewer</th><th>Rating</th><th>State</th><th class="actions">Moderate</th></tr></thead>
+        <tbody>
+        {{#each reviews}}
+          <tr>
+            <td class="tiny"><span class="badge info">{{platformLabel platform}}</span>{{#if is_sample}}<br><span class="badge warn">sample</span>{{/if}}</td>
+            <td class="tiny"><b>{{author_display}}</b><br><span class="muted">{{truncate text 90}}</span>
+              {{#if hide_reason}}<br><span class="badge bad">{{hide_reason}}</span>{{/if}}</td>
+            <td class="tiny">{{stars rating}}<br><span class="muted">{{rating}}</span></td>
+            <td>{{#if eq display_state 'shown'}}<span class="badge ok">Shown</span>{{else}}<span class="badge">Hidden</span>{{/if}}</td>
+            <td class="actions">
+              <form method="post" action="/admin/moderation/review/{{id}}" class="row" style="justify-content:flex-end">
+                <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+                <select name="action" style="max-width:110px"><option value="show">Show</option><option value="hide">Hide</option></select>
+                <input type="text" name="reason" placeholder="Reason" style="max-width:140px">
+                <button class="btn sm" type="submit">Apply</button>
+              </form>
+            </td>
+          </tr>
+        {{else}}
+          <tr><td colspan="5" class="empty"><b>No cached reviews</b>Connect a review platform or seed sample data.</td></tr>
+        {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="stack">
+    <div class="card">
+      <header><h2>Feed cache</h2></header>
+      <div class="table-wrap scroll-y">
+        <table class="table">
+          <thead><tr><th>Platform</th><th>Caption</th><th>State</th><th class="actions">Moderate</th></tr></thead>
+          <tbody>
+          {{#each feeds}}
+            <tr>
+              <td class="tiny"><span class="badge info">{{platformLabel platform}}</span>{{#if is_sample}}<br><span class="badge warn">sample</span>{{/if}}</td>
+              <td class="tiny">{{truncate caption 80}}<br><span class="muted">{{ago published_at}}</span></td>
+              <td>{{#if eq display_state 'shown'}}<span class="badge ok">Shown</span>{{else}}<span class="badge">Hidden</span>{{/if}}{{#if pinned}} <span class="badge gold">Pinned</span>{{/if}}</td>
+              <td class="actions">
+                <form method="post" action="/admin/moderation/feed/{{id}}" class="row" style="justify-content:flex-end">
+                  <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+                  <select name="action" style="max-width:110px"><option value="show">Show</option><option value="hide">Hide</option><option value="pin">Pin</option></select>
+                  <label class="inline-check"><input type="checkbox" name="pinned" value="1" {{#if pinned}}checked{{/if}}> pin</label>
+                  <button class="btn sm" type="submit">Apply</button>
+                </form>
+              </td>
+            </tr>
+          {{else}}
+            <tr><td colspan="4" class="empty"><b>No cached posts</b></td></tr>
+          {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <header><h2>Delivery queue</h2></header>
+      <div class="body scroll-y">
+        {{#each notifications}}
+        <div class="kv">
+          <span><b>{{subject}}</b><br><span class="tiny muted">{{default reference 'internal'}} · attempts {{default attempts 0}} · {{ago created_at}}</span></span>
+          <span class="badge {{#if eq status 'sent'}}ok{{/if}}{{#if eq status 'failed'}}bad{{/if}}{{#if eq status 'pending'}}warn{{/if}}">{{status}}</span>
+        </div>
+        {{else}}
+        <p class="muted tiny" style="margin:0">No notifications queued.</p>
+        {{/each}}
+      </div>
+      <div class="foot"><a class="btn sm" href="/admin/tools">Queue controls in Tools</a></div>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:16px">
+  <header><h2>Credential checklist</h2></header>
+  <div class="body">
+    <div class="grid g3">
+      <div class="tiny"><b>Reviews &amp; social</b><br><span class="mono muted">GOOGLE_BUSINESS_TOKEN, META_PAGE_TOKEN, YOUTUBE_API_KEY, TRUSTPILOT_API_KEY</span></div>
+      <div class="tiny"><b>Fares &amp; automation</b><br><span class="mono muted">FLIGHT_API_KEY, COMPOSIO_API_KEY</span></div>
+      <div class="tiny"><b>Email delivery</b><br><span class="mono muted">SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, MAIL_FROM</span></div>
+    </div>
+    <p class="tiny muted" style="margin:12px 0 0">Credentials are read from the server environment only — they are never stored in the database or rendered into pages.</p>
+  </div>
+</div>

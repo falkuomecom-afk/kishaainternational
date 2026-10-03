@@ -1,0 +1,39 @@
+<div class="page-head">
+  <div>
+    <h1>Audit trail</h1>
+    <p>Every privileged action: who did it, what changed, which record and from where. Append-only by design.</p>
+  </div>
+  <div class="spacer"></div>
+  <div class="row"><span class="muted tiny">{{count rows}} recent entries</span></div>
+</div>
+
+<div class="toolbar">
+  <form class="filters" method="get" action="/admin/audit">
+    <label class="field" style="margin:0"><input type="text" name="q" value="{{q}}" placeholder="Filter by action, entity or actor"></label>
+    <button class="btn" type="submit">Search</button>
+    {{#if q}}<a class="btn ghost" href="/admin/audit">Clear</a>{{/if}}
+  </form>
+  <div class="spacer"></div>
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th>When</th><th>Actor</th><th>Action</th><th>Entity</th><th>Metadata</th><th>IP hash</th></tr></thead>
+      <tbody>
+      {{#each rows}}
+        <tr>
+          <td class="tiny muted nowrap">{{date created_at}}<br>{{ago created_at}}</td>
+          <td class="tiny">{{default display actor}}</td>
+          <td class="tiny"><span class="badge {{#if in 'delete' action}}bad{{/if}}{{#if in 'create' action}}ok{{/if}}{{#if in 'login' action}}info{{/if}}">{{action}}</span></td>
+          <td class="tiny mono">{{default entity '—'}}{{#if entity_id}} #{{entity_id}}{{/if}}</td>
+          <td class="tiny">{{truncate meta 120}}</td>
+          <td class="tiny mono">{{truncate ip 24}}</td>
+        </tr>
+      {{else}}
+        <tr><td colspan="6" class="empty"><b>No matching entries</b>Actions appear here as soon as staff sign in or change content.</td></tr>
+      {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>

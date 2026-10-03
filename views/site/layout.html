@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{meta.title}}</title>
+<meta name="description" content="{{meta.description}}">
+<meta name="robots" content="{{meta.robots}}">
+<link rel="canonical" href="{{meta.canonical}}">
+<meta name="theme-color" content="#06162D">
+<meta name="csrf-token" content="{{csrf}}">
+<meta name="author" content="{{setting 'brand.name' 'Kishaa International'}}">
+{{#if meta.keywords}}<meta name="keywords" content="{{meta.keywords}}">{{/if}}
+<meta property="og:type" content="{{default meta.type 'website'}}">
+<meta property="og:site_name" content="{{setting 'brand.name' 'Kishaa International'}}">
+<meta property="og:title" content="{{meta.title}}">
+<meta property="og:description" content="{{meta.description}}">
+<meta property="og:url" content="{{meta.canonical}}">
+<meta property="og:image" content="{{meta.image}}">
+<meta property="og:locale" content="en">
+{{#if meta.publishedAt}}<meta property="article:published_time" content="{{isoDate meta.publishedAt}}">{{/if}}
+{{#if meta.modifiedAt}}<meta property="article:modified_time" content="{{isoDate meta.modifiedAt}}">{{/if}}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{meta.title}}">
+<meta name="twitter:description" content="{{meta.description}}">
+<meta name="twitter:image" content="{{meta.image}}">
+<link rel="alternate" type="application/rss+xml" title="{{setting 'brand.name'}} — guides" href="/feed.xml">
+<link rel="alternate" type="application/feed+json" title="JSON feed" href="/feed.json">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/index-DZARtdnF.css">
+<link rel="stylesheet" href="/css/site.css?v=20261003-navy-v5">
+{{#if preview}}<style>.preview-flag{background:#B78B2C;color:#fff;text-align:center;padding:10px 16px;font-weight:600;font-size:.88rem;letter-spacing:0.04em;text-transform:uppercase;box-shadow:0 2px 10px rgba(0,0,0,0.12)}</style>{{/if}}
+<script type="application/ld+json">{{{jsonld}}}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+{{#if preview}}<div class="preview-flag">Draft Preview — Private revision not visible to the public</div>{{/if}}
+{{> site/header}}
+<main id="main">
+{{{body}}}
+</main>
+{{> site/footer}}
+
+<div class="whatsapp-float">
+  <a class="whatsapp-circle" href="https://wa.me/{{replace (setting 'brand.whatsapp' '+971501234567') '+' ''}}?text=Hello%20Kishaa%20International%20%E2%80%94%20I%20have%20a%20question." rel="noopener noreferrer" target="_blank" aria-label="Chat on WhatsApp">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path></svg>
+  </a>
+</div>
+<script src="/js/site.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<div class="page-head">
+  <div>
+    <h1>Destination intelligence</h1>
+    <p>Per-country facts, city living costs and the statutory proof-of-funds rules that the planner quotes.</p>
+  </div>
+  <div class="spacer"></div>
+  <div class="row">
+    <a class="btn" href="/admin/funds-rules">Funds rules</a>
+  </div>
+</div>
+
+<div class="toolbar">
+  <input type="text" placeholder="Filter countries…" data-filter-table="#countryTable" style="max-width:280px">
+  <div class="spacer"></div>
+  <span class="muted tiny">{{count countries}} destinations</span>
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    <table class="table" id="countryTable">
+      <thead>
+        <tr><th>Country</th><th>Region</th><th>Currency</th><th>Living total</th><th>Processing</th><th>Data</th><th>Published</th><th class="actions">Actions</th></tr>
+      </thead>
+      <tbody>
+      {{#each countries}}
+        <tr>
+          <td><b>{{name}}</b><br><span class="tiny muted mono">{{iso2}} · /destinations/{{slug}}</span></td>
+          <td class="tiny">{{default region '—'}}<br><span class="muted">{{default bloc ''}}</span></td>
+          <td class="tiny">{{currency_symbol}} {{currency}}</td>
+          <td class="tiny">{{#if living_total}}{{money living_total living_currency}}{{else}}<span class="muted">not set</span>{{/if}}</td>
+          <td class="tiny">{{default processing_time '—'}}</td>
+          <td class="tiny">
+            <span class="badge {{#if gt city_counts 0}}ok{{else}}warn{{/if}}">{{city_counts}} cities</span>
+            <span class="badge {{#if gt rules 0}}ok{{else}}warn{{/if}}">{{rules}} rules</span>
+          </td>
+          <td>{{#if published}}<span class="badge ok">Live</span>{{else}}<span class="badge">Hidden</span>{{/if}}{{#if featured}} <span class="badge gold">Featured</span>{{/if}}</td>
+          <td class="actions">
+            <div class="row" style="justify-content:flex-end">
+              <a class="btn sm" href="/admin/countries/{{id}}/edit">Edit</a>
+              {{#if published}}<a class="btn sm ghost" href="/destinations/{{slug}}" target="_blank" rel="noopener">View</a>{{/if}}
+            </div>
+          </td>
+        </tr>
+      {{else}}
+        <tr><td colspan="8" class="empty"><b>No destinations yet</b>Add countries to power the planner and destination pages.</td></tr>
+      {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>

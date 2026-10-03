@@ -1,0 +1,23 @@
+import { PillarPage } from "@/components/site/PillarPage";
+
+export default function Immigration() {
+  return (
+    <PillarPage
+      pillar="immigration"
+      eyebrow="Immigration Consultancy"
+      title="Visa pathways with transparent milestones."
+      lede="Canada 10-year multiple entry visit visas with Business LOI, UAE Golden & Freelance visas through PRO & GDRFA-approved channels, Turkey on Emirates ID for Afghan passports, Serbia, Romania and Schengen — with fees itemised and milestones you can verify."
+      seoTitle="Immigration Consultancy — Canada 10-Yr LOI Visa, UAE Golden Visa, Turkey, Schengen"
+      seoDescription="Immigration consultancy in Dubai & Pakistan: Canada 10-year multiple entry visit visa with business LOI (AED 7,500 in milestones), UAE Golden/Freelance visas (PRO & GDRFA approved), Turkey visa on Emirates ID, Serbia, Romania, Schengen."
+      path="/immigration-consultancy"
+      faqCategory="Immigration"
+      formTitle="Start my visa assessment"
+      steps={[
+        { title: "Eligibility check", text: "We verify your profile against current official criteria before any payment." },
+        { title: "Document build", text: "Checklists, invitation and sponsor letters, and financial evidence prepared together." },
+        { title: "Submission & biometrics", text: "Application filed with milestone payments — you never pay everything upfront." },
+        { title: "Decision & next steps", text: "Outcome tracking, travel guidance, and honest closure either way." },
+      ]}
+    />
+  );
+}

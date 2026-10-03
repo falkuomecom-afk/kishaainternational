@@ -1,0 +1,43 @@
+{{> site/crumbs}}
+<section style="padding-top:8px">
+  <div class="wrap">
+    <h1>Search</h1>
+    <form method="get" action="/search" role="search" style="max-width:640px">
+      <label class="fl" for="q">Search published guides, destinations, courses and FAQs</label>
+      <div class="row" style="flex-wrap:nowrap;gap:10px">
+        <input id="q" type="search" name="q" value="{{q}}" placeholder="e.g. Finland funds, IELTS band 7.5, Romania work permit" autofocus>
+        <button class="btn btn-primary" type="submit">Search</button>
+      </div>
+      <p class="hint">Private content — drafts, leads, internal notes and evidence files — is never searchable here.</p>
+    </form>
+
+    {{#if q}}
+      <p class="muted" style="margin-top:24px">{{count results}} result{{plural (count results) '' 's'}} for “{{q}}”</p>
+      {{#if results}}
+      <div class="stack" style="margin-top:8px">
+        {{#each results}}
+        <a class="card" href="{{url}}" style="text-decoration:none;color:inherit">
+          <div class="between">
+            <span class="badge neutral">{{titlecase entity}}</span>
+            <span class="link-arrow tiny">Open</span>
+          </div>
+          <h3 style="font-size:1.1rem;margin-bottom:4px">{{title}}</h3>
+          {{#if snippet}}<p>{{{snippet}}}</p>{{/if}}
+        </a>
+        {{/each}}
+      </div>
+      {{else}}
+      <div class="notice warn" style="margin-top:18px"><span class="ico">!</span><div>
+        <h3>Nothing matched</h3>
+        <p>Try a shorter phrase, or start from the <a href="/destinations">destination guides</a>, <a href="/services">services</a> or the <a href="/cost-planner">cost planner</a>.</p>
+      </div></div>
+      {{/if}}
+    {{else}}
+      <div class="grid g3" style="margin-top:26px">
+        <a class="card" href="/destinations" style="text-decoration:none;color:inherit"><h3>Destination guides</h3><p>18 countries with costs, statutory rules and processing times.</p></a>
+        <a class="card" href="/cost-planner" style="text-decoration:none;color:inherit"><h3>Cost planner</h3><p>Flights, living costs and the bank statement requirement.</p></a>
+        <a class="card" href="/faq" style="text-decoration:none;color:inherit"><h3>FAQs</h3><p>The questions asked before every engagement.</p></a>
+      </div>
+    {{/if}}
+  </div>
+</section>

@@ -1,0 +1,202 @@
+<div class="page-head">
+  <div>
+    <h1>{{lead.full_name}}</h1>
+    <p class="mono">{{lead.reference}} · received {{date lead.created_at}} · {{stageLabel lead.stage}}</p>
+  </div>
+  <div class="spacer"></div>
+  <div class="row">
+    <a class="btn sm" href="/admin/leads">← All leads</a>
+    {{#if lead.phone}}<a class="btn sm" href="{{tel lead.phone}}">Call</a>{{/if}}
+    {{#if lead.whatsapp}}<a class="btn sm gold" href="{{wa lead.whatsapp 'Hello ' }}{{urlencode lead.full_name}} — Kishaa International" target="_blank" rel="noopener">WhatsApp</a>{{/if}}
+    {{#if lead.email}}<a class="btn sm" href="mailto:{{lead.email}}">Email</a>{{/if}}
+  </div>
+</div>
+
+<div class="grid g4" style="margin-bottom:16px">
+  <div class="stat"><div class="k">Stage</div><div class="v" style="font-size:1.2rem">{{stageLabel lead.stage}}</div><div class="d">{{default lead.stage_reason 'no reason recorded'}}</div></div>
+  <div class="stat"><div class="k">Owner</div><div class="v" style="font-size:1.2rem">{{default lead.owner_name 'Unassigned'}}</div><div class="d">Region {{default lead.region '—'}}</div></div>
+  <div class="stat"><div class="k">First response</div><div class="v" style="font-size:1.2rem">{{#if lead.first_response_at}}{{ago lead.first_response_at}}{{else}}pending{{/if}}</div><div class="d">Target {{setting 'ops.first_response_target_hours' '24'}}h</div></div>
+  <div class="stat {{#if gt lead.spam_score 0.5}}warn{{/if}}"><div class="k">Spam score</div><div class="v" style="font-size:1.2rem">{{percent lead.spam_score}}</div><div class="d">{{#if gt lead.spam_score 0.5}}Review before contacting{{else}}Passed the automated filters{{/if}}</div></div>
+</div>
+
+<div class="split">
+  <div class="stack">
+    <div class="card">
+      <header><h2>Enquiry</h2><div class="spacer"></div><span class="muted tiny">{{interestLabel lead.interest}}</span></header>
+      <div class="body">
+        <dl class="dl">
+          <dt>Service context</dt><dd>{{default lead.service_context '—'}}</dd>
+          <dt>Program</dt><dd>{{#if lead.program_name}}{{lead.program_name}}{{else}}<span class="muted">not specified</span>{{/if}}</dd>
+          <dt>Destination</dt><dd>{{#if lead.country_name}}{{lead.country_name}}{{else}}<span class="muted">not specified</span>{{/if}}</dd>
+          <dt>Requested trainer</dt><dd>{{default lead.requested_trainer '—'}}</dd>
+          <dt>Contact preference</dt><dd>{{default lead.contact_preference 'any'}}</dd>
+          <dt>Phone</dt><dd>{{#if lead.phone}}{{lead.phone}}{{else}}<span class="muted">—</span>{{/if}}</dd>
+          <dt>WhatsApp</dt><dd>{{#if lead.whatsapp}}{{lead.whatsapp}}{{else}}<span class="muted">—</span>{{/if}}</dd>
+          <dt>Email</dt><dd>{{#if lead.email}}{{lead.email}}{{else}}<span class="muted">—</span>{{/if}}</dd>
+          <dt>Qualification</dt><dd>{{default qualification.level '—'}}{{#if qualification.grades}} · {{qualification.grades}}{{/if}}{{#if qualification.english_test}} · {{qualification.english_test}}{{/if}}</dd>
+          {{#if estimatedBudget}}<dt>Estimated budget</dt><dd>{{json estimatedBudget}}</dd>{{/if}}
+        </dl>
+        <hr style="border:0;border-top:1px solid var(--a-line-soft);margin:14px 0">
+        <p style="white-space:pre-wrap;margin:0">{{default lead.message 'No message supplied.'}}</p>
+      </div>
+      <div class="foot tiny muted">
+        Source: {{default lead.source_type 'direct'}} · page {{default lead.source_page '—'}}
+        {{#if utm.source}} · utm.source={{utm.source}}{{/if}}{{#if utm.medium}} · utm.medium={{utm.medium}}{{/if}}{{#if utm.campaign}} · utm.campaign={{utm.campaign}}{{/if}}
+        <br>Consent version {{default lead.consent_notice_version '—'}} · marketing {{#if lead.marketing_consent}}opted in{{else}}not opted in{{/if}}
+      </div>
+    </div>
+
+    {{#if can 'leads.edit'}}
+    <div class="card">
+      <header><h2>Record an interaction</h2></header>
+      <div class="body">
+        <form method="post" action="/admin/leads/{{lead.id}}/activity">
+          <input type="hidden" name="_csrf" value="{{csrf}}">
+          <div class="field-row three">
+            <label class="field">
+              <span class="lab">Type</span>
+              <select name="type">
+                <option value="note">Note</option>
+                <option value="call">Call</option>
+                <option value="whatsapp">WhatsApp</option>
+                <option value="email">Email</option>
+                <option value="consultation">Consultation</option>
+              </select>
+            </label>
+            <label class="field">
+              <span class="lab">Move to stage</span>
+              <select name="new_stage">
+                <option value="">Keep current stage</option>
+                <option value="contacted">Contacted</option>
+                <option value="qualified">Qualified</option>
+                <option value="consultation">Consultation</option>
+                <option value="enrolled">Enrolled</option>
+                <option value="closed">Closed</option>
+              </select>
+            </label>
+            <label class="field"><span class="lab">Follow-up on</span><input type="datetime-local" name="follow_up_at"></label>
+          </div>
+          <label class="field"><span class="lab">Note</span><textarea name="note" rows="3" placeholder="What was discussed, what was agreed, what happens next."></textarea></label>
+          <div class="field-row">
+            <label class="field"><span class="lab">Close reason (only when closing)</span><input type="text" name="close_reason" placeholder="Budget, timing, chose another provider…"></label>
+            <label class="field">
+              <span class="lab">Consultation status (if applicable)</span>
+              <select name="status">
+                <option value="">Not a consultation</option>
+                <option value="requested">Requested</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="attended">Attended</option>
+                <option value="no_show">No show</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </label>
+          </div>
+          <button class="btn primary" type="submit">Save interaction</button>
+        </form>
+      </div>
+    </div>
+    {{/if}}
+
+    <div class="card">
+      <header><h2>Activity timeline</h2><div class="spacer"></div><span class="muted tiny">{{count activities}} entries</span></header>
+      <div class="body">
+        <div class="timeline">
+          {{#each activities}}
+          <div class="ev done">
+            <div class="when">{{date created_at}} · {{default actor_display actor_name}} · {{type}}</div>
+            <div class="what">
+              {{#if note}}{{note}}{{else}}<span class="muted">No note recorded.</span>{{/if}}
+              {{#if new_stage}}<br><span class="badge info">{{stageLabel prior_stage}} → {{stageLabel new_stage}}</span>{{/if}}
+              {{#if follow_up_at}}<br><span class="tiny muted">Follow-up set for {{date follow_up_at}}</span>{{/if}}
+            </div>
+          </div>
+          {{else}}
+          <p class="muted tiny" style="margin:0">No interactions recorded yet.</p>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+
+    {{#if consultations.length}}
+    <div class="card">
+      <header><h2>Consultations</h2></header>
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>Status</th><th>Mode</th><th>Requested</th><th>Confirmed</th><th>Timezone</th><th>History</th></tr></thead>
+          <tbody>
+          {{#each consultations}}
+            <tr>
+              <td><span class="badge {{#if eq status 'attended'}}ok{{/if}}{{#if eq status 'no_show'}}bad{{/if}}{{#if eq status 'requested'}}warn{{/if}}">{{titlecase status}}</span></td>
+              <td class="tiny">{{mode}}</td>
+              <td class="tiny">{{#if requested_at}}{{date requested_at}}{{else}}—{{/if}}</td>
+              <td class="tiny">{{#if confirmed_at}}{{date confirmed_at}}{{else}}<span class="muted">not confirmed</span>{{/if}}</td>
+              <td class="tiny">{{default timezone '—'}}</td>
+              <td class="tiny">{{count history_list}} entries</td>
+            </tr>
+          {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {{/if}}
+  </div>
+
+  <div class="stack">
+    {{#if can 'leads.assign'}}
+    <div class="card">
+      <header><h3>Assignment</h3></header>
+      <div class="body">
+        <form method="post" action="/admin/leads/{{lead.id}}/assign">
+          <input type="hidden" name="_csrf" value="{{csrf}}">
+          <label class="field">
+            <span class="lab">Owner</span>
+            <select name="owner_id">
+              <option value="">Shared intake queue</option>
+              {{#each owners}}<option value="{{id}}" {{#if eq id ../lead.owner_id}}selected{{/if}}>{{name}} — {{team}}</option>{{/each}}
+            </select>
+          </label>
+          <button class="btn block" type="submit">Update owner</button>
+        </form>
+      </div>
+    </div>
+    {{/if}}
+
+    <div class="card">
+      <header><h3>Record hygiene</h3></header>
+      <div class="body tiny">
+        <div class="kv"><span>Consent captured</span><span class="badge {{#if lead.consent_notice_version}}ok{{else}}warn{{/if}}">{{default lead.consent_notice_version 'missing'}}</span></div>
+        <div class="kv"><span>PII in public URLs</span><span class="badge ok">never</span></div>
+        <div class="kv"><span>Duplicate reference</span><span class="badge {{#if lead.duplicate_of}}warn{{/if}}">{{default lead.duplicate_of 'none'}}</span></div>
+        <div class="kv"><span>IP stored</span><span class="badge ok">hashed only</span></div>
+      </div>
+    </div>
+
+    {{#if duplicates.length}}
+    <div class="card">
+      <header><h3>Possible duplicates</h3></header>
+      <div class="body">
+        {{#each duplicates}}
+        <div class="kv">
+          <span><a href="/admin/leads/{{id}}">{{reference}}</a><br><span class="tiny muted">{{full_name}} · {{ago created_at}}</span></span>
+          <span class="badge">{{stageLabel stage}}</span>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+    {{/if}}
+
+    <div class="card">
+      <header><h3>Notification delivery</h3></header>
+      <div class="body scroll-y">
+        {{#each notifications}}
+        <div class="kv">
+          <span><b>{{subject}}</b><br><span class="tiny muted">{{default sent_at created_at}} · attempts {{default attempts 0}}</span></span>
+          <span class="badge {{#if eq status 'sent'}}ok{{else}}bad{{/if}}">{{status}}</span>
+        </div>
+        {{else}}
+        <p class="muted tiny" style="margin:0">No notifications queued for this lead.</p>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+</div>

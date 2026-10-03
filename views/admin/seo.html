@@ -1,0 +1,136 @@
+<div class="page-head">
+  <div>
+    <h1>SEO · AEO · GEO · AIO control centre</h1>
+    <p>Search, answer engines, generative engines and AI assistants all read the same surfaces. This page shows what is exposed and what needs attention.</p>
+  </div>
+  <div class="spacer"></div>
+  <div class="row">
+    <a class="btn sm" href="{{sitemapUrl}}" target="_blank" rel="noopener">XML sitemap</a>
+    <a class="btn sm" href="{{llmsUrl}}" target="_blank" rel="noopener">llms.txt</a>
+    <a class="btn sm" href="{{feedUrl}}" target="_blank" rel="noopener">RSS</a>
+  </div>
+</div>
+
+<div class="grid g4" style="margin-bottom:16px">
+  <div class="stat {{#if missing.length}}warn{{/if}}"><div class="k">Pages missing metadata</div><div class="v">{{count missing}}</div><div class="d">Titles or descriptions to write</div></div>
+  <div class="stat {{#if programMissing.length}}warn{{/if}}"><div class="k">Programs missing SEO</div><div class="v">{{count programMissing}}</div><div class="d">Service pages still unoptimised</div></div>
+  <div class="stat {{#if gt orphans 0}}warn{{/if}}"><div class="k">Published pages with no description</div><div class="v">{{orphans}}</div><div class="d">Weak snippets in search</div></div>
+  <div class="stat"><div class="k">Tracked events</div><div class="v">{{count eventCounts}}</div><div class="d">First-party, no PII attached</div></div>
+</div>
+
+<div class="split">
+  <div class="stack">
+    <div class="card">
+      <header><h2>Content needing SEO attention</h2><div class="spacer"></div><span class="muted tiny">Fix the highest-traffic pages first</span></header>
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>Type</th><th>Title</th><th>Missing</th><th class="actions">Fix</th></tr></thead>
+          <tbody>
+          {{#each missing}}
+            <tr>
+              <td class="tiny">{{#if eq kind 'post'}}<span class="badge info">Guide</span>{{else}}<span class="badge">Page</span>{{/if}}</td>
+              <td>{{title}}<br><span class="tiny muted mono">/{{slug}}</span></td>
+              <td class="tiny">
+                {{#if seo_title}}{{else}}<span class="badge warn">title</span>{{/if}}
+                {{#if seo_description}}{{else}}<span class="badge warn">description</span>{{/if}}
+              </td>
+              <td class="actions">
+                {{#if eq kind 'post'}}<a class="btn sm" href="/admin/posts/{{id}}/edit">Edit</a>{{else}}<a class="btn sm" href="/admin/pages/{{id}}/edit">Edit</a>{{/if}}
+              </td>
+            </tr>
+          {{else}}
+            <tr><td colspan="4" class="empty"><b>Every page has a title and description</b>Nothing to fix here.</td></tr>
+          {{/each}}
+          {{#each programMissing}}
+            <tr>
+              <td class="tiny"><span class="badge gold">Program</span></td>
+              <td>{{name}}<br><span class="tiny muted mono">/services/{{slug}}</span></td>
+              <td class="tiny"><span class="badge warn">metadata</span></td>
+              <td class="actions"><a class="btn sm" href="/admin/programs/{{id}}/edit">Edit</a></td>
+            </tr>
+          {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" id="redirects">
+      <header><h2>Redirects</h2><div class="spacer"></div><span class="muted tiny">One hop, permanent, no chains</span></header>
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>From</th><th>To</th><th>Type</th><th>Hits</th><th>Live</th><th class="actions">Actions</th></tr></thead>
+          <tbody>
+          {{#each redirects}}
+            <tr>
+              <td class="mono tiny">{{from_path}}</td>
+              <td class="mono tiny">{{to_path}}</td>
+              <td class="tiny">{{type}}</td>
+              <td class="tiny">{{hits}}</td>
+              <td>{{#if active}}<span class="badge ok">Active</span>{{else}}<span class="badge">Off</span>{{/if}}</td>
+              <td class="actions">
+                <form method="post" action="/admin/redirects/{{id}}/delete" data-confirm="Delete this redirect?">
+                  <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+                  <button class="btn sm danger" type="submit">Delete</button>
+                </form>
+              </td>
+            </tr>
+          {{else}}
+            <tr><td colspan="6" class="empty"><b>No redirects</b>Add legacy URLs below so old links keep working.</td></tr>
+          {{/each}}
+          </tbody>
+        </table>
+      </div>
+      {{#if can 'seo.manage'}}
+      <div class="foot">
+        <form method="post" action="/admin/redirects" class="row" style="align-items:flex-end">
+          <input type="hidden" name="_csrf" value="{{csrf}}">
+          <label class="field" style="margin:0;flex:1"><span class="lab">From</span><input type="text" name="from_path" placeholder="/old-page" required></label>
+          <label class="field" style="margin:0;flex:1"><span class="lab">To</span><input type="text" name="to_path" placeholder="/new-page" required></label>
+          <label class="field" style="margin:0;max-width:100px"><span class="lab">Type</span>
+            <select name="type"><option value="301">301</option><option value="302">302</option></select>
+          </label>
+          <label class="inline-check" style="margin-bottom:11px"><input type="checkbox" name="active" value="1" checked> active</label>
+          <button class="btn gold" type="submit" style="margin-bottom:8px">Add redirect</button>
+        </form>
+      </div>
+      {{/if}}
+    </div>
+  </div>
+
+  <div class="stack">
+    <div class="card">
+      <header><h3>Machine-readable surfaces</h3></header>
+      <div class="body tiny">
+        <div class="kv"><span>XML sitemap</span><a href="{{sitemapUrl}}" target="_blank" rel="noopener">/sitemap.xml</a></div>
+        <div class="kv"><span>Human sitemap</span><a href="/sitemap" target="_blank" rel="noopener">/sitemap</a></div>
+        <div class="kv"><span>AI summary</span><a href="{{llmsUrl}}" target="_blank" rel="noopener">/llms.txt</a></div>
+        <div class="kv"><span>RSS feed</span><a href="{{feedUrl}}" target="_blank" rel="noopener">/feed.xml</a></div>
+        <div class="kv"><span>Markdown mirrors</span><span class="muted">/&lt;page&gt;/markdown</span></div>
+        <div class="kv"><span>JSON-LD</span><span class="muted">Organization, Person, Course, FAQ, Review</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <header><h3>Indexing rules</h3></header>
+      <div class="body tiny">
+        <div class="kv"><span>/admin and /api</span><span class="badge ok">blocked</span></div>
+        <div class="kv"><span>Lead and thank-you pages</span><span class="badge ok">noindex</span></div>
+        <div class="kv"><span>Uploads folder</span><span class="badge ok">blocked</span></div>
+        <div class="kv"><span>AI crawlers</span><span class="badge ok">allowed on public pages</span></div>
+        <div class="kv"><span>Trailing-slash variants</span><span class="badge ok">301 to canonical</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <header><h3>First-party events</h3></header>
+      <div class="body">
+        {{#each eventCounts}}
+        <div class="kv"><span class="mono tiny">{{name}}</span><b>{{n}}</b></div>
+        {{else}}
+        <p class="muted tiny" style="margin:0">No events recorded yet.</p>
+        {{/each}}
+      </div>
+      <div class="foot tiny muted">Event payloads never include names, phone numbers, emails or free-text messages.</div>
+    </div>
+  </div>
+</div>

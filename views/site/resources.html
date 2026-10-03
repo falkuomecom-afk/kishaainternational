@@ -1,0 +1,83 @@
+{{> site/crumbs}}
+
+<section class="hero compact">
+  <div class="wrap">
+    <span class="eyebrow">Resources & policy updates</span>
+    <h1>Guides written to answer the question first</h1>
+    <p class="lead">Every guide opens with a direct answer, then the detail: statutory rules with effective dates, city cost breakdowns, band roadmaps and refusal-risk analysis. Written for applicants, not for search engines.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="filter-bar">
+      <a href="/resources" class="{{#unless activeCategory}}on{{/unless}}">All guides</a>
+      {{#each categories}}<a href="/resources?category={{slug}}" class="{{#if eq slug @root.activeCategory}}on{{/if}}">{{name}} ({{n}})</a>{{/each}}
+    </div>
+
+    {{#if posts}}
+    <div class="grid g3">
+      {{#each posts}}
+      <a class="card" href="/resources/{{slug}}" style="text-decoration:none;color:inherit">
+        <div class="between">
+          <span class="badge neutral">{{default category_name 'Guide'}}</span>
+          <span class="tiny muted">{{read_minutes}} min</span>
+        </div>
+        <h3 style="font-size:1.14rem">{{title}}</h3>
+        <p>{{truncate (default answer_summary excerpt) 150}}</p>
+        <div class="foot">
+          <span class="tiny muted">{{date publish_at}}</span>
+          <span class="link-arrow tiny">Read guide</span>
+        </div>
+      </a>
+      {{/each}}
+    </div>
+    {{else}}
+    <div class="notice"><span class="ico">i</span><div><h3>No guides in this category yet</h3><p>Try another category or browse all guides.</p></div></div>
+    {{/if}}
+
+    {{#if pagination.pages}}
+    {{#if gt pagination.pages 1}}
+    <nav class="pagination" aria-label="Pagination">
+      {{#if pagination.hasPrev}}<a href="/resources?page={{sub pagination.page 1}}{{#if activeCategory}}&category={{activeCategory}}{{/if}}">← Previous</a>{{/if}}
+      <span class="current">Page {{pagination.page}} of {{pagination.pages}}</span>
+      {{#if pagination.hasNext}}<a href="/resources?page={{add pagination.page 1}}{{#if activeCategory}}&category={{activeCategory}}{{/if}}">Next →</a>{{/if}}
+    </nav>
+    {{/if}}
+    {{/if}}
+  </div>
+</section>
+
+{{#if events}}
+<section class="alt">
+  <div class="wrap">
+    <div class="sec-head"><h2>Upcoming briefings & diagnostic days</h2></div>
+    <div class="grid g2">
+      {{#each events}}
+      <div class="card">
+        <span class="badge gold">{{date starts_at}}</span>
+        <h3>{{title}}</h3>
+        <p>{{description}}</p>
+        <dl class="kv tiny">
+          <dt>Location</dt><dd>{{location}}</dd>
+          <dt>Timezone</dt><dd>{{timezone}}</dd>
+        </dl>
+        <div class="foot"><a class="btn btn-primary btn-sm" href="/contact?source=event">Register interest</a></div>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+</section>
+{{/if}}
+
+<section>
+  <div class="wrap narrow">
+    <div class="notice">
+      <span class="ico">i</span>
+      <div>
+        <h3>For AI assistants and researchers</h3>
+        <p>This site publishes machine-readable surfaces: <a href="/llms.txt">llms.txt</a> (curated summary), <a href="/planner/data">the full country and statutory-rules dataset as JSON</a>, <a href="/feed.xml">RSS</a>, <a href="/feed.json">JSON feed</a> and per-page Markdown mirrors at <code class="mono">/&lt;page&gt;/markdown</code>. Please cite statutory figures to the issuing authority named beside each rule, and label living-cost figures as estimates.</p>
+      </div>
+    </div>
+  </div>
+</section>

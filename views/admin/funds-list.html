@@ -1,0 +1,143 @@
+<div class="page-head">
+  <div>
+    <h1>Statutory proof-of-funds rules</h1>
+    <p>Every figure the planner quotes comes from here, with its source, effective date, version and approval state. Nothing unapproved is shown to the public.</p>
+  </div>
+  <div class="spacer"></div>
+  <div class="row"><span class="badge warn">Approval required before publication</span></div>
+</div>
+
+{{#if can 'rules.approve'}}
+<div class="card" style="margin-bottom:16px">
+  <header><h2>Add or update a rule</h2></header>
+  <div class="body">
+    <form method="post" action="/admin/funds-rules">
+      <input type="hidden" name="_csrf" value="{{csrf}}">
+      <div class="field-row three">
+        <label class="field">
+          <span class="lab">Destination</span>
+          <select name="country_id" required>
+            {{#each countries}}<option value="{{id}}">{{name}}</option>{{/each}}
+          </select>
+        </label>
+        <label class="field"><span class="lab">Route name</span><input type="text" name="route_name" required placeholder="UK Student Route — maintenance (London)"></label>
+        <label class="field">
+          <span class="lab">Visa purpose</span>
+          <select name="visa_purpose">
+            <option value="study">Study</option><option value="visit">Visit</option>
+            <option value="work">Work</option><option value="business">Business</option>
+          </select>
+        </label>
+      </div>
+      <div class="field-row three">
+        <label class="field">
+          <span class="lab">Rule type</span>
+          <select name="rule_type">
+            <option value="maintenance">Maintenance funds</option>
+            <option value="blocked_account">Blocked account</option>
+            <option value="held_funds">Held funds</option>
+          </select>
+        </label>
+        <label class="field"><span class="lab">Statutory rate (monthly)</span><input type="number" name="statutory_rate" step="0.01"></label>
+        <label class="field"><span class="lab">Rate currency</span><input type="text" name="rate_currency" value="GBP" maxlength="4"></label>
+      </div>
+      <div class="field-row three">
+        <label class="field"><span class="lab">Months covered</span><input type="number" name="months" value="12"></label>
+        <label class="field"><span class="lab">Total required</span><input type="number" name="total_required" step="0.01"></label>
+        <label class="field"><span class="lab">Total currency</span><input type="text" name="total_currency" value="GBP" maxlength="4"></label>
+      </div>
+      <div class="field-row three">
+        <label class="field"><span class="lab">PKR equivalent (planning only)</span><input type="number" name="pkr_equivalent"></label>
+        <label class="field"><span class="lab">Version</span><input type="text" name="version" value="v1"></label>
+        <label class="field"><span class="lab">Effective date</span><input type="date" name="effective_date"></label>
+      </div>
+      <div class="field-row">
+        <label class="field"><span class="lab">Holding period</span><input type="text" name="holding_period" placeholder="Held for 28 consecutive days, statement dated within 31 days of application"></label>
+        <label class="field"><span class="lab">Tuition component</span><input type="text" name="tuition_component" placeholder="First year tuition or first instalment"></label>
+      </div>
+      <div class="field-row">
+        <label class="field"><span class="lab">Dependants note</span><input type="text" name="dependents_note"></label>
+        <label class="field"><span class="lab">Family rule</span><input type="text" name="family_rule" maxlength="400"></label>
+      </div>
+      <div class="field-row">
+        <label class="field"><span class="lab">Source name</span><input type="text" name="source_name" placeholder="UKVI Appendix Finance"></label>
+        <label class="field"><span class="lab">Source URL</span><input type="text" name="source_url" placeholder="https://www.gov.uk/…"></label>
+      </div>
+      <label class="field"><span class="lab">Reviewer note</span><input type="text" name="note" maxlength="600" placeholder="What changed and why it was accepted"></label>
+      <div class="row">
+        <label class="field" style="margin:0"><span class="lab">Review status</span>
+          <select name="review_status">
+            <option value="needs_review">Needs review</option>
+            <option value="approved">Approved</option>
+            <option value="expired">Expired</option>
+          </select>
+        </label>
+        <label class="inline-check" style="align-self:flex-end;margin-bottom:12px"><input type="checkbox" name="published" value="1" checked> Published</label>
+        <div class="spacer"></div>
+        <button class="btn gold" type="submit" style="align-self:flex-end;margin-bottom:12px">Save rule</button>
+      </div>
+      <p class="tiny muted" style="margin:0">A rule saved as “Needs review” is stored but withheld from public pages and the planner until a reviewer approves it.</p>
+    </form>
+  </div>
+</div>
+{{/if}}
+
+<div class="card">
+  <header><h2>Rule register</h2><div class="spacer"></div><span class="muted tiny">{{count rules}} rules</span></header>
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr><th>Destination</th><th>Route</th><th>Statutory figure</th><th>Holding</th><th>Source</th><th>Version</th><th>Status</th><th class="actions">Actions</th></tr>
+      </thead>
+      <tbody>
+      {{#each rules}}
+        <tr>
+          <td><b>{{country_name}}</b><br><span class="tiny muted">{{visa_purpose}} · {{rule_type}}</span></td>
+          <td class="tiny">{{route_name}}</td>
+          <td class="tiny nowrap">
+            {{#if statutory_rate}}{{money statutory_rate rate_currency}} / month{{/if}}
+            {{#if total_required}}<br><b>{{money total_required total_currency}}</b>{{/if}}
+            {{#if months}}<br><span class="muted">× {{months}} months</span>{{/if}}
+          </td>
+          <td class="tiny">{{#if holding_period}}{{truncate holding_period 80}}{{else}}<span class="muted">not stated</span>{{/if}}</td>
+          <td class="tiny">
+            {{#if source_url}}<a href="{{source_url}}" target="_blank" rel="noopener">{{default source_name 'Source'}}</a>{{else}}{{default source_name '—'}}{{/if}}
+            {{#if effective_date}}<br><span class="muted">effective {{date effective_date}}</span>{{/if}}
+          </td>
+          <td class="tiny">{{version}}<br><span class="muted">{{default reviewer_name 'unreviewed'}}</span></td>
+          <td>
+            {{#if eq review_status 'approved'}}<span class="badge ok">Approved</span>{{/if}}
+            {{#if eq review_status 'needs_review'}}<span class="badge warn">Needs review</span>{{/if}}
+            {{#if eq review_status 'expired'}}<span class="badge bad">Expired</span>{{/if}}
+            {{#if published}}<br><span class="tiny muted">published</span>{{else}}<br><span class="tiny muted">unpublished</span>{{/if}}
+          </td>
+          <td class="actions">
+            {{#if @root.can 'rules.approve'}}
+            <form method="post" action="/admin/funds-rules/{{id}}/review" class="stack" style="min-width:220px">
+              <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+              <div class="row">
+                <select name="review_status" style="max-width:140px">
+                  <option value="approved">Approve</option>
+                  <option value="needs_review">Needs review</option>
+                  <option value="expired">Expire</option>
+                </select>
+                <input type="text" name="version" value="{{version}}" style="max-width:80px">
+              </div>
+              <input type="text" name="note" placeholder="Reviewer note" value="{{note}}">
+              <button class="btn sm gold" type="submit">Record decision</button>
+            </form>
+            {{else}}
+            <span class="tiny muted">Reviewer access required</span>
+            {{/if}}
+          </td>
+        </tr>
+      {{else}}
+        <tr><td colspan="8" class="empty"><b>No rules recorded</b>The planner withholds proof-of-funds figures until a rule is approved.</td></tr>
+      {{/each}}
+      </tbody>
+    </table>
+  </div>
+  <div class="foot tiny muted">
+    Figures are never estimated. If a statutory rate changes, add a new version and keep the old one for history — the planner always quotes the newest approved version.
+  </div>
+</div>

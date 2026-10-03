@@ -1,0 +1,17 @@
+<section style="padding-top:36px">
+  <div class="wrap narrow">
+    <span class="eyebrow">Enquiry status</span>
+    <h1>{{lead.reference}}</h1>
+    <div class="card">
+      <dl class="kv">
+        <dt>Received</dt><dd>{{dateLong lead.created_at}}</dd>
+        <dt>Current stage</dt><dd><span class="badge {{#if eq lead.stage 'new'}}info{{else}}{{#if eq lead.stage 'closed'}}neutral{{else}}ok{{/if}}{{/if}}">{{stageLabel lead.stage}}</span></dd>
+      </dl>
+      <p class="tiny muted" style="margin-top:12px">Stages progress as: new → contacted → qualified → consultation → enrolled (or closed with a recorded reason). For your privacy this page shows no personal or financial details.</p>
+    </div>
+    <div class="row" style="margin-top:18px">
+      <a class="btn btn-primary" href="/contact">Send another message</a>
+      <a class="btn btn-outline" href="tel:{{replace (setting 'brand.phone_uae') ' ' ''}}">Call Dubai HQ</a>
+    </div>
+  </div>
+</section>

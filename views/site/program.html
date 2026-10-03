@@ -1,0 +1,160 @@
+{{> site/crumbs}}
+
+<section class="hero compact">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow">{{#if eq program.pillar 'cambridge'}}Cambridge & IELTS training{{else}}{{#if eq program.pillar 'immigration'}}Immigration consultancy{{else}}Career counseling & admissions{{/if}}{{/if}}</span>
+        <h1>{{program.name}}</h1>
+        <p class="lead">{{program.answer_first}}</p>
+        <div class="hero-actions">
+          <a class="btn btn-gold" href="/contact?interest={{#if eq program.pillar 'cambridge'}}cambridge{{else}}{{#if eq program.pillar 'immigration'}}immigration{{else}}career_counseling{{/if}}{{/if}}&program={{program.id}}">{{default program.cta_label 'Request a consultation'}}</a>
+          {{#if program.country}}<a class="btn btn-ghost" href="/cost-planner?country={{program.country.slug}}">See {{program.country.name}} costs</a>{{/if}}
+        </div>
+        <div class="hero-badges">
+          {{#if program.duration}}<span class="chip">{{program.duration}}</span>{{/if}}
+          {{#if program.delivery}}<span class="chip">{{program.delivery}}</span>{{/if}}
+          {{#if program.processing_time}}<span class="chip">{{program.processing_time}}</span>{{/if}}
+          <span class="chip">{{default program.availability 'Open'}}</span>
+        </div>
+      </div>
+      <div class="hero-card">
+        <h3>{{#if program.fee_from}}Fees{{else}}Fee basis{{/if}}</h3>
+        {{#if program.fee_from}}
+          <div class="stat" style="margin-bottom:12px">
+            <b>{{money program.fee_from program.currency}}{{#if program.fee_to}} – {{money program.fee_to program.currency}}{{/if}}</b>
+            <span>{{program.fee_notes}}</span>
+          </div>
+        {{else}}
+          <div class="stat" style="margin-bottom:12px"><b>Written quote</b><span>Issued after a free eligibility assessment — no fee before scope is agreed.</span></div>
+        {{/if}}
+        {{#if program.urgency}}<p class="tiny" style="color:#E8D6A8;margin:0 0 12px">{{program.urgency}}</p>{{/if}}
+        <a class="btn btn-gold btn-block" href="/contact?program={{program.id}}">{{default program.cta_label 'Request a consultation'}}</a>
+        <p class="tiny" style="color:#BFDCE2;margin-top:12px">{{setting 'legal.no_guarantee'}}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{{#if program.answer_first}}
+<section style="padding-bottom:0">
+  <div class="wrap narrow">
+    <div class="answer-first"><h3>Who this is for</h3><p>{{default program.audience program.summary}}</p></div>
+  </div>
+</section>
+{{/if}}
+
+{{#if program.highlights_list}}
+<section style="padding-bottom:0">
+  <div class="wrap narrow">
+    <div class="takeaways">
+      <h3>Key facts</h3>
+      <ul>{{#each program.highlights_list}}<li>{{this}}</li>{{/each}}</ul>
+    </div>
+  </div>
+</section>
+{{/if}}
+
+<section>
+  <div class="wrap">
+    <div class="grid g2">
+      <div>
+        <h2>What is included</h2>
+        <ul class="ticks">{{#each program.included_list}}<li>{{this}}</li>{{/each}}</ul>
+      </div>
+      <div>
+        <h2>Fees & what they cover</h2>
+        {{#if program.fees}}
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Version</th><th>Amount</th><th>Milestones</th><th>Source & status</th></tr></thead>
+            <tbody>
+            {{#each program.fees}}
+            <tr>
+              <td><strong>{{version}}</strong><br><span class="tiny muted">{{label}}</span></td>
+              <td>{{money amount currency}}</td>
+              <td class="tiny">{{#if schedule_list}}{{#each schedule_list}}{{milestone}}: {{money amount currency}}<br>{{/each}}{{else}}Single payment{{/if}}</td>
+              <td><span class="badge {{#if eq review_status 'approved'}}ok{{else}}warn{{/if}}">{{#if eq review_status 'approved'}}Approved{{else}}Needs review{{/if}}</span>
+                <div class="tiny muted" style="margin-top:6px">{{truncate source_name 70}}{{#if effective_date}}<br>Effective {{date effective_date}}{{/if}}</div></td>
+            </tr>
+            {{/each}}
+            </tbody>
+          </table>
+          <div class="table-note">{{program.fee_notes}}</div>
+        </div>
+        {{else}}
+        <div class="notice"><span class="ico">i</span><div><h3>Fee quoted after assessment</h3><p>This service is scoped per case. You receive a written quotation with clear milestones before any work starts.</p></div></div>
+        {{/if}}
+        <p class="tiny muted" style="margin-top:12px">Government, embassy, tuition and examination fees are payable to the relevant authority and are always shown separately from our advisory fee.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{{#if program.process_list}}
+<section class="alt">
+  <div class="wrap">
+    <div class="sec-head"><h2>How it works, step by step</h2><p class="lead">Each stage has a clear deliverable, so you always know what happens next.</p></div>
+    <div class="steps">
+      {{#each program.process_list}}<div class="step"><div><h4>{{title}}</h4><p>{{detail}}</p></div></div>{{/each}}
+    </div>
+  </div>
+</section>
+{{/if}}
+
+{{#if program.trainer}}
+<section>
+  <div class="wrap">
+    <div class="team-card">
+      <div class="portrait">{{initials program.trainer.name}}</div>
+      <div>
+        <p class="tiny" style="color:var(--gold-600);font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Led by</p>
+        <h3 style="margin-bottom:4px">{{program.trainer.name}}</h3>
+        <p style="color:var(--ink-500);font-size:.95rem">{{program.trainer.role_title}}</p>
+        <div class="creds" style="margin:12px 0">{{#each program.trainer.credentials_list}}<span class="cred">{{this}}</span>{{/each}}</div>
+        <p class="tiny">{{truncate program.trainer.bio 280}}</p>
+        <a class="link-arrow" href="/team/{{program.trainer.slug}}">Full profile & booking</a>
+      </div>
+    </div>
+  </div>
+</section>
+{{/if}}
+
+<section class="alt">
+  <div class="wrap narrow">
+    <div class="sec-head"><h2>Frequently asked</h2></div>
+    <div class="accordion">
+      {{#each program.faqs}}<details><summary>{{question}}</summary><div class="ans">{{answer}}</div></details>{{/each}}
+    </div>
+  </div>
+</section>
+
+{{#if program.related}}
+<section>
+  <div class="wrap">
+    <div class="sec-head"><h2>Related pathways</h2></div>
+    <div class="grid g3">
+      {{#each program.related}}
+      <a class="card" href="/services/{{slug}}" style="text-decoration:none;color:inherit">
+        <h3 style="font-size:1.06rem">{{name}}</h3>
+        <p>{{truncate summary 120}}</p>
+        <div class="foot"><span class="price tiny">{{#if fee_from}}{{money fee_from currency}}{{else}}Quoted{{/if}}</span><span class="link-arrow tiny">View</span></div>
+      </a>
+      {{/each}}
+    </div>
+  </div>
+</section>
+{{/if}}
+
+<section>
+  <div class="wrap">
+    <div class="cta-band">
+      <h2>{{default program.cta_label 'Request a consultation'}}</h2>
+      <p>Tell us your goal and current profile. We will assess eligibility honestly, confirm the current fees and rules, and give you a written next step.</p>
+      <div class="row" style="margin-top:20px;position:relative;z-index:1">
+        <a class="btn btn-gold" href="/contact?program={{program.id}}">Start my enquiry</a>
+        <a class="btn btn-ghost" href="https://wa.me/{{replace (setting 'brand.whatsapp') '+' ''}}?text={{urlencode program.name}}" rel="noopener" target="_blank">Ask on WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</section>

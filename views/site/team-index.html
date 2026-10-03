@@ -1,0 +1,27 @@
+{{> site/crumbs}}
+<section class="hero compact">
+  <div class="wrap">
+    <span class="eyebrow">Our team</span>
+    <h1>Named people, verifiable credentials, one accountable team</h1>
+    <p class="lead">Kishaa International operates from Dubai (headquarters) and Rawalpindi, Pakistan. Training is led by British Council Certified Trainer Zeb Khan; admissions and visa filing are handled by specialist desks.</p>
+  </div>
+</section>
+<section>
+  <div class="wrap">
+    <div class="stack" style="gap:22px">
+      {{#each members}}
+      <div class="team-card">
+        <div class="portrait">{{initials name}}</div>
+        <div>
+          <h2 style="margin-bottom:4px"><a href="/team/{{slug}}" style="color:inherit">{{name}}</a></h2>
+          <p style="color:var(--gold-600);font-weight:700;font-size:.86rem;text-transform:uppercase;letter-spacing:.09em;margin-bottom:10px">{{role_title}}</p>
+          <p style="color:var(--ink-500)">{{truncate intro 300}}</p>
+          <div class="creds" style="margin:12px 0">{{#each credentials_list}}<span class="cred">{{this}}</span>{{/each}}</div>
+          <div class="row"><a class="btn btn-outline btn-sm" href="/team/{{slug}}">View profile</a>
+            <a class="btn btn-primary btn-sm" href="/contact?trainer={{urlencode name}}">Enquire</a></div>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+</section>

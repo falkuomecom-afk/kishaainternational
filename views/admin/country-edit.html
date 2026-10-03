@@ -1,0 +1,156 @@
+<div class="page-head">
+  <div>
+    <h1>{{country.name}}</h1>
+    <p>/destinations/{{country.slug}} · {{#if country.published}}published{{else}}hidden from the site{{/if}}</p>
+  </div>
+  <div class="spacer"></div>
+  <div class="row">
+    {{#if country.published}}<a class="btn sm ghost" href="/destinations/{{country.slug}}" target="_blank" rel="noopener">View live</a>{{/if}}
+    <a class="btn sm" href="/admin/countries">All destinations</a>
+  </div>
+</div>
+
+<div class="split">
+  <div class="stack">
+    <form method="post" action="/admin/countries/{{country.id}}">
+      <input type="hidden" name="_csrf" value="{{csrf}}">
+      <div class="card">
+        <header><h2>Country profile</h2></header>
+        <div class="body">
+          <div class="field-row three">
+            <label class="field"><span class="lab">Name</span><input type="text" name="name" value="{{country.name}}" required></label>
+            <label class="field"><span class="lab">Region</span><input type="text" name="region" value="{{country.region}}"></label>
+            <label class="field"><span class="lab">Bloc / agreement</span><input type="text" name="bloc" value="{{country.bloc}}" placeholder="Schengen / Non-Schengen"></label>
+          </div>
+          <div class="field-row three">
+            <label class="field"><span class="lab">ISO code</span><input type="text" name="iso2" value="{{country.iso2}}" maxlength="2" style="text-transform:uppercase"></label>
+            <label class="field"><span class="lab">Currency</span><input type="text" name="currency" value="{{country.currency}}" maxlength="4"></label>
+            <label class="field"><span class="lab">Symbol</span><input type="text" name="currency_symbol" value="{{country.currency_symbol}}" maxlength="6"></label>
+          </div>
+          <div class="field-row">
+            <label class="field"><span class="lab">Processing time</span><input type="text" name="processing_time" value="{{country.processing_time}}" placeholder="3–6 months"></label>
+            <label class="field"><span class="lab">Visa purposes (comma separated)</span><input type="text" name="visa_purposes" value="{{join visa_purposes_list ', '}}" placeholder="study, visit, work"></label>
+          </div>
+          <label class="field"><span class="lab">Summary</span><textarea name="summary" rows="3" maxlength="900">{{country.summary}}</textarea></label>
+          <label class="field">
+            <span class="lab">Answer-first summary</span>
+            <textarea name="answer_summary" rows="3" maxlength="900">{{country.answer_summary}}</textarea>
+            <span class="hint">Lead with the numbers a client asks for first, and name the source.</span>
+          </label>
+          <div class="field-row">
+            <label class="field"><span class="lab">Entry requirements (one per line)</span><textarea name="requirements_text" rows="4">{{#each requirements_list}}{{this}}
+{{/each}}</textarea></label>
+            <label class="field"><span class="lab">Highlights (one per line)</span><textarea name="highlights_text" rows="4">{{#each highlights_list}}{{this}}
+{{/each}}</textarea></label>
+          </div>
+          <div class="field-row three">
+            <label class="field"><span class="lab">Living total</span><input type="number" name="living_total" value="{{country.living_total}}" step="1"></label>
+            <label class="field"><span class="lab">Living currency</span><input type="text" name="living_currency" value="{{country.living_currency}}" maxlength="4"></label>
+            <label class="field"><span class="lab">Sort order</span><input type="number" name="sort_order" value="{{country.sort_order}}"></label>
+          </div>
+          <label class="field"><span class="lab">Cost note</span><textarea name="cost_note" rows="2" maxlength="500">{{country.cost_note}}</textarea></label>
+          <div class="field-row">
+            <label class="field"><span class="lab">SEO title</span><input type="text" name="seo_title" value="{{country.seo_title}}" maxlength="200"></label>
+            <label class="field"><span class="lab">Meta description</span><input type="text" name="seo_description" value="{{country.seo_description}}" maxlength="400"></label>
+          </div>
+          <span class="inline-check"><input type="checkbox" name="published" value="1" {{#if country.published}}checked{{/if}}> Published</span>
+          <span class="inline-check"><input type="checkbox" name="featured" value="1" {{#if country.featured}}checked{{/if}}> Featured</span>
+          <div style="margin-top:12px"><button class="btn primary" type="submit">Save country</button></div>
+        </div>
+      </div>
+    </form>
+
+    <div class="card">
+      <header><h2>City living costs</h2><div class="spacer"></div><span class="muted tiny">{{count costs}} profiles</span></header>
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>City</th><th>Tier</th><th>Scenario</th><th>Rent</th><th>Food</th><th>Transit</th><th>Total</th><th>Status</th><th class="actions"></th></tr></thead>
+          <tbody>
+          {{#each costs}}
+            <tr>
+              <td><b>{{city}}</b></td>
+              <td class="tiny">{{city_tier}}</td>
+              <td class="tiny">{{scenario}}</td>
+              <td class="tiny">{{money rent currency}}</td>
+              <td class="tiny">{{money food currency}}</td>
+              <td class="tiny">{{money transit currency}}</td>
+              <td class="tiny"><b>{{money total currency}}</b></td>
+              <td>{{#if eq review_status 'approved'}}<span class="badge ok">approved</span>{{else}}<span class="badge warn">review</span>{{/if}}</td>
+              <td class="actions">
+                <form method="post" action="/admin/costs/{{id}}/delete" data-confirm="Delete this city cost profile?">
+                  <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+                  <button class="btn sm danger" type="submit">Delete</button>
+                </form>
+              </td>
+            </tr>
+          {{else}}
+            <tr><td colspan="9" class="empty"><b>No city profiles</b>The planner cannot estimate living costs without at least one city.</td></tr>
+          {{/each}}
+          </tbody>
+        </table>
+      </div>
+      <div class="foot">
+        <form method="post" action="/admin/countries/{{country.id}}/costs">
+          <input type="hidden" name="_csrf" value="{{csrf}}">
+          <div class="row" style="align-items:flex-end">
+            <label class="field" style="flex:1"><span class="lab">City</span><input type="text" name="city" required></label>
+            <label class="field"><span class="lab">Tier</span>
+              <select name="city_tier"><option value="capital">Capital</option><option value="major">Major city</option><option value="regional">Regional</option></select>
+            </label>
+            <label class="field"><span class="lab">Scenario</span>
+              <select name="scenario"><option value="budget">Budget</option><option value="standard" selected>Standard</option><option value="comfortable">Comfortable</option></select>
+            </label>
+            <label class="field"><span class="lab">Currency</span><input type="text" name="currency" value="{{country.living_currency}}" style="width:90px"></label>
+          </div>
+          <div class="field-row three">
+            <label class="field"><span class="lab">Rent</span><input type="number" name="rent" step="1" required></label>
+            <label class="field"><span class="lab">Food</span><input type="number" name="food" step="1" required></label>
+            <label class="field"><span class="lab">Transit</span><input type="number" name="transit" step="1"></label>
+          </div>
+          <div class="field-row three">
+            <label class="field"><span class="lab">Insurance</span><input type="number" name="insurance" step="1"></label>
+            <label class="field"><span class="lab">Utilities</span><input type="number" name="utilities" step="1"></label>
+            <label class="field"><span class="lab">Contingency</span><input type="number" name="contingency" step="1"></label>
+          </div>
+          <div class="field-row three">
+            <label class="field"><span class="lab">Source name</span><input type="text" name="source_name" placeholder="Kishaa maintained profile"></label>
+            <label class="field"><span class="lab">Observed on</span><input type="date" name="observed_at"></label>
+            <label class="field"><span class="lab">Review status</span>
+              <select name="review_status"><option value="approved">Approved</option><option value="needs_review">Needs review</option></select>
+            </label>
+          </div>
+          <button class="btn" type="submit">Add city profile</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="stack">
+    <div class="card">
+      <header><h3>Funds rules</h3><div class="spacer"></div><a class="tiny" href="/admin/funds-rules">Manage →</a></header>
+      <div class="body scroll-y">
+        {{#each rules}}
+        <div class="kv">
+          <span>
+            <b>{{route_name}}</b><br>
+            <span class="tiny muted">{{money statutory_rate rate_currency}}/mo × {{months}} · {{version}}<br>
+            effective {{default effective_date '—'}} · {{default source_name 'no source'}}</span>
+          </span>
+          <span class="badge {{#if eq review_status 'approved'}}ok{{else}}warn{{/if}}">{{review_status}}</span>
+        </div>
+        {{else}}
+        <p class="muted tiny" style="margin:0">No statutory rules recorded for this destination.</p>
+        {{/each}}
+      </div>
+    </div>
+
+    <div class="card">
+      <header><h3>Planner behaviour</h3></header>
+      <div class="body tiny">
+        <div class="kv"><span>Rule status shown publicly</span><span class="badge ok">always</span></div>
+        <div class="kv"><span>Unapproved rules withheld</span><span class="badge ok">enforced</span></div>
+        <div class="kv"><span>Cities required for estimates</span><span class="badge {{#if gt (count costs) 0}}ok{{else}}warn{{/if}}">{{count costs}}</span></div>
+      </div>
+    </div>
+  </div>
+</div>

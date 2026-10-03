@@ -1,0 +1,174 @@
+<div class="block-row" data-block>
+  <header>
+    <span class="handle" title="Drag handles are visual — use the arrows to reorder">⣿</span>
+    <span class="type js-type-label" data-type-label>{{default type 'Block'}}</span>
+    <span class="tiny muted js-type-help" data-type-help></span>
+    <span class="spacer"></span>
+    <button class="btn sm" type="button" data-move="up" title="Move up">↑</button>
+    <button class="btn sm" type="button" data-move="down" title="Move down">↓</button>
+    <button class="btn sm" type="button" data-collapse>Collapse</button>
+    <button class="btn sm danger" type="button" data-remove>Remove</button>
+  </header>
+  <div class="block-body">
+    <div class="field-row">
+      <label class="field" style="margin-bottom:0">
+        <span class="lab">Block type</span>
+        <select name="block_type[]" data-key="type">
+          {{#each BLOCK_TYPES}}
+          <option value="{{type}}" {{#if eq type ../type}}selected{{/if}}>{{label}}</option>
+          {{/each}}
+        </select>
+      </label>
+      <label class="field" style="margin-bottom:0">
+        <span class="lab">Variant / tone</span>
+        <div class="row">
+          <select name="block_variant[]" data-key="variant" data-field="variant" style="max-width:150px">
+            <option value="">Default</option>
+            <option value="alt">Alt background</option>
+            <option value="sand">Sand background</option>
+            <option value="dark">Dark band</option>
+            <option value="compact">Compact spacing</option>
+          </select>
+          <select name="block_tone[]" data-key="tone" data-field="tone" style="max-width:140px">
+            <option value="info">Info tone</option>
+            <option value="warn">Warning tone</option>
+            <option value="ok">Success tone</option>
+          </select>
+        </div>
+      </label>
+    </div>
+
+    <label class="field" data-field="eyebrow" style="margin-bottom:0">
+      <span class="lab">Eyebrow</span>
+      <input type="text" name="block_eyebrow[]" data-key="eyebrow" placeholder="Small label above the headline">
+    </label>
+
+    <label class="field" data-field="question" style="margin-bottom:0">
+      <span class="lab">Question (answer-first)</span>
+      <input type="text" name="block_question[]" data-key="question" placeholder="e.g. How much must sit in the bank for a UK student visa?">
+    </label>
+    <label class="field" data-field="answer" style="margin-bottom:0">
+      <span class="lab">Answer</span>
+      <textarea name="block_answer[]" data-key="answer" rows="3" placeholder="40–60 word direct answer with the figure and its official source."></textarea>
+    </label>
+
+    <label class="field" data-field="title" style="margin-bottom:0">
+      <span class="lab">Title / headline</span>
+      <input type="text" name="block_title[]" data-key="title" placeholder="Headline shown in this block">
+    </label>
+    <label class="field" data-field="subtitle" style="margin-bottom:0">
+      <span class="lab">Subtitle / intro</span>
+      <textarea name="block_subtitle[]" data-key="subtitle" rows="2" placeholder="Supporting sentence under the headline."></textarea>
+    </label>
+    <label class="field" data-field="heading" style="margin-bottom:0">
+      <span class="lab">Section heading</span>
+      <input type="text" name="block_heading[]" data-key="heading" placeholder="Heading for cards, tables and lists">
+    </label>
+    <label class="field" data-field="subheading" style="margin-bottom:0">
+      <span class="lab">Section subheading</span>
+      <textarea name="block_subheading[]" data-key="subheading" rows="2"></textarea>
+    </label>
+
+    <label class="field" data-field="html" style="margin-bottom:0">
+      <span class="lab">Body HTML</span>
+      <textarea name="block_html[]" data-key="html" class="code" rows="7" placeholder="&lt;p&gt;Paragraph text…&lt;/p&gt;&lt;h3&gt;Subhead&lt;/h3&gt;"></textarea>
+      <span class="hint">Sanitised on output: scripts and embedded event handlers are stripped.</span>
+    </label>
+
+    <label class="field" data-field="text" style="margin-bottom:0">
+      <span class="lab">Callout text</span>
+      <textarea name="block_text[]" data-key="text" rows="3"></textarea>
+    </label>
+    <label class="field" data-field="note" style="margin-bottom:0">
+      <span class="lab">Table note / footnote</span>
+      <input type="text" name="block_note[]" data-key="note" placeholder="Source, date or caveat shown under the table">
+    </label>
+
+    <div class="field-row three">
+      <label class="field" data-field="pillar" style="margin-bottom:0">
+        <span class="lab">Pillar filter</span>
+        <select name="block_pillar[]" data-key="pillar">
+          <option value="all">All pillars</option>
+          <option value="career">Career counseling</option>
+          <option value="immigration">Immigration</option>
+          <option value="cambridge">Cambridge &amp; IELTS</option>
+        </select>
+      </label>
+      <label class="field" data-field="filter" style="margin-bottom:0">
+        <span class="lab">Content filter</span>
+        <select name="block_filter[]" data-key="filter">
+          <option value="all">Everything</option>
+          <option value="featured">Featured only</option>
+        </select>
+      </label>
+      <label class="field" data-field="limit" style="margin-bottom:0">
+        <span class="lab">Maximum items</span>
+        <input type="number" name="block_limit[]" data-key="limit" min="1" max="48" placeholder="6">
+      </label>
+    </div>
+
+    <div class="field-row three">
+      <label class="field" data-field="teamSlug" style="margin-bottom:0">
+        <span class="lab">Team member slug</span>
+        <input type="text" name="block_teamSlug[]" data-key="teamSlug" placeholder="zeb-khan">
+      </label>
+      <label class="field" data-field="preselect" style="margin-bottom:0">
+        <span class="lab">Pre-selected country</span>
+        <input type="text" name="block_preselect[]" data-key="preselect" placeholder="finland">
+      </label>
+      <label class="field" data-field="category" style="margin-bottom:0">
+        <span class="lab">FAQ category</span>
+        <input type="text" name="block_category[]" data-key="category" placeholder="visas">
+      </label>
+    </div>
+
+    <div class="field-row">
+      <label class="field" data-field="image" style="margin-bottom:0">
+        <span class="lab">Image (media ID or URL)</span>
+        <input type="text" name="block_image[]" data-key="image" id="blockImageInput" placeholder="12 or /uploads/file.jpg">
+      </label>
+      <div class="field" data-field="reverse" style="margin-bottom:0">
+        <span class="lab">Options</span>
+        <span class="inline-check"><input type="hidden" name="block_reverse[]" value=""><input type="checkbox" name="block_reverse[]" data-key="reverse" value="1"> Image on the left</span>
+        <span class="inline-check"><input type="hidden" name="block_compact[]" value=""><input type="checkbox" name="block_compact[]" data-key="compact" value="1"> Compact</span>
+      </div>
+    </div>
+
+    <label class="field" data-field="actions" style="margin-bottom:0">
+      <span class="lab">Buttons (JSON array)</span>
+      <textarea name="block_actions[]" data-key="actions" class="code" rows="2" placeholder='[{"label":"Book a consultation","url":"/contact","style":"primary"}]'></textarea>
+    </label>
+    <label class="field" data-field="badges" style="margin-bottom:0">
+      <span class="lab">Badges (JSON array)</span>
+      <textarea name="block_badges[]" data-key="badges" class="code" rows="2" placeholder='["British Council certified trainer","Dubai &amp; Pakistan offices"]'></textarea>
+    </label>
+    <label class="field" data-field="stats" style="margin-bottom:0">
+      <span class="lab">Stat strip (JSON array)</span>
+      <textarea name="block_stats[]" data-key="stats" class="code" rows="2" placeholder='[{"value":"18","label":"Destinations covered","note":"Updated September 2026"}]'></textarea>
+    </label>
+    <label class="field" data-field="items" style="margin-bottom:0">
+      <span class="lab">Cards / items (JSON array)</span>
+      <textarea name="block_items[]" data-key="items" class="code" rows="3" placeholder='[{"title":"Card title","text":"Supporting text","url":"/contact","icon":"01"}]'></textarea>
+    </label>
+    <label class="field" data-field="steps" style="margin-bottom:0">
+      <span class="lab">Process steps (JSON array)</span>
+      <textarea name="block_steps[]" data-key="steps" class="code" rows="3" placeholder='[{"title":"Free profile review","text":"We check your funds, grades and timeline."}]'></textarea>
+    </label>
+    <label class="field" data-field="columns" style="margin-bottom:0">
+      <span class="lab">Table columns (JSON array)</span>
+      <textarea name="block_columns[]" data-key="columns" class="code" rows="2" placeholder='["Route","Tuition","Proof of funds"]'></textarea>
+    </label>
+    <label class="field" data-field="rows" style="margin-bottom:0">
+      <span class="lab">Table rows (JSON array of arrays)</span>
+      <textarea name="block_rows[]" data-key="rows" class="code" rows="3" placeholder='[["UK","£11,300–£15,500","£1,483/month (London)"]]'></textarea>
+    </label>
+    <label class="field" data-field="bullets" style="margin-bottom:0">
+      <span class="lab">Checklist bullets (JSON array)</span>
+      <textarea name="block_bullets[]" data-key="bullets" class="code" rows="3" placeholder='["Passport valid 6+ months","Bank statement covering 28 consecutive days"]'></textarea>
+    </label>
+    <label class="field" data-field="countries" style="margin-bottom:0">
+      <span class="lab">Country slugs (JSON array)</span>
+      <textarea name="block_countries[]" data-key="countries" class="code" rows="2" placeholder='["uk","finland","italy"]'></textarea>
+    </label>
+  </div>
+</div>

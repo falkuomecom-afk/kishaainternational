@@ -1,0 +1,495 @@
+{{#each blocks}}
+
+{{#if eq type 'hero'}}
+<section class="hero {{#if compact}}compact{{/if}}">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        {{#if eyebrow}}<span class="eyebrow">{{eyebrow}}</span>{{/if}}
+        <h1>{{title}}</h1>
+        {{#if subtitle}}<p class="lead">{{subtitle}}</p>{{/if}}
+        <div class="hero-actions">
+          {{#each actions}}
+            <a class="btn {{#if eq style 'primary'}}btn-primary{{else}}btn-ghost{{/if}}" href="{{url}}">{{label}}</a>
+          {{/each}}
+        </div>
+        {{#if badges}}<div class="hero-badges">{{#each badges}}<span class="chip">{{this}}</span>{{/each}}</div>{{/if}}
+      </div>
+      <div>
+        {{#if stats}}
+        <div class="hero-card">
+          <h3>At a glance</h3>
+          <div class="stat-grid">
+            {{#each stats}}<div class="stat"><b>{{value}}</b><span>{{label}}</span></div>{{/each}}
+          </div>
+          <div class="review-mini">
+            <span class="stars">★★★★★</span>
+            <span>{{default @root.aggregates.0.score 4.9}} average across {{default @root.aggregates.0.review_count 214}} Google reviews · Dubai</span>
+          </div>
+        </div>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</section>
+{{/if}}
+
+{{#if eq type 'answerFirst'}}
+<section class="wrap" style="padding-bottom:0">
+  <div class="answer-first">
+    <h3>{{question}}</h3>
+    <p>{{answer}}</p>
+  </div>
+</section>
+{{/if}}
+
+{{#if eq type 'pillars'}}
+<section>
+  <div class="wrap">
+    {{#if heading}}
+    <div class="sec-head">
+      <h2>{{heading}}</h2>
+      {{#if subheading}}<p class="lead">{{subheading}}</p>{{/if}}
+    </div>
+    {{/if}}
+    <div class="grid g3">
+      {{#each items}}
+      <article class="card">
+        <span class="icon">{{#if eq icon 'compass'}}🧭{{else}}{{#if eq icon 'passport'}}🛂{{else}}{{#if eq icon 'target'}}🎯{{else}}{{#if eq icon 'star'}}★{{else}}{{#if eq icon 'folder'}}🗂{{else}}◆{{/if}}{{/if}}{{/if}}{{/if}}{{/if}}</span>
+        <h3>{{title}}</h3>
+        <p>{{text}}</p>
+        {{#if url}}<div class="foot"><a class="link-arrow" href="{{url}}">{{default cta 'Learn more'}}</a></div>{{/if}}
+      </article>
+      {{/each}}
+    </div>
+  </div>
+</section>
+{{/if}}
+
+{{#if eq type 'programCards'}}
+<section class="alt">
+  <div class="wrap">
+    {{#if heading}}
+    <div class="sec-head">
+      <h2>{{heading}}</h2>
+      {{#if subheading}}<p class="lead">{{subheading}}</p>{{/if}}
+    </div>
+    {{/if}}
+    <div class="grid g3">
+      {{#each items}}
+      <article class="card">
+        <div class="between">
+          <span class="badge {{#if eq pillar 'cambridge'}}gold{{else}}{{#if eq pillar 'immigration'}}info{{else}}ok{{/if}}{{/if}}">{{#if eq pillar 'cambridge'}}Cambridge & IELTS{{else}}{{#if eq pillar 'immigration'}}Immigration{{else}}Career & admissions{{/if}}{{/if}}</span>
+          {{#if urgency}}<span class="tiny muted">{{truncate urgency 34}}</span>{{/if}}
+        </div>
+        <h3><a href="/services/{{slug}}" style="color:inherit">{{name}}</a></h3>
+        <p>{{truncate summary 150}}</p>
+        {{#if highlights_list}}<ul class="ticks tiny" style="margin:0">{{#each highlights_list}}<li>{{this}}</li>{{/each}}</ul>{{/if}}
+        <div class="foot">
+          <span class="price">{{#if fee_from}}{{money fee_from currency}}{{#if fee_to}} – {{money fee_to currency}}{{/if}}<small>{{#if fee_notes}}see full fee breakdown{{else}}indicative{{/if}}</small>{{else}}Free assessment<small>quote issued in writing</small>{{/if}}</span>
+          <a class="btn btn-primary btn-sm" href="/services/{{slug}}">View details</a>
+        </div>
+      </article>
+      {{/each}}
+    </div>
+  </div>
+</section>
+{{/if}}
+
+{{#if eq type 'destinations'}}
+<section>
+  <div class="wrap">
+    {{#if heading}}
+    <div class="sec-head">
+      <h2>{{heading}}</h2>
+      {{#if subheading}}<p class="lead">{{subheading}}</p>{{/if}}
+    </div>
+    {{/if}}
+    {{#if regions}}<div class="filter-bar">{{#each regions}}<a href="/destinations#{{slugify region}}">{{region}} <span class="muted">({{n}})</span></a>{{/each}}</div>{{/if}}
+    <div class="grid g4">
+      {{#each items}}
+      <a class="card" href="/destinations/{{slug}}" style="text-decoration:none;color:inherit">
+        <div class="between">
+          <span class="badge neutral">{{bloc}}</span>
+          {{#if featured}}<span class="badge gold">Popular</span>{{/if}}
+        </div>
+        <h3 style="margin-bottom:2px">{{name}}</h3>
+        <p class="tiny" style="color:var(--ink-400)">{{region}}</p>
+        <p>{{truncate answer_summary 110}}</p>
+        <div class="foot">
+          <span class="price tiny">{{money living_total living_currency}}<small>monthly living</small></span>
+          <span class="link-arrow tiny">Guide</span>
+        </div>
+      </a>
+      {{/each}}
+    </div>
+    <div class="row" style="margin-top:24px"><a class="btn btn-outline" href="/destinations">All destinations & cost data</a></div>
+  </div>
+</section>
+{{/if}}
+
+{{#if eq type 'plannerTeaser'}}
+<section class="sand">
+  <div class="wrap">
+    <div class="split">
+      <div>
+        <span class="eyebrow">Cost planner</span>
+        <h2>{{default heading 'Know the real number before you commit'}}</h2>
+        <p class="lead">{{default subheading 'Choose a destination and see the flight estimate, city living costs, the statutory bank statement rule and the document checklist — separated, dated and sourced.'}}</p>
+        <ul class="ticks">
+          <li>Spending and mandatory bank balances shown <strong>separately</strong> — never netted together</li>
+          <li>Every figure carries its authority, effective date and review state</li>
+          <li>Unverified rules are withheld with “more information needed” instead of a fabricated number</li>
+          <li>No contact details required to generate an estimate</li>
+        </ul>
+        <div class="row" style="margin-top:20px">
+          <a class="btn btn-primary" href="/cost-planner">Open the cost planner</a>
+          <a class="btn btn-outline" href="/bank-statements">Bank statement rules</a>
+        </div>
+      </div>
+      <div>
+        <form class="planner" method="post" action="/cost-planner">
+          <div class="planner-head">
+            <h3>Quick estimate</h3>
+            <p>Destination, purpose and stay length — full results on the next screen.</p>
+          </div>
+          <div class="planner-body">
+            <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+            <div class="field-grid">
+              <div>
+                <label class="fl" for="qt-country">Destination</label>
+                <select id="qt-country" name="country">
+                  {{#each items}}<option value="{{slug}}" {{#if eq slug @root.prefill.countrySlug}}selected{{/if}}>{{name}}</option>{{/each}}
+                </select>
+              </div>
+              <div>
+                <label class="fl" for="qt-purpose">Purpose</label>
+                <select id="qt-purpose" name="purpose">
+                  <option value="study">Study</option><option value="visit">Visit / tourist</option>
+                  <option value="work">Work</option><option value="business">Business</option>
+                </select>
+              </div>
+              <div>
+                <label class="fl" for="qt-months">Stay (months)</label>
+                <input id="qt-months" type="number" name="months" value="12" min="1" max="72" inputmode="numeric">
+              </div>
+              <div>
+                <label class="fl" for="qt-origin">Flying from</label>
+                <select id="qt-origin" name="origin">
+                  {{#each origins}}<option value="{{origin_code}}">{{origin_city}} ({{origin_code}})</option>{{/each}}
+                </select>
+              </div>
+            </div>
+            <div class="row" style="margin-top:18px">
+              <button class="btn btn-gold" type="submit">Calculate costs</button>
+              <span class="tiny muted">Free · no sign-up · no contact details</span>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{{/if}}
+
+{{#if eq type 'trainer'}}
+<section class="alt">
+  <div class="wrap">
+    {{#if member}}
+    <div class="split">
+      <div>
+        <span class="eyebrow">Senior Consultant & Executive Trainer</span>
+        <h2>{{default heading 'Meet Zeb Khan'}}</h2>
+        <p class="lead">{{member.intro}}</p>
+        <div class="creds" style="margin:16px 0">
+          {{#each member.credentials_list}}<span class="cred">{{this}}</span>{{/each}}
+        </div>
+        <div class="grid g2" style="gap:14px;margin:18px 0">
+          <div><h4>Expertise</h4><ul class="dots tiny">{{#each member.expertise_list}}<li>{{this}}</li>{{/each}}</ul></div>
+          <div><h4>Teaches & consults in</h4><ul class="dots tiny">{{#each member.languages_list}}<li>{{this}}</li>{{/each}}</ul>
+            <h4 style="margin-top:12px">Based</h4><ul class="dots tiny">{{#each member.locations_list}}<li>{{this}}</li>{{/each}}</ul></div>
+        </div>
+        <div class="row">
+          <a class="btn btn-primary" href="/team/{{member.slug}}">Full profile</a>
+          <a class="btn btn-outline" href="/contact?interest=cambridge&trainer=Zeb+Khan">Enquire about counseling & training</a>
+        </div>
+      </div>
+      <div>
+          <div class="portrait" style="width:72px;height:72px;border-radius:50%;overflow:hidden;border:2px solid #E5B54F;padding:0;flex-shrink:0">
+            <img src="/img/zeb-khan.png" alt="Zeb Khan" style="width:100%;height:100%;object-fit:cover;object-position:top">
+          </div>
+          <div>
+            <h3 style="margin-bottom:2px">{{member.name}}</h3>
+            <p class="tiny" style="color:var(--gold-600);font-weight:700;text-transform:uppercase;letter-spacing:.1em">{{member.role_title}}</p>
+            <p class="tiny">{{truncate member.bio 300}}</p>
+            <ul class="dot tiny" style="font-size:.86rem;color:var(--ink-500)">
+              {{#each member.phones_list}}<li><a href="tel:{{replace this ' ' ''}}">{{this}}</a></li>{{/each}}
+            </ul>
+          </div>
+        </div>
+        {{#if member.programs}}
+        <div class="stack" style="margin-top:14px">
+          {{#each member.programs}}
+          <a class="card" href="/services/{{slug}}" style="flex-direction:row;align-items:center;justify-content:space-between">
+            <span style="font-weight:650">{{name}}</span><span class="link-arrow tiny">Open</span>
+          </a>
+          {{/each}}
+        </div>
+        {{/if}}
+      </div>
+    </div>
+    {{/if}}
+  </div>
+</section>
+{{/if}}
+
+{{#if eq type 'process'}}
+<section>
+  <div class="wrap">
+    {{#if heading}}<div class="sec-head"><h2>{{heading}}</h2></div>{{/if}}
+    <div class="steps">
+      {{#each steps}}<div class="step"><div><h4>{{title}}</h4><p>{{detail}}</p></div></div>{{/each}}
+    </div>
+  </div>
+</section>
+{{/if}}
+
+{{#if eq type 'richtext'}}
+<section>
+  <div class="wrap narrow article-body">{{{html}}}</div>
+</section>
+{{/if}}
+
+{{#if eq type 'imageText'}}
+<section>
+  <div class="wrap">
+    <div class="split">
+      <div>{{#if heading}}<h2>{{heading}}</h2>{{/if}}{{{body}}}
+        {{#if bullets}}<ul class="ticks">{{#each bullets}}<li>{{this}}</li>{{/each}}</ul>{{/if}}</div>
+      <div>{{#if image}}<img src="{{image}}" alt="{{default alt heading}}" loading="lazy">{{/if}}</div>
+    </div>
+  </div>
+</section>
+{{/if}}
+
+{{#if eq type 'stats'}}
+<section class="alt" style="padding:34px 0">
+  <div class="wrap">
+    <div class="stat-grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">
+      {{#each items}}<div class="stat" style="background:#fff;border-color:var(--line)"><b style="color:var(--navy)">{{value}}</b><span style="color:var(--ink-500)">{{label}}</span></div>{{/each}}
+    </div>
+  </div>
+</section>
+{{/if}}
+
+{{#if eq type 'reviews'}}
+<section class="alt">
+  <div class="wrap">
+    {{#if heading}}<div class="sec-head"><h2>{{heading}}</h2>{{#if subheading}}<p class="lead">{{subheading}}</p>{{/if}}</div>{{/if}}
+    <div class="trust-strip" style="margin-bottom:26px">
+      {{#each aggregates}}
+      <div class="trust-pill">
+        <b>{{score}}</b>
+        <div class="stars">{{stars score}}</div>
+        <span>{{platformLabel platform}} · {{review_count}} reviews</span>
+      </div>
+      {{/each}}
+    </div>
+    <div class="grid g3">
+      {{#each items}}{{> site/review-card}}{{/each}}
+    </div>
+    <div class="row" style="margin-top:24px"><a class="btn btn-outline" href="/reviews">All verified reviews & media</a></div>
+  </div>
+</section>
+{{/if}}
+
+{{#if eq type 'feeds'}}
+<section>
+  <div class="wrap">
+    {{#if heading}}<div class="sec-head"><h2>{{heading}}</h2>{{#if subheading}}<p class="lead">{{subheading}}</p>{{/if}}</div>{{/if}}
+    <div class="grid g3">
+      {{#each items}}{{> site/feed-card}}{{/each}}
+    </div>
+  </div>
+</section>
+{{/if}}
+
+{{#if eq type 'table'}}
+<section>
+  <div class="wrap">
+    {{#if heading}}<div class="sec-head"><h2>{{heading}}</h2></div>{{/if}}
+    <div class="table-wrap">
+      <table>
+        <thead><tr>{{#each columns}}<th>{{this}}</th>{{/each}}</tr></thead>
+        <tbody>{{#each rows}}<tr>{{#each this}}<td>{{this}}</td>{{/each}}</tr>{{/each}}</tbody>
+      </table>
+      {{#if note}}<div class="table-note">{{note}}</div>{{/if}}
+    </div>
+  </div>
+</section>
+{{/if}}
+
+{{#if eq type 'fundsTable'}}
+<section>
+  <div class="wrap">
+    {{#if heading}}<div class="sec-head"><h2>{{heading}}</h2></div>{{/if}}
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Country & route</th><th>Statutory amount</th><th>Holding period</th><th>Family rule</th><th>Source & status</th></tr></thead>
+        <tbody>
+        {{#each rows}}
+          <tr>
+            <td><strong><a href="/destinations/{{country_slug}}">{{country_name}}</a></strong><br><span class="tiny muted">{{route_name}}</span></td>
+            <td>{{#if total_required}}<strong>{{money total_required total_currency}}</strong>{{#if pkr_equivalent}}<br><span class="tiny muted">≈ {{money pkr_equivalent 'PKR'}}</span>{{/if}}{{else}}<span class="tiny muted">Route-specific — see guide</span>{{/if}}</td>
+            <td>{{default holding_period '—'}}</td>
+            <td class="tiny">{{truncate family_rule 90}}</td>
+            <td>
+              <span class="badge {{#if eq review_status 'approved'}}ok{{else}}warn{{/if}}">{{#if eq review_status 'approved'}}Official{{else}}Under review{{/if}}</span>
+              <div class="tiny muted" style="margin-top:6px">{{truncate source_name 60}}{{#if effective_date}} · effective {{date effective_date}}{{/if}} · {{version}}</div>
+            </td>
+          </tr>
+        {{/each}}
+        </tbody>
+      </table>
+      <div class="table-note">Statutory figures are the amounts that must sit in a bank account for the required period. They are separate from flights and living spending, which the <a href="/cost-planner">cost planner</a> budgets separately.</div>
+    </div>
+  </div>
+</section>
+{{/if}}
+
+{{#if eq type 'checklist'}}
+<section class="alt">
+  <div class="wrap narrow">
+    {{#if heading}}<div class="sec-head"><h2>{{heading}}</h2></div>{{/if}}
+    <div class="card" style="gap:0">
+      <ul class="ticks" style="margin:0">{{#each items}}<li>{{this}}</li>{{/each}}</ul>
+    </div>
+  </div>
+</section>
+{{/if}}
+
+{{#if eq type 'comparison'}}
+<section>
+  <div class="wrap">
+    {{#if heading}}<div class="sec-head"><h2>{{heading}}</h2></div>{{/if}}
+    <div class="table-wrap">
+      <table>
+        <thead><tr>{{#each columns}}<th>{{this}}</th>{{/each}}</tr></thead>
+        <tbody>{{#each rows}}<tr>{{#each this}}<td>{{this}}</td>{{/each}}</tr>{{/each}}</tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{{/if}}
+
+{{#if eq type 'notice'}}
+<section style="padding:0">
+  <div class="wrap" style="padding-top:36px">
+    <div class="notice {{#if eq tone 'warn'}}warn{{else}}{{#if eq tone 'ok'}}ok{{/if}}{{/if}}">
+      <span class="ico">{{#if eq tone 'warn'}}!{{else}}i{{/if}}</span>
+      <div>{{#if heading}}<h3>{{heading}}</h3>{{/if}}<p>{{text}}</p></div>
+    </div>
+  </div>
+</section>
+{{/if}}
+
+{{#if eq type 'faq'}}
+<section class="alt">
+  <div class="wrap narrow">
+    {{#if heading}}<div class="sec-head"><h2>{{heading}}</h2></div>{{/if}}
+    <div class="accordion">
+      {{#each items}}
+      <details>
+        <summary>{{question}}</summary>
+        <div class="ans">{{answer}}</div>
+      </details>
+      {{/each}}
+    </div>
+    <div class="row" style="margin-top:20px"><a class="btn btn-outline" href="/faq">All frequently asked questions</a></div>
+  </div>
+</section>
+{{/if}}
+
+{{#if eq type 'enquiryForm'}}
+{{> site/enquiry-form}}
+{{/if}}
+
+{{#if eq type 'contactCards'}}
+<section>
+  <div class="wrap">
+    <div class="grid g3">
+      {{#each offices}}
+      <div class="card">
+        <span class="icon">{{flag}}</span>
+        <h3>{{name}}</h3>
+        <p style="color:var(--ink-700)">{{address}}</p>
+        <dl class="kv">
+          <dt>Phone</dt><dd><a href="tel:{{replace phone ' ' ''}}">{{phone}}</a></dd>
+          <dt>WhatsApp</dt><dd><a href="https://wa.me/{{replace whatsapp '+' ''}}" rel="noopener" target="_blank">{{whatsapp}}</a></dd>
+          <dt>Email</dt><dd><a href="mailto:{{email}}">{{email}}</a></dd>
+          <dt>Hours</dt><dd>{{hours}}</dd>
+          <dt>Timezone</dt><dd>{{timezone}}</dd>
+        </dl>
+      </div>
+      {{/each}}
+      <div class="card">
+        <span class="icon">⏱</span>
+        <h3>Response promise</h3>
+        <p>{{setting 'ops.response_promise'}}</p>
+        <p class="tiny muted">Every enquiry receives a reference number, an assigned consultant and a recorded follow-up. A consultation time is confirmed only once we agree it with you.</p>
+      </div>
+    </div>
+  </div>
+</section>
+{{/if}}
+
+{{#if eq type 'cta'}}
+<section>
+  <div class="wrap">
+    <div class="cta-band">
+      <h2>{{heading}}</h2>
+      {{#if text}}<p>{{text}}</p>{{/if}}
+      <div class="row" style="margin-top:20px;position:relative;z-index:1">
+        {{#each actions}}<a class="btn {{#if eq style 'primary'}}btn-gold{{else}}btn-ghost{{/if}}" href="{{url}}">{{label}}</a>{{/each}}
+      </div>
+      <p class="tiny" style="margin-top:18px;position:relative;z-index:1;color:#BFDCE2">{{setting 'legal.no_guarantee'}}</p>
+    </div>
+  </div>
+</section>
+{{/if}}
+
+{{#if eq type 'sources'}}
+<section>
+  <div class="wrap narrow">
+    <div class="sources">
+      {{#if heading}}<h3>{{heading}}</h3>{{/if}}
+      {{#if note}}<p class="tiny muted">{{note}}</p>{{/if}}
+      <ol>
+        {{#each items}}<li>{{#if url}}<a href="{{url}}" rel="noopener nofollow" target="_blank">{{label}}</a>{{else}}{{label}}{{/if}}{{#if date}} <span class="muted tiny">— observed {{date}}</span>{{/if}}</li>{{/each}}
+      </ol>
+    </div>
+  </div>
+</section>
+{{/if}}
+
+{{#if eq type 'thankYou'}}
+<section>
+  <div class="wrap narrow">
+    <div class="answer-first" style="border-left-color:var(--gold-500)">
+      <h3>Thank you. Your enquiry has been received.</h3>
+      <p>Our team will use your selected contact method to discuss the next step. A consultation time is confirmed only after we agree it with you.</p>
+    </div>
+    <div class="grid g3" style="margin-top:22px">
+      <div class="card"><span class="icon">1</span><h3>Stored privately</h3><p>Your enquiry is saved with a unique reference and never shared publicly.</p></div>
+      <div class="card"><span class="icon">2</span><h3>Assigned to a named consultant</h3><p>Dubai or Pakistan, depending on your destination and preferred channel.</p></div>
+      <div class="card"><span class="icon">3</span><h3>Next step agreed with you</h3><p>{{setting 'ops.response_promise'}}</p></div>
+    </div>
+    <div class="row" style="margin-top:22px">
+      <a class="btn btn-primary" href="/cost-planner">Build your cost estimate</a>
+      <a class="btn btn-outline" href="/resources">Read the preparation guides</a>
+    </div>
+  </div>
+</section>
+{{/if}}
+
+{{/each}}

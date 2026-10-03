@@ -1,0 +1,25 @@
+<section style="padding-top:60px">
+  <div class="wrap narrow center">
+    <span class="eyebrow" style="justify-content:center">404</span>
+    <h1>That page does not exist</h1>
+    <p class="lead">The address may have changed, or the page may not be published yet. Here are the routes people usually want.</p>
+    <div class="row" style="justify-content:center;margin:26px 0">
+      <a class="btn btn-primary" href="/">Home</a>
+      <a class="btn btn-outline" href="/cost-planner">Cost planner</a>
+      <a class="btn btn-outline" href="/destinations">Destinations</a>
+      <a class="btn btn-outline" href="/search">Search</a>
+    </div>
+    <div class="grid g2" style="text-align:left;margin-top:30px">
+      {{#if suggestions}}
+      <div class="card"><h3>Popular services</h3><ul class="related-list">
+        {{#each suggestions}}<li><a href="/services/{{slug}}">{{name}}</a></li>{{/each}}
+      </ul></div>
+      {{/if}}
+      {{#if destinations}}
+      <div class="card"><h3>Popular destinations</h3><ul class="related-list">
+        {{#each destinations}}<li><a href="/destinations/{{slug}}">{{name}}</a></li>{{/each}}
+      </ul></div>
+      {{/if}}
+    </div>
+  </div>
+</section>

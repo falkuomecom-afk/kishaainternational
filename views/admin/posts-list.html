@@ -1,0 +1,81 @@
+<div class="page-head">
+  <div>
+    <h1>Posts &amp; guides</h1>
+    <p>Long-form guides, news and answer-first articles. Each one carries an answer summary, takeaways and its own structured data.</p>
+  </div>
+  <div class="spacer"></div>
+  <div class="row">
+    {{#if can 'content.create'}}<a class="btn primary" href="/admin/posts/new">+ Add new guide</a>{{/if}}
+  </div>
+</div>
+
+<div class="toolbar">
+  <form class="filters" method="get" action="/admin/posts">
+    <label class="field" style="margin:0"><input type="text" name="q" value="{{q}}" placeholder="Search title or body"></label>
+    <button class="btn" type="submit">Search</button>
+    {{#if q}}<a class="btn ghost" href="/admin/posts">Clear</a>{{/if}}
+  </form>
+  <div class="spacer"></div>
+  <span class="muted tiny">{{count posts}} guide{{plural (count posts) '' 's'}}</span>
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr><th>Title</th><th>Category</th><th>Status</th><th>AEO</th><th>Author</th><th>Updated</th><th class="actions">Actions</th></tr>
+      </thead>
+      <tbody>
+      {{#each posts}}
+        <tr>
+          <td>
+            <b>{{title}}</b>
+            {{#if excerpt}}<br><span class="tiny muted">{{truncate excerpt 80}}</span>{{/if}}
+            {{#if target_query}}<br><span class="tiny muted">target: “{{target_query}}”</span>{{/if}}
+          </td>
+          <td class="tiny">{{default category_name 'Uncategorised'}}</td>
+          <td>
+            {{#if eq status 'published'}}<span class="badge ok">Published</span>{{/if}}
+            {{#if eq status 'draft'}}<span class="badge">Draft</span>{{/if}}
+            {{#if eq status 'review'}}<span class="badge warn">In review</span>{{/if}}
+            {{#if eq status 'trashed'}}<span class="badge bad">Trashed</span>{{/if}}
+            {{#if publish_at}}<br><span class="tiny muted">⏱ {{date publish_at}}</span>{{/if}}
+          </td>
+          <td class="tiny">
+            {{#if answer_summary}}<span class="badge ok">summary</span>{{else}}<span class="badge warn">no summary</span>{{/if}}
+            {{#if key_takeaways}}<br><span class="badge ok">takeaways</span>{{/if}}
+            {{#if geo_summary}}<br><span class="badge info">GEO note</span>{{/if}}
+          </td>
+          <td class="tiny">{{default author_name '—'}}</td>
+          <td class="tiny muted">{{ago updated_at}}</td>
+          <td class="actions">
+            <div class="row" style="justify-content:flex-end">
+              <a class="btn sm" href="/admin/posts/{{id}}/edit">Edit</a>
+              <a class="btn sm ghost" href="/admin/preview/posts/{{id}}" target="_blank" rel="noopener">Preview</a>
+              {{#if eq status 'published'}}<a class="btn sm ghost" href="/resources/{{slug}}" target="_blank" rel="noopener">View</a>{{/if}}
+              {{#if can 'content.publish'}}
+              <form method="post" action="/admin/posts/{{id}}/status">
+                <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+                <input type="hidden" name="status" value="{{#if eq status 'published'}}draft{{else}}published{{/if}}">
+                <button class="btn sm {{#if eq status 'published'}}danger{{else}}gold{{/if}}" type="submit">{{#if eq status 'published'}}Unpublish{{else}}Publish{{/if}}</button>
+              </form>
+              {{/if}}
+            </div>
+          </td>
+        </tr>
+      {{else}}
+        <tr><td colspan="7" class="empty"><b>No guides yet</b>Publish a guide to feed the resources hub, RSS feed and AI answer surfaces.</td></tr>
+      {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card" style="margin-top:16px">
+  <header><h3>Categories</h3></header>
+  <div class="body">
+    <div class="pill-row">
+      {{#each categories}}<span class="badge info">{{name}}</span>{{else}}<span class="muted tiny">No categories created.</span>{{/each}}
+    </div>
+  </div>
+</div>

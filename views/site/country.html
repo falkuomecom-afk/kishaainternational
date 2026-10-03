@@ -1,0 +1,208 @@
+{{> site/crumbs}}
+
+<section class="hero compact">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow">{{region}}{{#if bloc}} · {{bloc}}{{/if}}</span>
+        <h1>Study, work & visit {{country.name}}</h1>
+        <p class="lead">{{country.answer_first}}</p>
+        <div class="hero-actions">
+          <a class="btn btn-gold" href="/cost-planner?country={{country.slug}}">Calculate my {{country.name}} costs</a>
+          <a class="btn btn-ghost" href="/contact?country={{country.slug}}">Talk to a consultant</a>
+        </div>
+        <div class="hero-badges">
+          <span class="chip">{{country.currency}} · {{country.currency_symbol}}</span>
+          <span class="chip">{{default country.processing_time 'Route-specific processing'}}</span>
+          <span class="chip">{{money country.living_total country.living_currency}}/month indicative</span>
+        </div>
+      </div>
+      <div class="hero-card">
+        <h3>Quick facts</h3>
+        <div class="stat-grid">
+          <div class="stat"><b>{{count country.cities}}</b><span>city cost profiles</span></div>
+          <div class="stat"><b>{{count country.funds}}</b><span>published statutory rule(s)</span></div>
+          <div class="stat"><b>{{count country.programs}}</b><span>linked programs & courses</span></div>
+          <div class="stat"><b>{{count country.routes}}</b><span>flight route options</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-bottom:0">
+  <div class="wrap narrow">
+    <div class="answer-first">
+      <h3>What this means in one paragraph</h3>
+      <p>{{country.answer_first}}</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="split">
+      <div>
+        <h2>Statutory proof-of-funds rules</h2>
+        <p class="lead">Statutory funds must be held, not spent. Where a rule is still under review we say so instead of publishing a stale figure.</p>
+      </div>
+      <div></div>
+    </div>
+    {{#if country.funds}}
+    <div class="table-wrap" style="margin-top:24px">
+      <table>
+        <thead><tr><th>Route</th><th>Amount required</th><th>Holding period</th><th>Family / dependants</th><th>Source & status</th></tr></thead>
+        <tbody>
+        {{#each country.funds}}
+          <tr>
+            <td><strong>{{route_name}}</strong><br><span class="tiny muted">{{rule_type}} · {{visa_purpose}}</span></td>
+            <td>{{#if total_required}}<strong>{{money total_required total_currency}}</strong>{{#if pkr_equivalent}}<br><span class="tiny muted">≈ {{money pkr_equivalent 'PKR'}}</span>{{/if}}{{else}}<span class="tiny muted">{{#if statutory_rate}}{{money statutory_rate rate_currency}} / month × {{months}}{{else}}Route-specific{{/if}}</span>{{/if}}</td>
+            <td class="tiny">{{default holding_period '—'}}</td>
+            <td class="tiny">{{truncate (default family_rule dependents_note '—') 110}}</td>
+            <td>
+              <span class="badge {{#if eq review_status 'approved'}}ok{{else}}warn{{/if}}">{{#if eq review_status 'approved'}}Official{{else}}Under review{{/if}}</span>
+              <div class="tiny muted" style="margin-top:6px">{{truncate source_name 70}}{{#if effective_date}}<br>Effective {{date effective_date}}{{/if}} · {{version}}</div>
+            </td>
+          </tr>
+        {{/each}}
+        </tbody>
+      </table>
+      <div class="table-note">Confirmed against the issuing authority. A rule marked “under review” is withheld from the calculator until a rule reviewer re-confirms it.</div>
+    </div>
+    {{else}}
+    <div class="notice warn" style="margin-top:24px"><span class="ico">!</span><div><h3>More information needed</h3><p>No published statutory rule exists for {{country.name}} yet. A counselor will confirm the current requirement for your specific route — we do not publish an unverified figure.</p></div></div>
+    {{/if}}
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Monthly living costs by city</h2>
+      <p class="lead">Indicative maintained averages by city tier and budget scenario, with observation dates. City data overrides national averages.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>City</th><th>Tier</th><th>Scenario</th><th>Rent</th><th>Food</th><th>Transit</th><th>Insurance</th><th>Utilities</th><th>Contingency</th><th>Monthly total</th></tr></thead>
+        <tbody>
+        {{#each country.costs}}
+          <tr>
+            <td><strong>{{city}}</strong></td>
+            <td class="tiny">{{city_tier}}</td>
+            <td class="tiny">{{scenario}}</td>
+            <td>{{money rent currency}}</td><td>{{money food currency}}</td><td>{{money transit currency}}</td>
+            <td>{{money insurance currency}}</td><td>{{money utilities currency}}</td><td>{{money contingency currency}}</td>
+            <td><strong>{{money total currency}}</strong></td>
+          </tr>
+        {{/each}}
+        </tbody>
+      </table>
+      <div class="table-note">{{country.cost_note}}</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="grid g2">
+      <div>
+        <h2>Requirements & documents</h2>
+        <ul class="ticks">
+          {{#each country.requirement_list}}<li>{{this}}</li>{{/each}}
+        </ul>
+      </div>
+      <div>
+        <h2>Why applicants choose {{country.name}}</h2>
+        <ul class="ticks">
+          {{#each country.highlight_list}}<li>{{this}}</li>{{/each}}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+{{#if country.programs}}
+<section class="alt">
+  <div class="wrap">
+    <div class="sec-head"><h2>Programs & packages for {{country.name}}</h2></div>
+    <div class="grid g3">
+      {{#each country.programs}}
+      <article class="card">
+        <span class="badge {{#if eq pillar 'cambridge'}}gold{{else}}{{#if eq pillar 'immigration'}}info{{else}}ok{{/if}}{{/if}}">{{#if eq pillar 'cambridge'}}Cambridge & IELTS{{else}}{{#if eq pillar 'immigration'}}Immigration{{else}}Career & admissions{{/if}}{{/if}}</span>
+        <h3><a href="/services/{{slug}}" style="color:inherit">{{name}}</a></h3>
+        <p>{{truncate summary 140}}</p>
+        <div class="foot">
+          <span class="price">{{#if fee_from}}{{money fee_from currency}}{{else}}Quoted after assessment{{/if}}</span>
+          <a class="link-arrow" href="/services/{{slug}}">Details</a>
+        </div>
+      </article>
+      {{/each}}
+    </div>
+  </div>
+</section>
+{{/if}}
+
+<section>
+  <div class="wrap">
+    <div class="grid g2">
+      <div>
+        <h2>Flight routes into {{country.name}}</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>From</th><th>To</th><th>Base fare from</th><th>Currency</th></tr></thead>
+            <tbody>
+            {{#each country.routes}}
+              <tr><td>{{origin_city}} ({{origin_code}})</td><td>{{dest_city}} ({{dest_code}})</td><td><strong>{{money base_fare currency}}</strong></td><td class="tiny">{{currency}}</td></tr>
+            {{/each}}
+            </tbody>
+          </table>
+          <div class="table-note">Route-matrix planning figures including taxes and fuel surcharges. Connect an approved flight provider to show live supplier quotes.</div>
+        </div>
+        <div class="row" style="margin-top:16px"><a class="btn btn-outline" href="/cost-planner?country={{country.slug}}">Full cost breakdown</a></div>
+      </div>
+      <div>
+        <h2>Questions applicants ask</h2>
+        <div class="accordion">
+          {{#each country.faqs}}<details><summary>{{question}}</summary><div class="ans">{{answer}}</div></details>{{/each}}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <div class="sec-head"><h2>What clients say</h2></div>
+    <div class="grid g3">{{#each country.reviews}}{{> site/review-card}}{{/each}}</div>
+  </div>
+</section>
+
+{{#if country.posts}}
+<section>
+  <div class="wrap">
+    <div class="sec-head"><h2>Related guides</h2></div>
+    <div class="grid g3">
+      {{#each country.posts}}
+      <a class="card" href="/resources/{{slug}}" style="text-decoration:none;color:inherit">
+        <h3 style="font-size:1.08rem">{{title}}</h3>
+        <p>{{truncate answer_summary 130}}</p>
+        <div class="foot"><span class="tiny muted">{{read_minutes}} min read</span><span class="link-arrow tiny">Read</span></div>
+      </a>
+      {{/each}}
+    </div>
+  </div>
+</section>
+{{/if}}
+
+<section>
+  <div class="wrap">
+    <div class="cta-band">
+      <h2>Ready to plan {{country.name}} properly?</h2>
+      <p>Bring your profile and budget. We will confirm the current statutory rule, model the real cost, and tell you honestly whether the route is realistic right now.</p>
+      <div class="row" style="margin-top:20px;position:relative;z-index:1">
+        <a class="btn btn-gold" href="/contact?country={{country.slug}}">Request a consultation</a>
+        <a class="btn btn-ghost" href="/cost-planner?country={{country.slug}}">Calculate costs</a>
+      </div>
+    </div>
+  </div>
+</section>

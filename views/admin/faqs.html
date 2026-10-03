@@ -1,0 +1,91 @@
+<div class="page-head">
+  <div>
+    <h1>FAQs</h1>
+    <p>Answer-first question and answer pairs. Published FAQs become FAQPage structured data and are quoted by assistants.</p>
+  </div>
+  <div class="spacer"></div>
+  <div class="row"><span class="muted tiny">{{count faqs}} questions</span></div>
+</div>
+
+<div class="split">
+  <div class="card">
+    <header><h2>Question bank</h2></header>
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Question</th><th>Category</th><th>Destination</th><th>Published</th><th class="actions">Actions</th></tr></thead>
+        <tbody>
+        {{#each faqs}}
+          <tr>
+            <td>
+              <form method="post" action="/admin/faqs/{{id}}">
+                <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+                <input type="text" name="question" value="{{question}}" style="margin-bottom:5px">
+                <textarea name="answer" rows="3" style="margin-bottom:5px">{{answer}}</textarea>
+                <div class="row">
+                  <input type="text" name="category" value="{{default category 'general'}}" style="max-width:130px">
+                  <select name="country_id" style="max-width:170px">
+                    <option value="">General / no destination</option>
+                    {{#each @root.countries}}<option value="{{id}}" {{#if eq id ../../country_id}}selected{{/if}}>{{name}}</option>{{/each}}
+                  </select>
+                  <input type="number" name="sort_order" value="{{sort_order}}" style="max-width:80px">
+                  <label class="inline-check"><input type="checkbox" name="published" value="1" {{#if published}}checked{{/if}}> published</label>
+                  <button class="btn sm" type="submit">Save</button>
+                </div>
+                {{#if answer_summary}}<span class="tiny muted">Summary: {{truncate answer_summary 110}}</span>{{/if}}
+              </form>
+            </td>
+            <td class="tiny">{{default category 'general'}}</td>
+            <td class="tiny">{{default country_name 'All'}}</td>
+            <td>{{#if published}}<span class="badge ok">Live</span>{{else}}<span class="badge">Draft</span>{{/if}}</td>
+            <td class="actions">
+              <form method="post" action="/admin/faqs/{{id}}/delete" data-confirm="Delete this FAQ?">
+                <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+                <button class="btn sm danger" type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+        {{else}}
+          <tr><td colspan="5" class="empty"><b>No FAQs yet</b>Add the questions clients actually ask on calls.</td></tr>
+        {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="stack">
+    <div class="card">
+      <header><h3>Add a question</h3></header>
+      <div class="body">
+        <form method="post" action="/admin/faqs">
+          <input type="hidden" name="_csrf" value="{{csrf}}">
+          <label class="field"><span class="lab">Question</span><input type="text" name="question" required maxlength="300" placeholder="How much money must I show for a UK student visa?"></label>
+          <label class="field"><span class="lab">Answer</span><textarea name="answer" rows="5" required maxlength="3000"></textarea>
+            <span class="hint">Answer in the first sentence with the figure and the rule. Add the source and the date when it was checked.</span>
+          </label>
+          <div class="field-row">
+            <label class="field"><span class="lab">Category</span><input type="text" name="category" value="general" maxlength="40"></label>
+            <label class="field"><span class="lab">Sort order</span><input type="number" name="sort_order" value="100"></label>
+          </div>
+          <label class="field"><span class="lab">Destination</span>
+            <select name="country_id">
+              <option value="">General / applies everywhere</option>
+              {{#each countries}}<option value="{{id}}">{{name}}</option>{{/each}}
+            </select>
+          </label>
+          <label class="inline-check"><input type="checkbox" name="published" value="1" checked> Publish immediately</label>
+          <div style="margin-top:12px"><button class="btn primary block" type="submit">Add FAQ</button></div>
+        </form>
+      </div>
+    </div>
+
+    <div class="card">
+      <header><h3>Answer quality rules</h3></header>
+      <div class="body tiny">
+        <div class="kv"><span>Direct answer first</span><span class="badge ok">required</span></div>
+        <div class="kv"><span>Statutory figures sourced</span><span class="badge ok">required</span></div>
+        <div class="kv"><span>No guarantees of outcome</span><span class="badge ok">blocked</span></div>
+        <div class="kv"><span>Destinations separated</span><span class="badge ok">preferred</span></div>
+      </div>
+    </div>
+  </div>
+</div>

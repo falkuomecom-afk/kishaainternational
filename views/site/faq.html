@@ -1,0 +1,33 @@
+{{> site/crumbs}}
+<section style="background:var(--navy);color:#ffffff;padding:48px 0">
+  <div class="wrap" style="max-width:1280px;margin:0 auto;padding:0 24px">
+    <p class="eyebrow" style="color:var(--gold-500);margin-bottom:8px">Frequently asked questions</p>
+    <h1 style="font-family:'Fraunces',Georgia,serif;font-size:clamp(28px,3.5vw,42px);font-weight:500;color:#ffffff;margin:0 0 12px">Direct answers, including the uncomfortable ones</h1>
+    <p style="color:rgba(255,255,255,0.7);max-width:70ch;font-size:16px;line-height:1.6">What we do, what we cannot do, how we charge, how we store your enquiry and how we handle funds rules that change. If your question is not here, ask it — we publish the answers we give.</p>
+  </div>
+</section>
+<section style="padding:48px 0">
+  <div class="wrap narrow" style="max-width:860px;margin:0 auto;padding:0 24px">
+    {{#each groups}}
+    <h2 style="margin-top:36px;font-family:'Fraunces',Georgia,serif;font-size:1.6rem;color:var(--navy);text-transform:capitalize;border-bottom:2px solid var(--gold-500);padding-bottom:8px">{{this}}</h2>
+    <div class="accordion" style="margin-top:16px;border:1px solid var(--line);border-radius:4px">
+      {{#each @root.faqs}}
+        {{#if eq category ../this}}
+        <details>
+          <summary style="font-family:'Fraunces',Georgia,serif;color:var(--navy);font-size:1rem">{{question}}</summary>
+          <div class="ans" style="line-height:1.65;color:var(--ink-700)">{{answer}}</div>
+        </details>
+        {{/if}}
+      {{/each}}
+    </div>
+    {{/each}}
+    <div class="card" style="margin-top:40px;background:var(--sand);border:1px solid var(--line);border-radius:4px;padding:32px">
+      <h3 style="font-family:'Fraunces',Georgia,serif;font-size:1.35rem;color:var(--navy);margin:0 0 8px">Still unsure?</h3>
+      <p style="color:var(--ink-700);margin-bottom:20px;line-height:1.65">Ask us directly. If the answer is useful to others we will add it to this page with the notice version recorded.</p>
+      <div class="row" style="gap:12px">
+        <a class="btn btn-gold" href="/contact">Ask a question</a>
+        <a class="btn btn-outline" href="https://wa.me/{{replace (setting 'brand.whatsapp' '+971501234567') '+' ''}}" rel="noopener" target="_blank">WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</section>

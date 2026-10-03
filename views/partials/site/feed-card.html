@@ -1,0 +1,14 @@
+<article class="feed-card">
+  <div class="thumb">
+    <span class="plat">{{platform_label}}</span>
+    {{#if eq kind 'video'}}<span class="play">▶</span>{{else}}{{#if eq kind 'short'}}<span class="play">▶</span>{{else}}{{#if eq kind 'reel'}}<span class="play">▶</span>{{else}}<span style="opacity:.7;font-size:1.6rem">◈</span>{{/if}}{{/if}}{{/if}}
+  </div>
+  <div class="body">
+    {{#if pinned}}<span class="badge gold">Pinned success story</span>{{/if}}
+    <p>{{truncate caption 170}}</p>
+    <div class="src" style="margin-top:auto;padding-top:10px;border-top:1px solid var(--line-soft);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap">
+      <span class="tiny muted">{{date published_at}}{{#if is_sample}} · sample{{/if}}</span>
+      <a class="link-arrow tiny" href="{{default permalink '/contact'}}" rel="noopener nofollow" target="_blank">Enquire About This Route</a>
+    </div>
+  </div>
+</article>

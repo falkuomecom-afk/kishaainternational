@@ -1,0 +1,204 @@
+<div class="page-head">
+  <div>
+    <h1>{{#if page.id}}Edit page{{else}}Add new page{{/if}}</h1>
+    <p>{{#if page.id}}/{{page.slug}} · last saved {{ago page.updated_at}}{{else}}Start with a title, then build the page from blocks.{{/if}}</p>
+  </div>
+  <div class="spacer"></div>
+  <div class="row">
+    <span class="tiny muted" id="autosaveStatus">{{#if autosave}}Working copy from {{ago autosave.updated_at}}{{else}}Not autosaved yet{{/if}}</span>
+    {{#if page.id}}<a class="btn sm" href="/admin/preview/pages/{{page.id}}" target="_blank" rel="noopener">Preview</a>{{/if}}
+    {{#if page.id}}{{#if eq page.status 'published'}}<a class="btn sm ghost" href="/{{#if eq page.slug 'home'}}{{else}}{{page.slug}}{{/if}}" target="_blank" rel="noopener">View live</a>{{/if}}{{/if}}
+    {{#if can 'content.publish'}}
+    <form method="post" action="/admin/pages/{{page.id}}/status">
+      <input type="hidden" name="_csrf" value="{{csrf}}">
+      <input type="hidden" name="status" value="{{#if eq page.status 'published'}}draft{{else}}published{{/if}}">
+      <button class="btn sm {{#if eq page.status 'published'}}danger{{else}}gold{{/if}}" type="submit" {{#if page.id}}{{else}}disabled{{/if}}>
+        {{#if eq page.status 'published'}}Unpublish{{else}}Publish{{/if}}
+      </button>
+    </form>
+    {{/if}}
+  </div>
+</div>
+
+{{#if autosave}}
+<div class="notice warn">
+  A working copy was autosaved {{ago autosave.updated_at}} by {{default autosave.author 'another editor'}} — newer than the saved version.
+  <form method="post" action="/admin/pages/{{page.id}}/autosave/discard" style="display:inline">
+    <input type="hidden" name="_csrf" value="{{csrf}}">
+    <button class="btn sm" type="submit">Discard working copy</button>
+  </form>
+</div>
+{{/if}}
+
+<form method="post" action="/admin/pages/{{#if page.id}}{{page.id}}{{/if}}" id="contentForm"
+      data-autosave="{{#if page.id}}/admin/pages/{{page.id}}/autosave{{/if}}">
+  <input type="hidden" name="_csrf" value="{{csrf}}">
+  <input type="hidden" name="record_id" value="{{page.id}}">
+
+  <div class="split">
+    <div class="stack">
+      <div class="card">
+        <header><h2>Page content</h2></header>
+        <div class="body">
+          <label class="field">
+            <span class="lab">Title</span>
+            <input type="text" name="title" value="{{page.title}}" required data-slug-source maxlength="200">
+            <span class="hint">Shown in the browser tab, headings and the sitemap.</span>
+          </label>
+          <div class="field-row">
+            <label class="field">
+              <span class="lab">URL slug</span>
+              <input type="text" name="slug" value="{{page.slug}}" data-slug-target>
+              <span class="hint">Use “home” for the homepage. Keep it short and permanent — changing it needs a redirect.</span>
+            </label>
+            <label class="field">
+              <span class="lab">Template</span>
+              <select name="template">
+                <option value="blocks" {{#if eq page.template 'blocks'}}selected{{/if}}>Standard blocks page</option>
+                <option value="home" {{#if eq page.template 'home'}}selected{{/if}}>Homepage</option>
+                <option value="tool" {{#if eq page.template 'tool'}}selected{{/if}}>Interactive tool</option>
+              </select>
+            </label>
+          </div>
+          <label class="field">
+            <span class="lab">Excerpt / summary</span>
+            <textarea name="excerpt" rows="2" maxlength="400" data-count="#excerptCount" data-max="400">{{page.excerpt}}</textarea>
+            <span class="hint">One or two sentences used in listings and as the answer-first fallback. <span id="excerptCount" class="tiny muted"></span></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <header>
+          <h2>Page builder</h2>
+          <div class="spacer"></div>
+          <button class="btn sm primary" type="button" data-add-block>+ Add block</button>
+        </header>
+        <div class="body">
+          <div id="blockPicker" hidden class="block-add">
+            <div class="row between">
+              <b>Choose a block</b>
+              <button class="btn sm ghost" type="button" data-close-picker>Close</button>
+            </div>
+            <div class="block-gallery">
+              {{#each BLOCK_TYPES}}
+              <button type="button" data-add-block="{{type}}">
+                <b>{{label}}</b><span>{{help}}</span>
+              </button>
+              {{/each}}
+            </div>
+          </div>
+
+          <div class="block-list" id="blockList" data-next="{{count blocks}}">
+            {{#each blocks}}{{> admin/block-row}}{{/each}}
+          </div>
+          <p class="tiny muted" style="margin:10px 0 0">Blocks render in this order. Attach images by ID from the media library; leave a field blank to use the site default copy.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <header><h2>Search &amp; AI optimisation</h2><div class="spacer"></div><span class="muted tiny">SEO · AEO · GEO · AIO</span></header>
+        <div class="body">
+          <label class="field">
+            <span class="lab">SEO title</span>
+            <input type="text" name="seo_title" value="{{page.seo_title}}" maxlength="70" data-count="#seoTitleCount" data-max="60">
+            <span class="hint">Aim for 50–60 characters. <span id="seoTitleCount" class="tiny muted"></span></span>
+          </label>
+          <label class="field">
+            <span class="lab">Meta description</span>
+            <textarea name="seo_description" rows="2" maxlength="170" data-count="#seoDescCount" data-max="158">{{page.seo_description}}</textarea>
+            <span class="hint">Aim for 140–158 characters; lead with the answer, not a tease. <span id="seoDescCount" class="tiny muted"></span></span>
+          </label>
+          <div class="field-row">
+            <label class="field">
+              <span class="lab">Canonical URL override</span>
+              <input type="text" name="canonical_url" value="{{page.canonical_url}}" placeholder="https://kishaainternational.com/…">
+              <span class="hint">Only for syndicated copies. Leave empty for normal pages.</span>
+            </label>
+            <label class="field">
+              <span class="lab">Indexing</span>
+              <span class="inline-check"><input type="checkbox" name="noindex" value="1" {{#if page.noindex}}checked{{/if}}> Hide from search engines (noindex)</span>
+              <span class="hint">Use for thank-you pages, previews and legal drafts only.</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stack">
+      <div class="card">
+        <header><h3>Publishing</h3></header>
+        <div class="body">
+          <label class="field">
+            <span class="lab">Status</span>
+            <select name="status">
+              <option value="draft" {{#if eq page.status 'draft'}}selected{{/if}}>Draft</option>
+              <option value="review" {{#if eq page.status 'review'}}selected{{/if}}>Ready for review</option>
+              <option value="published" {{#if eq page.status 'published'}}selected{{/if}}>Published</option>
+              <option value="trashed" {{#if eq page.status 'trashed'}}selected{{/if}}>Move to trash</option>
+            </select>
+            {{#if can 'content.publish'}}{{else}}<span class="hint">Your role cannot publish directly — submitting for review sends it to an editor.</span>{{/if}}
+          </label>
+          <label class="field">
+            <span class="lab">Schedule publication</span>
+            <input type="datetime-local" name="publish_at" value="{{page.publish_at}}">
+            <span class="hint">Leave empty to publish immediately on save. Scheduled pages publish automatically.</span>
+          </label>
+          <button class="btn primary block" type="submit">Save page</button>
+          {{#if page.id}}
+          <p class="tiny muted" style="margin:10px 0 0">Every save writes a revision. Restore any earlier version below.</p>
+          {{/if}}
+        </div>
+      </div>
+
+      {{#if page.id}}
+      <div class="card">
+        <header><h3>Revisions</h3><div class="spacer"></div><span class="muted tiny">{{count revisions}}</span></header>
+        <div class="body scroll-y">
+          {{#each revisions}}
+          <div class="kv">
+            <span>
+              <b>{{note}}</b><br>
+              <span class="tiny muted">{{ago created_at}} · {{default author_name 'system'}} · {{count (json blocks)}} chars</span>
+            </span>
+            <form method="post" action="/admin/pages/{{../page.id}}/restore/{{id}}" data-confirm="Restore this revision into a new draft?">
+              <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+              <button class="btn sm" type="submit">Restore</button>
+            </form>
+          </div>
+          {{else}}
+          <p class="muted tiny" style="margin:0">No revisions yet. The first save records one.</p>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+
+      <div class="card">
+        <header><h3>Media library</h3><div class="spacer"></div><a class="tiny" href="/admin/media">Manage →</a></header>
+        <div class="body">
+          {{#if media.length}}
+          <div class="media-pick-grid">
+            {{#each media}}
+            <div class="media-tile" data-media-tile="{{id}}">
+              <img src="/uploads/{{filename}}" alt="{{default alt filename}}" loading="lazy">
+              <div class="meta">
+                <b>{{filename}}</b>
+                <button class="btn sm ghost" type="button" data-pick-media="#blockImageInput">Use ID {{id}}</button>
+              </div>
+            </div>
+            {{/each}}
+          </div>
+          <p class="tiny muted" style="margin:10px 0 0">Type the ID into an image field, or leave blank for the styled default.</p>
+          {{else}}
+          <p class="muted tiny" style="margin:0">No media uploaded yet. <a href="/admin/media">Upload images →</a></p>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<script type="application/json" id="pageBlocks">{{json blocks}}</script>
+<script>window.__BLOCK_INDEX__ = {{count blocks}};</script>
+
+<template id="blockTemplate">{{> admin/block-row}}</template>

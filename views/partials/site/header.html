@@ -1,0 +1,102 @@
+<!-- Full-Width Smart Header matching React client layout -->
+<header id="site-header" class="site-header-wrapper" style="position:fixed;top:0;left:0;right:0;width:100%;z-index:50;background:linear-gradient(90deg,#021226 0%,#051c3c 50%,#031428 100%);border-bottom:1px solid rgba(22,58,105,0.8);transition:transform 0.3s ease-in-out;transform:translateY(0);box-shadow:0 4px 25px rgba(2,12,28,0.5)">
+  <div style="max-width:1920px;margin:0 auto;padding:0 16px">
+    <div style="display:flex;height:68px;align-items:center;justify-content:space-between;gap:8px">
+      <!-- Brand -->
+      <a class="brand" href="/" aria-label="Kishaa International — home" style="display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0">
+        <img src="/img/logo.png" alt="Kishaa International" width="38" height="38" style="width:38px;height:38px;object-fit:contain;border-radius:50%;box-shadow:0 0 10px rgba(201,162,39,0.3);flex-shrink:0">
+        <div style="display:flex;flex-direction:column;line-height:1.2">
+          <strong style="font-family:'Fraunces',Georgia,serif;font-size:14.5px;font-weight:600;letter-spacing:-0.01em;color:#ffffff;white-space:nowrap">Kishaa International</strong>
+          <span style="font-size:7.5px;letter-spacing:0.18em;text-transform:uppercase;color:#93a7c3;font-weight:600;margin-top:1px;white-space:nowrap">GATEWAY TO GLOBAL CAREERS</span>
+        </div>
+      </a>
+
+      <!-- Navigation links (Desktop - All 8 items) -->
+      <nav class="main-nav-desktop" aria-label="Primary" style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+        <a href="/" style="position:relative;font-size:11px;font-weight:500;color:{{#if (eq @root.path '/')}}#ffffff{{else}}rgba(255,255,255,0.8){{/if}};text-decoration:none;padding:4px 6px;white-space:nowrap">
+          Home
+          {{#if (eq @root.path '/')}}<span style="position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);width:16px;height:2px;background:#E5B54F;border-radius:999px"></span>{{/if}}
+        </a>
+        <a href="/career-counseling" style="position:relative;font-size:11px;font-weight:500;color:{{#if (eq @root.path '/career-counseling')}}#ffffff{{else}}rgba(255,255,255,0.8){{/if}};text-decoration:none;padding:4px 6px;white-space:nowrap">
+          Career Counselling
+          {{#if (eq @root.path '/career-counseling')}}<span style="position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);width:16px;height:2px;background:#E5B54F;border-radius:999px"></span>{{/if}}
+        </a>
+        <a href="/immigration-consultancy" style="position:relative;font-size:11px;font-weight:500;color:{{#if (eq @root.path '/immigration-consultancy')}}#ffffff{{else}}rgba(255,255,255,0.8){{/if}};text-decoration:none;padding:4px 6px;white-space:nowrap">
+          Immigration Consultancy
+          {{#if (eq @root.path '/immigration-consultancy')}}<span style="position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);width:16px;height:2px;background:#E5B54F;border-radius:999px"></span>{{/if}}
+        </a>
+        <a href="/cambridge-courses" style="position:relative;font-size:11px;font-weight:500;color:{{#if (eq @root.path '/cambridge-courses')}}#ffffff{{else}}rgba(255,255,255,0.8){{/if}};text-decoration:none;padding:4px 6px;white-space:nowrap">
+          Cambridge Courses
+          {{#if (eq @root.path '/cambridge-courses')}}<span style="position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);width:16px;height:2px;background:#E5B54F;border-radius:999px"></span>{{/if}}
+        </a>
+        <a href="/destinations" style="position:relative;font-size:11px;font-weight:500;color:{{#if (or (eq @root.path '/destinations') (startsWith @root.path '/destinations/'))}}#ffffff{{else}}rgba(255,255,255,0.8){{/if}};text-decoration:none;padding:4px 6px;white-space:nowrap">
+          Destinations &amp; Costs
+          {{#if (or (eq @root.path '/destinations') (startsWith @root.path '/destinations/'))}}<span style="position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);width:16px;height:2px;background:#E5B54F;border-radius:999px"></span>{{/if}}
+        </a>
+        <a href="/team/zeb-khan" style="position:relative;font-size:11px;font-weight:500;color:{{#if (eq @root.path '/team/zeb-khan')}}#ffffff{{else}}rgba(255,255,255,0.8){{/if}};text-decoration:none;padding:4px 6px;white-space:nowrap">
+          Meet Zeb Khan
+          {{#if (eq @root.path '/team/zeb-khan')}}<span style="position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);width:16px;height:2px;background:#E5B54F;border-radius:999px"></span>{{/if}}
+        </a>
+        <a href="/reviews" style="position:relative;font-size:11px;font-weight:500;color:{{#if (eq @root.path '/reviews')}}#ffffff{{else}}rgba(255,255,255,0.8){{/if}};text-decoration:none;padding:4px 6px;white-space:nowrap">
+          Reviews
+          {{#if (eq @root.path '/reviews')}}<span style="position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);width:16px;height:2px;background:#E5B54F;border-radius:999px"></span>{{/if}}
+        </a>
+        <a href="/contact" style="position:relative;font-size:11px;font-weight:500;color:{{#if (eq @root.path '/contact')}}#ffffff{{else}}rgba(255,255,255,0.8){{/if}};text-decoration:none;padding:4px 6px;white-space:nowrap">
+          Contact
+          {{#if (eq @root.path '/contact')}}<span style="position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);width:16px;height:2px;background:#E5B54F;border-radius:999px"></span>{{/if}}
+        </a>
+      </nav>
+
+      <!-- Right Area: Phone numbers + Button -->
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+        <!-- Phone Capsule -->
+        <div style="display:flex;align-items:center;gap:6px;background:rgba(2,11,24,0.85);border:1px solid rgba(255,255,255,0.1);border-radius:999px;padding:3px 10px;font-size:10px;white-space:nowrap">
+          <a href="tel:+971588828099" style="display:flex;align-items:center;gap:4px;color:#ffffff;text-decoration:none;font-weight:500" title="Call UAE Office: +971 58 882 8099">
+            <span style="display:inline-flex;width:14px;height:14px;border-radius:999px;background:#E5A922;color:#06162D;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </span>
+            <span>+971 58 882 8099</span>
+          </a>
+          <span style="width:1px;height:10px;background:rgba(255,255,255,0.2)"></span>
+          <a href="https://wa.me/923125526099" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:4px;color:#ffffff;text-decoration:none;font-weight:500" title="WhatsApp Pakistan Office: +92 312 552 6099">
+            <span style="display:inline-flex;width:14px;height:14px;border-radius:999px;background:#25D366;color:#ffffff;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.974.53 1.761.815 2.796.815 3.181 0 5.767-2.586 5.768-5.766.001-3.182-2.585-5.768-5.768-5.768zm3.374 8.167c-.14.394-.712.75-1.004.793-.283.042-.647.07-1.047-.06-.251-.082-.572-.191-1.018-.385-1.89-.824-3.123-2.73-3.218-2.855-.094-.126-.763-1.017-.763-1.94 0-.923.483-1.378.654-1.565.172-.187.375-.234.5-.234.125 0 .25.002.359.007.115.006.27-.044.421.32.156.376.532 1.3.579 1.394.047.094.078.204.016.33-.063.125-.094.204-.188.314-.094.11-.198.245-.283.33-.094.094-.192.196-.083.383.11.188.487.804 1.045 1.302.718.64 1.324.839 1.512.932.188.094.297.079.407-.047.11-.125.469-.548.594-.736.125-.188.25-.157.422-.094.172.063 1.094.516 1.282.61.188.094.313.141.359.219.047.079.047.454-.093.848z"/></svg>
+            </span>
+            <span>+92 312 552 6099</span>
+          </a>
+        </div>
+
+        <!-- Request Consultation Button -->
+        <a href="/contact" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(90deg,#F5C344 0%,#F1BE3B 50%,#E5A720 100%);color:#06162D;padding:7px 14px;border-radius:999px;font-size:10.5px;font-weight:700;text-decoration:none;box-shadow:0 2px 10px rgba(245,195,68,0.25);white-space:nowrap;flex-shrink:0">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="10" y1="10" y2="10"/></svg>
+          <span>Request Consultation</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+
+        <!-- Mobile burger toggle -->
+        <button class="burger mobile-only" id="burger" aria-label="Open menu" style="display:none;background:transparent;border:none;cursor:pointer">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script>
+(function() {
+  var header = document.getElementById('site-header');
+  if (!header) return;
+  var lastScrollY = window.scrollY || 0;
+  window.addEventListener('scroll', function() {
+    var currentScrollY = window.scrollY || 0;
+    if (currentScrollY <= 30) {
+      header.style.transform = 'translateY(0)';
+    } else if (currentScrollY > lastScrollY + 8) {
+      header.style.transform = 'translateY(-100%)';
+    } else if (currentScrollY < lastScrollY - 4) {
+      header.style.transform = 'translateY(0)';
+    }
+    lastScrollY = currentScrollY;
+  }, { passive: true });
+})();
+</script>

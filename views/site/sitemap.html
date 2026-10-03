@@ -1,0 +1,52 @@
+{{> site/crumbs}}
+<section>
+  <div class="wrap">
+    <h1>Sitemap</h1>
+    <p class="lead">Every published page on kishaainternational.com. Machine-readable versions: <a href="/sitemap.xml">sitemap.xml</a>, <a href="/llms.txt">llms.txt</a>, <a href="/feed.xml">RSS</a>.</p>
+
+    <div class="grid g2" style="margin-top:30px">
+      <div class="card">
+        <h3>Main pages</h3>
+        <ul class="related-list">
+          <li><a href="/">Home</a></li>
+          <li><a href="/career-counseling">Career Counseling</a></li>
+          <li><a href="/immigration-consultancy">Immigration Consultancy</a></li>
+          <li><a href="/cambridge-courses">Cambridge Courses</a></li>
+          <li><a href="/services">All services</a></li>
+          <li><a href="/destinations">Destinations</a></li>
+          <li><a href="/cost-planner">Cost Planner</a></li>
+          <li><a href="/bank-statements">Bank Statement Rules</a></li>
+          <li><a href="/reviews">Reviews & Media</a></li>
+          <li><a href="/resources">Resources</a></li>
+          <li><a href="/faq">FAQs</a></li>
+          <li><a href="/about-us">About Us</a></li>
+          <li><a href="/contact">Contact</a></li>
+          <li><a href="/privacy">Privacy Policy</a></li>
+          <li><a href="/terms">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Destinations</h3>
+        <ul class="related-list">
+          {{#each destinations}}<li><a href="/destinations/{{slug}}">{{name}}</a> <span class="tiny muted">· {{region}}</span></li>{{/each}}
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Services & programs</h3>
+        <ul class="related-list">{{#each programs}}<li><a href="/services/{{slug}}">{{name}}</a></li>{{/each}}</ul>
+      </div>
+      <div class="card">
+        <h3>Guides</h3>
+        <ul class="related-list">{{#each posts}}<li><a href="/resources/{{slug}}">{{title}}</a></li>{{/each}}</ul>
+      </div>
+      <div class="card">
+        <h3>Team</h3>
+        <ul class="related-list">{{#each team}}<li><a href="/team/{{slug}}">{{name}}</a> <span class="tiny muted">· {{role_title}}</span></li>{{/each}}</ul>
+      </div>
+      <div class="card">
+        <h3>Excluded from search engines</h3>
+        <p class="tiny muted">Private leads, CMS administration, preview responses, thank-you pages and internal search results are deliberately excluded from indexing and from this sitemap.</p>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,87 @@
+<div class="page-head">
+  <div>
+    <h1>Media library</h1>
+    <p>Images and PDFs used across pages, guides, destinations and programmes. Alt text is required for accessibility and image search.</p>
+  </div>
+  <div class="spacer"></div>
+</div>
+
+{{#if error}}<div class="notice bad">{{error}}</div>{{/if}}
+
+<div class="card" style="margin-bottom:16px">
+  <header><h2>Upload</h2><div class="spacer"></div><span class="muted tiny">JPEG, PNG, WebP, GIF, SVG, AVIF, PDF · up to 8 MB each · 6 files at once</span></header>
+  <div class="body">
+    <form method="post" action="/admin/media" enctype="multipart/form-data">
+      <input type="hidden" name="_csrf" value="{{csrf}}">
+      <div class="field-row three">
+        <label class="field"><span class="lab">Files</span><input type="file" name="files" id="mediaFiles" multiple accept="image/*,application/pdf" required></label>
+        <label class="field"><span class="lab">Folder</span><input type="text" name="folder" value="{{default folder 'general'}}" placeholder="general, hero, destinations"></label>
+        <label class="field">
+          <span class="lab">Visibility</span>
+          <select name="visibility"><option value="public">Public</option><option value="internal">Internal / draft only</option></select>
+        </label>
+      </div>
+      <div class="field-row">
+        <label class="field"><span class="lab">Alt text (applies to this batch)</span><input type="text" name="alt" placeholder="Describe the image for screen readers"></label>
+        <label class="field"><span class="lab">Caption</span><input type="text" name="caption"></label>
+      </div>
+      <p class="tiny muted" id="mediaChosen">No files selected</p>
+      <button class="btn primary" type="submit">Upload files</button>
+    </form>
+  </div>
+</div>
+
+<div class="toolbar">
+  <a class="btn sm {{#if folder}}{{else}}primary{{/if}}" href="/admin/media">All files</a>
+  {{#each folders}}
+  <a class="btn sm {{#if eq @root.folder folder}}primary{{/if}}" href="/admin/media?folder={{urlencode folder}}">{{folder}} ({{n}})</a>
+  {{/each}}
+  <div class="spacer"></div>
+  <input type="text" placeholder="Filter files…" data-filter-table="#mediaTable" style="max-width:240px">
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    <table class="table" id="mediaTable">
+      <thead><tr><th>Preview</th><th>File</th><th>Alt / caption</th><th>Folder</th><th>Usage</th><th>Uploaded</th><th class="actions">Actions</th></tr></thead>
+      <tbody>
+      {{#each media}}
+        <tr>
+          <td style="width:90px">
+            {{#if (isImage mime)}}<img src="/uploads/{{filename}}" alt="{{default alt ''}}" style="width:72px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--a-line)">
+            {{else}}<span class="badge">file</span>{{/if}}
+          </td>
+          <td class="tiny"><b>{{filename}}</b><br><span class="mono muted">{{default mime 'unknown'}} · {{bytes size}}</span></td>
+          <td class="tiny">
+            <form method="post" action="/admin/media/{{id}}">
+              <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+              <input type="text" name="alt" value="{{alt}}" placeholder="Alt text (required)" style="margin-bottom:4px">
+              <input type="text" name="caption" value="{{caption}}" placeholder="Caption">
+              <div class="row" style="margin-top:4px">
+                <input type="text" name="folder" value="{{default folder 'general'}}" style="max-width:110px">
+                <select name="visibility" style="max-width:110px">
+                  <option value="public" {{#if eq visibility 'public'}}selected{{/if}}>Public</option>
+                  <option value="private" {{#if eq visibility 'private'}}selected{{/if}}>Private</option>
+                </select>
+                <button class="btn sm" type="submit">Save</button>
+              </div>
+              {{#if alt}}{{else}}<span class="badge warn">alt missing</span>{{/if}}
+            </form>
+          </td>
+          <td class="tiny">{{default folder 'general'}}<br><span class="muted">{{default uploader '—'}}</span></td>
+          <td class="tiny">{{default usage_count 0}} reference{{plural (default usage_count 0) '' 's'}}</td>
+          <td class="tiny muted">{{ago created_at}}</td>
+          <td class="actions">
+            <div class="row" style="justify-content:flex-end">
+              <button class="btn sm ghost" type="button" data-copy-url="/uploads/{{filename}}">Copy URL</button>
+              <a class="btn sm ghost" href="/uploads/{{filename}}" target="_blank" rel="noopener">Open</a>
+            </div>
+          </td>
+        </tr>
+      {{else}}
+        <tr><td colspan="7" class="empty"><b>No media yet</b>Upload images to use in hero blocks, destination cards and guide covers.</td></tr>
+      {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>

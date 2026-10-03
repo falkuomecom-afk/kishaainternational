@@ -1,0 +1,16 @@
+<section style="padding-top:60px">
+  <div class="wrap narrow">
+    <div class="notice warn">
+      <span class="ico">!</span>
+      <div>
+        <h3>{{title}}</h3>
+        <p>{{message}}</p>
+      </div>
+    </div>
+    <div class="row" style="margin-top:20px">
+      <a class="btn btn-primary" href="/contact">Back to the form</a>
+      <a class="btn btn-outline" href="tel:{{replace (setting 'brand.phone_uae') ' ' ''}}">Call {{setting 'brand.phone_uae'}}</a>
+      <a class="btn btn-outline" href="https://wa.me/{{replace (setting 'brand.whatsapp') '+' ''}}" rel="noopener" target="_blank">WhatsApp</a>
+    </div>
+  </div>
+</section>

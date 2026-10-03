@@ -1,0 +1,39 @@
+<div class="group">Overview</div>
+<a class="item {{#if eq path '/admin/'}}on{{/if}}{{#if eq path '/admin'}}on{{/if}}" href="/admin"><span class="ico">◈</span> Dashboard</a>
+{{#if can 'leads.view'}}<a class="item {{#if in '/admin/leads' path}}on{{/if}}" href="/admin/leads"><span class="ico">◉</span> Leads{{#if @root.navCounts.newLeads}}<span class="count">{{@root.navCounts.newLeads}}</span>{{/if}}</a>{{/if}}
+{{#if can 'reports.view'}}<a class="item {{#if eq path '/admin/reports'}}on{{/if}}" href="/admin/reports"><span class="ico">▤</span> Reports</a>{{/if}}
+
+{{#if can 'content.view'}}
+<div class="group">Content</div>
+<a class="item {{#if in '/admin/pages' path}}on{{/if}}" href="/admin/pages"><span class="ico">▦</span> Pages{{#if @root.navCounts.drafts}}<span class="count">{{@root.navCounts.drafts}}</span>{{/if}}</a>
+<a class="item {{#if in '/admin/posts' path}}on{{/if}}" href="/admin/posts"><span class="ico">✎</span> Posts &amp; guides</a>
+<a class="item {{#if in '/admin/programs' path}}on{{/if}}" href="/admin/programs"><span class="ico">◍</span> Programs</a>
+<a class="item {{#if in '/admin/countries' path}}on{{/if}}" href="/admin/countries"><span class="ico">◎</span> Destinations</a>
+<a class="item {{#if in '/admin/funds-rules' path}}on{{/if}}" href="/admin/funds-rules"><span class="ico">⚖</span> Funds rules{{#if @root.navCounts.rulesReview}}<span class="count">{{@root.navCounts.rulesReview}}</span>{{/if}}</a>
+<a class="item {{#if in '/admin/team' path}}on{{/if}}" href="/admin/team"><span class="ico">☺</span> Team</a>
+<a class="item {{#if eq path '/admin/faqs'}}on{{/if}}" href="/admin/faqs"><span class="ico">?</span> FAQs</a>
+<a class="item {{#if eq path '/admin/testimonials'}}on{{/if}}" href="/admin/testimonials"><span class="ico">❝</span> Testimonials{{#if @root.navCounts.pendingReviews}}<span class="count">{{@root.navCounts.pendingReviews}}</span>{{/if}}</a>
+{{/if}}
+
+{{#if can 'media.manage'}}<a class="item {{#if eq path '/admin/media'}}on{{/if}}" href="/admin/media"><span class="ico">▣</span> Media library</a>{{/if}}
+{{#if can 'menus.manage'}}<a class="item {{#if eq path '/admin/menus'}}on{{/if}}" href="/admin/menus"><span class="ico">≡</span> Menus</a>{{/if}}
+
+{{#if can 'seo.manage'}}
+<div class="group">Growth</div>
+<a class="item {{#if eq path '/admin/seo'}}on{{/if}}" href="/admin/seo"><span class="ico">⌕</span> SEO · AEO · GEO</a>
+{{/if}}
+{{#if can 'integrations.manage'}}<a class="item {{#if eq path '/admin/integrations'}}on{{/if}}" href="/admin/integrations"><span class="ico">⇄</span> Integrations</a>{{/if}}
+
+{{#if can 'settings.manage'}}
+<div class="group">System</div>
+<a class="item {{#if eq path '/admin/settings'}}on{{/if}}" href="/admin/settings"><span class="ico">⚙</span> Settings</a>
+{{/if}}
+{{#if can 'users.manage'}}<a class="item {{#if in '/admin/users' path}}on{{/if}}" href="/admin/users"><span class="ico">⚿</span> Users &amp; roles</a>{{/if}}
+{{#if can 'audit.view'}}<a class="item {{#if eq path '/admin/audit'}}on{{/if}}" href="/admin/audit"><span class="ico">▤</span> Audit trail</a>{{/if}}
+{{#if can 'tools.run'}}<a class="item {{#if eq path '/admin/tools'}}on{{/if}}" href="/admin/tools"><span class="ico">⚒</span> Tools &amp; backup</a>{{/if}}
+
+<div class="group">Shortcuts</div>
+<a class="item" href="/admin/pages/new"><span class="ico">+</span> New page</a>
+<a class="item" href="/admin/posts/new"><span class="ico">+</span> New guide</a>
+<a class="item" href="/sitemap.xml" target="_blank" rel="noopener"><span class="ico">↗</span> XML sitemap</a>
+<a class="item" href="/llms.txt" target="_blank" rel="noopener"><span class="ico">↗</span> llms.txt</a>

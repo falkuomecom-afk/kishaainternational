@@ -1,0 +1,119 @@
+{{> site/crumbs}}
+
+<section class="hero compact">
+  <div class="wrap">
+    <span class="eyebrow">Verified evidence</span>
+    <h1>Real reviews, fetched from the platforms that host them</h1>
+    <p class="lead">Google Business Profile, Facebook and Trustpilot reviews alongside recent posts and videos from Instagram, Facebook and YouTube. Every item is attributed and linked to its original source, and content deleted at source disappears here on the next refresh.</p>
+    <div class="hero-badges">
+      <span class="chip">Aggregates fetched from platform APIs</span>
+      <span class="chip">Never invented or inflated</span>
+      <span class="chip">Cached for speed — external outages never break the page</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="trust-strip">
+      {{#each aggregates}}
+      <div class="trust-pill">
+        <b>{{score}}</b>
+        <div class="stars">{{stars score}}</div>
+        <span>{{platformLabel platform}} · {{review_count}} reviews</span>
+        {{#if ranking_note}}<p class="tiny muted" style="margin-top:8px">{{truncate ranking_note 110}}</p>{{/if}}
+        {{#if profile_url}}<a class="link-arrow tiny" href="{{profile_url}}" rel="noopener nofollow" target="_blank">Open profile</a>{{/if}}
+        <div class="tiny muted" style="margin-top:8px">Last synced {{ago retrieved_at}} · {{mode}}</div>
+      </div>
+      {{/each}}
+    </div>
+    {{#if setting 'flags.sample_reviews' true}}
+    <p class="sample-note" style="margin-top:16px">Integration mode: <strong>cache</strong>. Provider credentials are not connected in this environment, so labelled sample records illustrate the layout. Connect Google Business Profile, Facebook and Trustpilot in Admin → Integrations to switch each provider to live.</p>
+    {{/if}}
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <div class="between" style="margin-bottom:20px">
+      <h2 class="mb0">Review wall</h2>
+      <div class="filter-bar" style="margin:0">
+        <a href="/reviews" class="{{#unless query.platform}}on{{/unless}}">All</a>
+        {{#each platforms}}<a href="/reviews?platform={{this}}" class="{{#if eq this @root.query.platform}}on{{/if}}">{{platformLabel this}}</a>{{/each}}
+      </div>
+    </div>
+    <div class="grid g3">
+      {{#each reviews}}{{> site/review-card}}{{/each}}
+    </div>
+  </div>
+</section>
+
+{{#if testimonials}}
+<section>
+  <div class="wrap">
+    <div class="sec-head"><h2>Client stories with publication permission on file</h2><p class="lead">Each testimonial below has a recorded consent and a private evidence file. Evidence is never published.</p></div>
+    <div class="grid g2">
+      {{#each testimonials}}
+      <div class="card">
+        <div class="stars">★★★★★</div>
+        <blockquote style="margin:0;font-size:1rem;color:var(--ink-700)">“{{quote}}”</blockquote>
+        <p class="tiny muted" style="margin:0">{{author_display}}{{#if program_name}} · {{program_name}}{{/if}}</p>
+        <div class="foot"><span class="badge ok">Consent recorded</span>{{#if program_slug}}<a class="link-arrow tiny" href="/services/{{program_slug}}">Related service</a>{{/if}}</div>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+</section>
+{{/if}}
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Student videos & social posts</h2>
+      <p class="lead">Ingested through the integration hub and cached so the page never waits on a social platform. Autoplay is disabled and reduced-motion preferences are respected.</p>
+    </div>
+    <div class="filter-bar">
+      <a href="/reviews" class="{{#unless query.feed}}on{{/unless}}">All media</a>
+      {{#each feedPlatforms}}<a href="/reviews?feed={{this}}" class="{{#if eq this @root.query.feed}}on{{/if}}">{{platformLabel this}}</a>{{/each}}
+    </div>
+    <div class="grid g3">
+      {{#each feeds}}{{> site/feed-card}}{{/each}}
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <div class="grid g2">
+      <div>
+        <h2>How we keep this honest</h2>
+        <ul class="ticks">
+          <li>Aggregate scores and counts come from platform APIs — never entered by hand</li>
+          <li>Each card shows the platform name, reviewer display name and a deep link</li>
+          <li>Reviews removed or edited at source are synchronised and disappear on the next refresh</li>
+          <li>Staff can hide an item for relevance or tone, with the reason and moderator recorded in the audit trail</li>
+          <li>Where a provider is not connected, the page serves the last cached snapshot and says so</li>
+        </ul>
+      </div>
+      <div>
+        <h2>Connection health</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Provider</th><th>Status</th><th>Mode</th><th>Last sync</th></tr></thead>
+            <tbody>
+            {{#each health}}
+            <tr>
+              <td>{{label}}</td>
+              <td><span class="badge {{#if eq status 'connected'}}ok{{else}}neutral{{/if}}">{{status}}</span></td>
+              <td class="tiny">{{mode}}</td>
+              <td class="tiny">{{#if last_sync_at}}{{ago last_sync_at}}{{else}}—{{/if}}</td>
+            </tr>
+            {{/each}}
+            </tbody>
+          </table>
+          <div class="table-note">Tokens and OAuth credentials stay server-side. The browser never receives a provider credential.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

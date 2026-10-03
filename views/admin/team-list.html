@@ -1,0 +1,39 @@
+<div class="page-head">
+  <div>
+    <h1>Team &amp; trainers</h1>
+    <p>Public profiles, credentials and the trainers linked to programs. Names and titles here are what the site prints everywhere.</p>
+  </div>
+  <div class="spacer"></div>
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th>Name</th><th>Title</th><th>Languages</th><th>Locations</th><th>Public</th><th>Programs</th><th class="actions">Actions</th></tr></thead>
+      <tbody>
+      {{#each members}}
+        <tr>
+          <td><b>{{name}}</b><br><span class="tiny muted mono">/team/{{slug}}</span></td>
+          <td class="tiny">{{role_title}}</td>
+          <td class="tiny">{{join languages_list ', '}}</td>
+          <td class="tiny">{{join locations_list ' · '}}</td>
+          <td>{{#if is_public}}<span class="badge ok">Listed</span>{{else}}<span class="badge">Internal</span>{{/if}}</td>
+          <td class="tiny">{{default program_count 0}}</td>
+          <td class="actions">
+            <div class="row" style="justify-content:flex-end">
+              <a class="btn sm" href="/admin/team/{{id}}/edit">Edit</a>
+              {{#if is_public}}<a class="btn sm ghost" href="/team/{{slug}}" target="_blank" rel="noopener">View</a>{{/if}}
+            </div>
+          </td>
+        </tr>
+      {{else}}
+        <tr><td colspan="7" class="empty"><b>No team members</b>Add the consultants and trainers who appear on the site.</td></tr>
+      {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="notice plain">
+  Titles are locked to the approved wording: <b>Zeb Khan — Senior Consultant &amp; Executive Trainer</b>. Keeping this exact avoids contradicting published profiles, review platforms and physical signage.
+</div>

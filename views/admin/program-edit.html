@@ -1,0 +1,210 @@
+<div class="page-head">
+  <div>
+    <h1>{{#if program.id}}Edit program{{else}}Add program{{/if}}</h1>
+    <p>{{#if program.id}}/services/{{program.slug}}{{else}}Fees live in versioned records so an old quote always stays traceable.{{/if}}</p>
+  </div>
+  <div class="spacer"></div>
+  <div class="row">
+    {{#if program.id}}{{#if eq program.status 'published'}}<a class="btn sm ghost" href="/services/{{program.slug}}" target="_blank" rel="noopener">View live</a>{{/if}}{{/if}}
+  </div>
+</div>
+
+<div class="split">
+  <div class="stack">
+    <form method="post" action="/admin/programs/{{#if program.id}}{{program.id}}{{/if}}">
+      <input type="hidden" name="_csrf" value="{{csrf}}">
+      <div class="card">
+        <header><h2>Details</h2></header>
+        <div class="body">
+          <label class="field">
+            <span class="lab">Program name</span>
+            <input type="text" name="name" value="{{program.name}}" required data-slug-source maxlength="200">
+          </label>
+          <div class="field-row">
+            <label class="field">
+              <span class="lab">Slug</span>
+              <input type="text" name="slug" value="{{program.slug}}" data-slug-target>
+            </label>
+            <label class="field">
+              <span class="lab">Status</span>
+              <select name="status">
+                <option value="draft" {{#if eq program.status 'draft'}}selected{{/if}}>Draft</option>
+                <option value="published" {{#if eq program.status 'published'}}selected{{/if}}>Published</option>
+                <option value="archived" {{#if eq program.status 'archived'}}selected{{/if}}>Archived</option>
+              </select>
+            </label>
+          </div>
+          <div class="field-row three">
+            <label class="field">
+              <span class="lab">Pillar</span>
+              <select name="pillar">
+                <option value="career" {{#if eq program.pillar 'career'}}selected{{/if}}>Career counseling</option>
+                <option value="immigration" {{#if eq program.pillar 'immigration'}}selected{{/if}}>Immigration</option>
+                <option value="cambridge" {{#if eq program.pillar 'cambridge'}}selected{{/if}}>Cambridge &amp; IELTS</option>
+              </select>
+            </label>
+            <label class="field">
+              <span class="lab">Type</span>
+              <select name="type">
+                <option value="study" {{#if eq program.type 'study'}}selected{{/if}}>Study admissions</option>
+                <option value="visa" {{#if eq program.type 'visa'}}selected{{/if}}>Visa package</option>
+                <option value="course" {{#if eq program.type 'course'}}selected{{/if}}>Course / training</option>
+                <option value="service" {{#if eq program.type 'service'}}selected{{/if}}>Service</option>
+              </select>
+            </label>
+            <label class="field">
+              <span class="lab">Audience</span>
+              <input type="text" name="audience" value="{{program.audience}}" placeholder="Students, families, professionals">
+            </label>
+          </div>
+          <label class="field">
+            <span class="lab">Summary</span>
+            <textarea name="summary" rows="3" maxlength="800">{{program.summary}}</textarea>
+          </label>
+          <label class="field">
+            <span class="lab">Answer-first summary</span>
+            <textarea name="answer_summary" rows="3" maxlength="900" data-count="#answerCount" data-max="420">{{program.answer_summary}}</textarea>
+            <span class="hint">Direct answer for assistants and search snippets. <span id="answerCount" class="tiny muted"></span></span>
+          </label>
+          <div class="field-row">
+            <label class="field">
+              <span class="lab">Highlights (one per line)</span>
+              <textarea name="highlights_text" rows="4">{{#each highlights}}{{this}}
+{{/each}}</textarea>
+            </label>
+            <label class="field">
+              <span class="lab">What is included (one per line)</span>
+              <textarea name="included_text" rows="4">{{#each included}}{{this}}
+{{/each}}</textarea>
+            </label>
+          </div>
+          <label class="field">
+            <span class="lab">Process steps (JSON)</span>
+            <textarea name="process_json" class="code" rows="4" placeholder='[{"title":"Profile review","text":"We check grades, funds and timeline."}]'>{{json process}}</textarea>
+          </label>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <header><h2>Delivery &amp; fees</h2></header>
+        <div class="body">
+          <div class="field-row three">
+            <label class="field"><span class="lab">Delivery</span><input type="text" name="delivery" value="{{program.delivery}}" placeholder="Online + Dubai classroom"></label>
+            <label class="field"><span class="lab">Duration</span><input type="text" name="duration" value="{{program.duration}}" placeholder="8 weeks"></label>
+            <label class="field"><span class="lab">Processing time</span><input type="text" name="processing_time" value="{{program.processing_time}}" placeholder="3–6 months"></label>
+          </div>
+          <div class="field-row three">
+            <label class="field"><span class="lab">Fee from</span><input type="number" name="fee_from" value="{{program.fee_from}}" step="0.01"></label>
+            <label class="field"><span class="lab">Fee to</span><input type="number" name="fee_to" value="{{program.fee_to}}" step="0.01"></label>
+            <label class="field"><span class="lab">Currency</span><input type="text" name="currency" value="{{program.currency}}" maxlength="4"></label>
+          </div>
+          <label class="field"><span class="lab">Fee notes</span><textarea name="fee_notes" rows="2" maxlength="600">{{program.fee_notes}}</textarea></label>
+          <div class="field-row three">
+            <label class="field">
+              <span class="lab">Location</span><input type="text" name="location" value="{{program.location}}" placeholder="Dubai · Rawalpindi · Online">
+            </label>
+            <label class="field">
+              <span class="lab">Availability</span>
+              <input type="text" name="availability" value="{{program.availability}}" placeholder="Open / Waiting list">
+            </label>
+            <label class="field">
+              <span class="lab">CTA label</span><input type="text" name="cta_label" value="{{program.cta_label}}">
+            </label>
+          </div>
+          <label class="field"><span class="lab">Urgency / intake note</span><input type="text" name="urgency" value="{{program.urgency}}" maxlength="300"></label>
+          <div class="field-row three">
+            <label class="field">
+              <span class="lab">Trainer</span>
+              <select name="trainer_id">
+                <option value="">Not applicable</option>
+                {{#each team}}<option value="{{id}}" {{#if eq id ../program.trainer_id}}selected{{/if}}>{{name}}</option>{{/each}}
+              </select>
+            </label>
+            <label class="field">
+              <span class="lab">Linked destination</span>
+              <select name="country_id">
+                <option value="">None</option>
+                {{#each countries}}<option value="{{id}}" {{#if eq id ../program.country_id}}selected{{/if}}>{{name}}</option>{{/each}}
+              </select>
+            </label>
+            <label class="field">
+              <span class="lab">Flags</span>
+              <span class="inline-check"><input type="checkbox" name="featured" value="1" {{#if program.featured}}checked{{/if}}> Featured</span>
+            </label>
+          </div>
+          <div class="field-row">
+            <label class="field"><span class="lab">SEO title</span><input type="text" name="seo_title" value="{{program.seo_title}}" maxlength="200"></label>
+            <label class="field"><span class="lab">Meta description</span><input type="text" name="seo_description" value="{{program.seo_description}}" maxlength="400"></label>
+          </div>
+          <button class="btn primary" type="submit">Save program</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="stack">
+    {{#if program.id}}
+    <div class="card">
+      <header><h3>Fee versions</h3><div class="spacer"></div><span class="muted tiny">{{count fees}}</span></header>
+      <div class="body scroll-y">
+        {{#each fees}}
+        <div class="kv">
+          <span>
+            <b>{{label}}</b> <span class="badge {{#if eq review_status 'approved'}}ok{{else}}warn{{/if}}">{{review_status}}</span><br>
+            <span class="tiny muted">{{money amount currency}} · {{version}} · effective {{default effective_date '—'}}<br>
+            {{default source_name 'no source recorded'}}</span>
+          </span>
+        </div>
+        {{else}}
+        <p class="muted tiny" style="margin:0">No fee versions recorded. Add one so published prices stay traceable.</p>
+        {{/each}}
+      </div>
+      {{#if can 'rules.approve'}}
+      <div class="foot">
+        <form method="post" action="/admin/programs/{{program.id}}/fees">
+          <input type="hidden" name="_csrf" value="{{csrf}}">
+          <label class="field"><span class="lab">Label</span><input type="text" name="label" placeholder="2027 intake — tuition deposit" required></label>
+          <div class="field-row">
+            <label class="field"><span class="lab">Amount</span><input type="number" name="amount" step="0.01"></label>
+            <label class="field"><span class="lab">Currency</span><input type="text" name="currency" value="{{program.currency}}"></label>
+          </div>
+          <div class="field-row">
+            <label class="field"><span class="lab">Version</span><input type="text" name="version" value="v1"></label>
+            <label class="field"><span class="lab">Effective date</span><input type="date" name="effective_date"></label>
+          </div>
+          <label class="field"><span class="lab">Source name</span><input type="text" name="source_name" placeholder="University fee schedule 2027"></label>
+          <label class="field"><span class="lab">Source URL</span><input type="text" name="source_url"></label>
+          <label class="field">
+            <span class="lab">Review status</span>
+            <select name="review_status">
+              <option value="needs_review">Needs review</option>
+              <option value="approved">Approved</option>
+              <option value="expired">Expired</option>
+            </select>
+          </label>
+          <label class="field"><span class="lab">Note</span><input type="text" name="note" maxlength="400"></label>
+          <input type="hidden" name="schedule_json" value="[]">
+          <button class="btn gold block" type="submit">Add fee version</button>
+        </form>
+      </div>
+      {{/if}}
+    </div>
+    {{else}}
+    <div class="card">
+      <header><h3>Before you save</h3></header>
+      <div class="body tiny muted">
+        Create the program first, then add fee versions, trainer links and destination links from this sidebar.
+      </div>
+    </div>
+    {{/if}}
+
+    <div class="card">
+      <header><h3>Publishing rules</h3></header>
+      <div class="body tiny">
+        <div class="kv"><span>Only published programs appear on the site</span><span class="badge ok">enforced</span></div>
+        <div class="kv"><span>Fees without approval are hidden publicly</span><span class="badge ok">enforced</span></div>
+        <div class="kv"><span>No result or ranking guarantees</span><span class="badge ok">policy</span></div>
+      </div>
+    </div>
+  </div>
+</div>

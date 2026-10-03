@@ -1,0 +1,16 @@
+<article class="review">
+  <div class="who">
+    <span class="avatar">{{initials author}}</span>
+    <div>
+      <strong style="display:block;font-size:.95rem">{{author}}</strong>
+      <span class="tiny muted">{{platform_label}}{{#if published_at}} · {{date published_at}}{{/if}}</span>
+    </div>
+  </div>
+  <div class="stars" aria-label="{{rating}} out of 5">★★★★★</div>
+  <blockquote>{{truncate text 220}}</blockquote>
+  <div class="src">
+    <span>{{attribution}}{{#if is_sample}} · sample{{/if}}</span>
+    {{#if permalink}}<a href="{{permalink}}" rel="noopener nofollow" target="_blank">View at source ↗</a>{{/if}}
+  </div>
+  <a class="link-arrow tiny" href="/contact?source=review&platform={{platform}}">Enquire about this pathway</a>
+</article>

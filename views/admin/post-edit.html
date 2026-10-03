@@ -1,0 +1,211 @@
+<div class="page-head">
+  <div>
+    <h1>{{#if post.id}}Edit guide{{else}}Add new guide{{/if}}</h1>
+    <p>{{#if post.id}}/resources/{{post.slug}} · last saved {{ago post.updated_at}}{{else}}Write the answer first, then the long-form body below it.{{/if}}</p>
+  </div>
+  <div class="spacer"></div>
+  <div class="row">
+    <span class="tiny muted" id="autosaveStatus">{{#if autosave}}Working copy from {{ago autosave.updated_at}}{{else}}Not autosaved yet{{/if}}</span>
+    {{#if post.id}}<a class="btn sm" href="/admin/preview/posts/{{post.id}}" target="_blank" rel="noopener">Preview</a>{{/if}}
+    {{#if can 'content.publish'}}
+    <form method="post" action="/admin/posts/{{post.id}}/status">
+      <input type="hidden" name="_csrf" value="{{csrf}}">
+      <input type="hidden" name="status" value="{{#if eq post.status 'published'}}draft{{else}}published{{/if}}">
+      <button class="btn sm {{#if eq post.status 'published'}}danger{{else}}gold{{/if}}" type="submit" {{#if post.id}}{{else}}disabled{{/if}}>
+        {{#if eq post.status 'published'}}Unpublish{{else}}Publish{{/if}}
+      </button>
+    </form>
+    {{/if}}
+  </div>
+</div>
+
+{{#if autosave}}
+<div class="notice warn">A working copy was autosaved {{ago autosave.updated_at}} by {{default autosave.author 'another editor'}}.</div>
+{{/if}}
+
+<form method="post" action="/admin/posts/{{#if post.id}}{{post.id}}{{/if}}" id="contentForm"
+      data-autosave="{{#if post.id}}/admin/posts/{{post.id}}/autosave{{/if}}">
+  <input type="hidden" name="_csrf" value="{{csrf}}">
+  <input type="hidden" name="record_id" value="{{post.id}}">
+
+  <div class="split">
+    <div class="stack">
+      <div class="card">
+        <header><h2>Guide</h2></header>
+        <div class="body">
+          <label class="field">
+            <span class="lab">Title</span>
+            <input type="text" name="title" value="{{post.title}}" required data-slug-source maxlength="200">
+          </label>
+          <div class="field-row">
+            <label class="field">
+              <span class="lab">URL slug</span>
+              <input type="text" name="slug" value="{{post.slug}}" data-slug-target placeholder="ukvi-28-day-rule-explained">
+            </label>
+            <label class="field">
+              <span class="lab">Category</span>
+              <select name="category_id">
+                <option value="">Uncategorised</option>
+                {{#each categories}}<option value="{{id}}" {{#if eq id ../post.category_id}}selected{{/if}}>{{name}}</option>{{/each}}
+              </select>
+            </label>
+          </div>
+          <label class="field">
+            <span class="lab">Excerpt</span>
+            <textarea name="excerpt" rows="2" maxlength="400" data-count="#excerptCount" data-max="400">{{post.excerpt}}</textarea>
+            <span class="hint">One sentence used on cards and in the RSS feed. <span id="excerptCount" class="tiny muted"></span></span>
+          </label>
+          <div class="field-row three">
+            <label class="field">
+              <span class="lab">Reading time</span>
+              <input type="text" value="{{#if post.read_minutes}}{{post.read_minutes}} min{{else}}calculated on save{{/if}}" disabled>
+              <span class="hint">Derived from the body automatically.</span>
+            </label>
+            <label class="field">
+              <span class="lab">Primary pillar</span>
+              <select name="primary_pillar">
+                <option value="resources" {{#if eq post.primary_pillar 'resources'}}selected{{/if}}>Resources</option>
+                <option value="career" {{#if eq post.primary_pillar 'career'}}selected{{/if}}>Career counseling</option>
+                <option value="immigration" {{#if eq post.primary_pillar 'immigration'}}selected{{/if}}>Immigration</option>
+                <option value="cambridge" {{#if eq post.primary_pillar 'cambridge'}}selected{{/if}}>Cambridge &amp; IELTS</option>
+              </select>
+            </label>
+            <label class="field">
+              <span class="lab">Target query</span>
+              <input type="text" name="target_query" value="{{post.target_query}}" placeholder="uk student visa bank statement rules 2026">
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <header><h2>Answer-first block</h2><div class="spacer"></div><span class="muted tiny">Feeds AEO, GEO and AI answer surfaces</span></header>
+        <div class="body">
+          <label class="field">
+            <span class="lab">Answer summary (40–60 words)</span>
+            <textarea name="answer_summary" rows="3" maxlength="600" data-count="#answerCount" data-max="420">{{post.answer_summary}}</textarea>
+            <span class="hint">State the figure, the rule and the source. This is what assistants quote. <span id="answerCount" class="tiny muted"></span></span>
+          </label>
+          <label class="field">
+            <span class="lab">GEO / entity note</span>
+            <textarea name="geo_summary" rows="2" maxlength="600">{{post.geo_summary}}</textarea>
+            <span class="hint">Named entities, places, institutions and dates the passage is about.</span>
+          </label>
+          <label class="field">
+            <span class="lab">Key takeaways (one per line)</span>
+            <textarea name="key_takeaways_text" id="takeawayInput" rows="4">{{#each takeaways}}{{this}}
+{{/each}}</textarea>
+            <span class="hint">Rendered as a scannable list directly under the answer.</span>
+          </label>
+          <div class="field-row">
+            <label class="field">
+              <span class="lab">Tags (comma separated)</span>
+              <input type="text" name="tags" value="{{join tags ', '}}" placeholder="uk student visa, bank statement, 28 days">
+            </label>
+            <label class="field">
+              <span class="lab">Cover image (media ID)</span>
+              <input type="text" name="cover_media_id" value="{{post.cover_media_id}}">
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <header><h2>Body</h2><div class="spacer"></div><span class="muted tiny">HTML — headings, lists, tables and links</span></header>
+        <div class="body">
+          <label class="field">
+            <textarea name="body" class="code" rows="22" style="min-height:420px">{{post.body}}</textarea>
+            <span class="hint">Use &lt;h2&gt; and &lt;h3&gt; in order, one &lt;h2&gt; per idea. Tables need a source note underneath. Scripts and inline handlers are stripped on output.</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <header><h2>SEO metadata</h2></header>
+        <div class="body">
+          <label class="field">
+            <span class="lab">SEO title</span>
+            <input type="text" name="seo_title" value="{{post.seo_title}}" maxlength="70" data-count="#seoTitleCount" data-max="60">
+            <span class="hint"><span id="seoTitleCount" class="tiny muted"></span></span>
+          </label>
+          <label class="field">
+            <span class="lab">Meta description</span>
+            <textarea name="seo_description" rows="2" maxlength="170" data-count="#seoDescCount" data-max="158">{{post.seo_description}}</textarea>
+            <span class="hint"><span id="seoDescCount" class="tiny muted"></span></span>
+          </label>
+          <span class="inline-check"><input type="checkbox" name="noindex" value="1" {{#if post.noindex}}checked{{/if}}> Hide from search engines</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stack">
+      <div class="card">
+        <header><h3>Publishing</h3></header>
+        <div class="body">
+          <label class="field">
+            <span class="lab">Status</span>
+            <select name="status">
+              <option value="draft" {{#if eq post.status 'draft'}}selected{{/if}}>Draft</option>
+              <option value="review" {{#if eq post.status 'review'}}selected{{/if}}>Ready for review</option>
+              <option value="published" {{#if eq post.status 'published'}}selected{{/if}}>Published</option>
+              <option value="trashed" {{#if eq post.status 'trashed'}}selected{{/if}}>Move to trash</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="lab">Schedule publication</span>
+            <input type="datetime-local" name="publish_at" value="{{post.publish_at}}">
+          </label>
+          <button class="btn primary block" type="submit">Save guide</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <header><h3>Editorial checklist</h3></header>
+        <div class="body tiny">
+          <div class="kv"><span>Answer in the first 60 words</span><span class="badge {{#if post.answer_summary}}ok{{else}}warn{{/if}}">{{#if post.answer_summary}}done{{else}}todo{{/if}}</span></div>
+          <div class="kv"><span>Statutory figures dated &amp; sourced</span><span class="badge {{#if post.geo_summary}}ok{{else}}warn{{/if}}">{{#if post.geo_summary}}done{{else}}todo{{/if}}</span></div>
+          <div class="kv"><span>Takeaways listed</span><span class="badge {{#if post.key_takeaways}}ok{{else}}warn{{/if}}">{{#if post.key_takeaways}}done{{else}}todo{{/if}}</span></div>
+          <div class="kv"><span>Meta description 140–158 chars</span><span class="badge {{#if post.seo_description}}ok{{else}}warn{{/if}}">{{#if post.seo_description}}done{{else}}todo{{/if}}</span></div>
+          <div class="kv"><span>Editorial sign-off recorded</span><span class="badge {{#if post.reviewer_id}}ok{{else}}warn{{/if}}">{{#if post.reviewer_id}}signed{{else}}pending{{/if}}</span></div>
+        </div>
+      </div>
+
+      {{#if post.id}}
+      <div class="card">
+        <header><h3>Revisions</h3><div class="spacer"></div><span class="muted tiny">{{count revisions}}</span></header>
+        <div class="body scroll-y">
+          {{#each revisions}}
+          <div class="kv">
+            <span><b>{{default note 'Save'}}</b><br><span class="tiny muted">{{ago created_at}} · {{default author_name 'system'}}</span></span>
+            <form method="post" action="/admin/posts/{{../post.id}}/restore/{{id}}" data-confirm="Restore this revision?">
+              <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+              <button class="btn sm" type="submit">Restore</button>
+            </form>
+          </div>
+          {{else}}
+          <p class="muted tiny" style="margin:0">No revisions recorded yet.</p>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+
+      <div class="card">
+        <header><h3>Media</h3><div class="spacer"></div><a class="tiny" href="/admin/media">Library →</a></header>
+        <div class="body">
+          {{#if media.length}}
+          <div class="media-pick-grid">
+            {{#each media}}
+            <div class="media-tile" data-media-tile="{{id}}">
+              <img src="/uploads/{{filename}}" alt="{{default alt filename}}" loading="lazy">
+              <div class="meta"><b>{{filename}}</b><span class="tiny muted">ID {{id}}</span></div>
+            </div>
+            {{/each}}
+          </div>
+          {{else}}
+          <p class="muted tiny" style="margin:0">No media uploaded yet.</p>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

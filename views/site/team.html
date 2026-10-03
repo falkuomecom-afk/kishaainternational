@@ -1,0 +1,106 @@
+{{> site/crumbs}}
+
+<section class="hero compact">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow">Official client leadership & trainer</span>
+        <h1>{{member.name}}</h1>
+        <p class="lead">{{member.role_title}}</p>
+        <div class="creds" style="margin:14px 0">
+          {{#each member.credentials_list}}<span class="cred">{{this}}</span>{{/each}}
+        </div>
+        <div class="hero-actions">
+          <a class="btn btn-gold" href="/contact?interest=cambridge&trainer={{urlencode member.name}}">Enquire about counseling & training</a>
+          {{#if member.phones_list}}<a class="btn btn-ghost" href="tel:{{replace member.phones_list.0 ' ' ''}}">{{member.phones_list.0}}</a>{{/if}}
+        </div>
+        <div class="hero-badges">
+          {{#each member.languages_list}}<span class="chip">{{this}}</span>{{/each}}
+        </div>
+      </div>
+      <div class="hero-card">
+          <div class="portrait" style="width:72px;height:72px;border-radius:50%;overflow:hidden;border:2px solid #E5B54F;padding:0;flex-shrink:0">
+            <img src="/img/zeb-khan.png" alt="{{member.name}}" style="width:100%;height:100%;object-fit:cover;object-position:top">
+          </div>
+          <div>
+            <h3 style="margin-bottom:6px">{{member.name}}</h3>
+            <p class="tiny" style="color:#BFDCE2;margin-bottom:10px">{{member.role_title}}</p>
+            <div class="stack tiny" style="gap:6px;color:#CFE6EA">
+              {{#each member.phones_list}}<span><a href="tel:{{replace this ' ' ''}}" style="color:#fff">{{this}}</a></span>{{/each}}
+              {{#if member.email}}<span><a href="mailto:{{member.email}}" style="color:#fff">{{member.email}}</a></span>{{/if}}
+            </div>
+            <p class="tiny" style="color:#BFDCE2;margin-top:12px">{{join member.locations_list ' · '}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-bottom:0">
+  <div class="wrap narrow">
+    <div class="answer-first">
+      <h3>Who Zeb Khan is, in one paragraph</h3>
+      <p>{{member.intro}}</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="grid g2">
+      <div>
+        <h2>Profile</h2>
+        <div class="article-body">{{paragraphs member.bio}}</div>
+      </div>
+      <div>
+        <h2>Credentials & expertise</h2>
+        <div class="creds" style="margin-bottom:20px">{{#each member.credentials_list}}<span class="cred">{{this}}</span>{{/each}}</div>
+        <h4>Expertise</h4>
+        <ul class="ticks">{{#each member.expertise_list}}<li>{{this}}</li>{{/each}}</ul>
+        <h4 style="margin-top:20px">Based in</h4>
+        <ul class="dots tiny">{{#each member.locations_list}}<li>{{this}}</li>{{/each}}</ul>
+        <h4 style="margin-top:20px">Teaching & consultation languages</h4>
+        <div class="pill-row">{{#each member.languages_list}}<span class="chip light">{{this}}</span>{{/each}}</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{{#if member.programs}}
+<section class="alt">
+  <div class="wrap">
+    <div class="sec-head"><h2>Programs & courses with Zeb Khan</h2></div>
+    <div class="grid g3">
+      {{#each member.programs}}
+      <article class="card">
+        <span class="badge {{#if eq pillar 'cambridge'}}gold{{else}}ok{{/if}}">{{#if eq pillar 'cambridge'}}Training{{else}}Advisory{{/if}}</span>
+        <h3><a href="/services/{{slug}}" style="color:inherit">{{name}}</a></h3>
+        <p>{{truncate summary 130}}</p>
+        <div class="foot"><span class="price tiny">{{#if fee_from}}{{money fee_from currency}}{{else}}Quoted{{/if}}</span><a class="link-arrow tiny" href="/services/{{slug}}">View</a></div>
+      </article>
+      {{/each}}
+    </div>
+  </div>
+</section>
+{{/if}}
+
+<section>
+  <div class="wrap">
+    <div class="sec-head"><h2>What clients say about working with Zeb Khan</h2></div>
+    <div class="grid g3">{{#each member.reviews}}{{> site/review-card}}{{/each}}</div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="cta-band">
+      <h2>Book counseling or training with Zeb Khan</h2>
+      <p>IELTS diagnostics, Cambridge course placement, executive communication training, admissions strategy and visa/admissions consultation — routed to the Dubai or Pakistan team depending on your preference.</p>
+      <div class="row" style="margin-top:20px;position:relative;z-index:1">
+        <a class="btn btn-gold" href="/contact?interest=cambridge&trainer={{urlencode member.name}}">Send an enquiry</a>
+        <a class="btn btn-ghost" href="https://wa.me/{{replace (setting 'brand.whatsapp') '+' ''}}?text={{urlencode 'Hello, I would like to speak with Zeb Khan'}}" rel="noopener" target="_blank">WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</section>

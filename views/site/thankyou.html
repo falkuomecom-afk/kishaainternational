@@ -1,0 +1,32 @@
+<section style="padding-top:36px">
+  <div class="wrap narrow">
+    <div class="answer-first" style="border-left-color:var(--gold-500)">
+      <h3>Thank you. Your enquiry has been received by Kishaa International.</h3>
+      <p>Our team will use your selected contact method to discuss the next step. A consultation time is confirmed only after the team agrees it with you — nothing is booked automatically.</p>
+    </div>
+
+    {{#if lead}}
+    <div class="card" style="margin-top:20px">
+      <h3>Your reference</h3>
+      <p class="mono" style="font-size:1.3rem;color:var(--navy);font-weight:700">{{lead.reference}}</p>
+      <dl class="kv">
+        <dt>Received</dt><dd>{{dateLong lead.created_at}}</dd>
+        <dt>Preferred channel</dt><dd style="text-transform:capitalize">{{lead.contact_preference}}</dd>
+        <dt>Status</dt><dd><span class="badge info">Received — awaiting first contact</span></dd>
+      </dl>
+      <p class="tiny muted">Keep this reference. You can check progress at <a href="/lead/{{lead.reference}}">/lead/{{lead.reference}}</a> — we will never ask you to resubmit because a notification failed; your enquiry is already stored.</p>
+    </div>
+    {{/if}}
+
+    <div class="grid g3" style="margin-top:24px">
+      <div class="card"><span class="icon">📋</span><h3>What happens next</h3><p>{{setting 'ops.response_promise'}} A named consultant reviews your enquiry, checks the current rules for your route and replies on your chosen channel.</p></div>
+      <div class="card"><span class="icon">💰</span><h3>While you wait</h3><p>Build your itemised cost estimate — flights, city living costs and the statutory bank statement requirement, shown separately.</p><a class="link-arrow tiny" href="/cost-planner">Open the cost planner</a></div>
+      <div class="card"><span class="icon">📚</span><h3>Prepare in advance</h3><p>Read the guide for your destination so the first conversation starts three steps ahead.</p><a class="link-arrow tiny" href="/resources">Browse guides</a></div>
+    </div>
+
+    <div class="notice" style="margin-top:22px">
+      <span class="ico">i</span>
+      <div><h3>Please do not send documents yet</h3><p>We never request passport scans, bank account numbers or financial passwords through this website or public WhatsApp. Once your enquiry is acknowledged we will tell you exactly which documents are needed and how to send them securely.</p></div>
+    </div>
+  </div>
+</section>

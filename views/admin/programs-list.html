@@ -1,0 +1,59 @@
+<div class="page-head">
+  <div>
+    <h1>Programs, visa packages &amp; courses</h1>
+    <p>Everything the site can sell or advise on: study admissions, visit-visa packages, Cambridge and IELTS courses, and services.</p>
+  </div>
+  <div class="spacer"></div>
+  <div class="row">
+    {{#if can 'content.create'}}<a class="btn primary" href="/admin/programs/new">+ Add program</a>{{/if}}
+  </div>
+</div>
+
+<div class="toolbar">
+  <input type="text" placeholder="Filter this table…" data-filter-table="#programTable" style="max-width:280px">
+  <div class="spacer"></div>
+  <span class="muted tiny">{{count programs}} records</span>
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    <table class="table" id="programTable">
+      <thead>
+        <tr><th>Program</th><th>Pillar</th><th>Type</th><th>Fees</th><th>Delivery</th><th>Status</th><th>Fee versions</th><th class="actions">Actions</th></tr>
+      </thead>
+      <tbody>
+      {{#each programs}}
+        <tr>
+          <td>
+            <b>{{name}}</b>
+            {{#if country_name}}<br><span class="tiny muted">{{country_name}}{{#if trainer_name}} · {{trainer_name}}{{/if}}</span>{{/if}}
+          </td>
+          <td><span class="badge info">{{titlecase pillar}}</span></td>
+          <td class="tiny">{{type}}</td>
+          <td class="tiny nowrap">
+            {{#if fee_from}}{{money fee_from currency}}{{#if fee_to}} – {{money fee_to currency}}{{/if}}{{else}}<span class="muted">on request</span>{{/if}}
+          </td>
+          <td class="tiny">{{default delivery '—'}}<br><span class="muted">{{default duration ''}}</span></td>
+          <td>
+            {{#if eq status 'published'}}<span class="badge ok">Published</span>{{/if}}
+            {{#if eq status 'draft'}}<span class="badge">Draft</span>{{/if}}
+            {{#if eq status 'archived'}}<span class="badge bad">Archived</span>{{/if}}
+            {{#if featured}}<br><span class="badge gold">Featured</span>{{/if}}
+          </td>
+          <td class="tiny">
+            {{#if gt fee_versions 0}}<span class="badge ok">{{fee_versions}}</span>{{else}}<span class="badge warn">none</span>{{/if}}
+          </td>
+          <td class="actions">
+            <div class="row" style="justify-content:flex-end">
+              <a class="btn sm" href="/admin/programs/{{id}}/edit">Edit</a>
+              {{#if eq status 'published'}}<a class="btn sm ghost" href="/services/{{slug}}" target="_blank" rel="noopener">View</a>{{/if}}
+            </div>
+          </td>
+        </tr>
+      {{else}}
+        <tr><td colspan="8" class="empty"><b>No programs yet</b>Programs power the services hub, service pages and planner packages.</td></tr>
+      {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>

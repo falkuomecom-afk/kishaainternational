@@ -1,0 +1,59 @@
+<section class="hero compact">
+  <div class="wrap">
+    <span class="eyebrow">Destination intelligence</span>
+    <h1>Compare 18 destinations on real numbers</h1>
+    <p class="lead">Tuition, city-by-city living costs, statutory bank statement rules, processing times and flight routes — organised by region, with the EU, Schengen and non-Schengen distinction kept precise.</p>
+    <div class="hero-actions">
+      <a class="btn btn-gold" href="/cost-planner">Open the cost planner</a>
+      <a class="btn btn-ghost" href="/bank-statements">Bank statement rules</a>
+    </div>
+  </div>
+</section>
+{{> site/crumbs}}
+
+<section>
+  <div class="wrap">
+    {{#each regions}}
+    <div id="{{slugify region}}" style="margin-bottom:44px">
+      <div class="sec-head" style="margin-bottom:20px">
+        <h2>{{region}} <span class="muted tiny" style="font-family:var(--sans);font-weight:600">{{n}} destinations</span></h2>
+        <p class="lead tiny">{{#if eq region 'Europe'}}{{@root.regionNotes.Europe}}{{else}}{{#if eq region 'Central Asia'}}{{@root.regionNotes.[Central Asia]}}{{else}}{{#if eq region 'Oceania'}}{{@root.regionNotes.Oceania}}{{else}}{{#if eq region 'North America'}}{{@root.regionNotes.[North America]}}{{else}}{{@root.regionNotes.[Middle East & Eurasia]}}{{/if}}{{/if}}{{/if}}{{/if}}</p>
+      </div>
+      <div class="grid g3">
+        {{#each @root.countries}}
+          {{#if eq region ../region}}
+          <a class="card" href="/destinations/{{slug}}" style="text-decoration:none;color:inherit">
+            <div class="between">
+              <span class="badge neutral">{{default bloc '—'}}</span>
+              {{#if featured}}<span class="badge gold">Popular</span>{{/if}}
+            </div>
+            <h3 style="margin-bottom:2px">{{name}}</h3>
+            <p>{{truncate answer_summary 150}}</p>
+            <dl class="kv tiny" style="margin-top:6px">
+              <dt>Living</dt><dd>{{money living_total living_currency}} / month</dd>
+              <dt>Processing</dt><dd>{{default processing_time 'route-specific'}}</dd>
+              <dt>Cost data</dt><dd>{{city_count}} city profiles · {{rule_count}} statutory rule(s)</dd>
+            </dl>
+            <div class="foot"><span class="link-arrow">Open {{name}} guide</span></div>
+          </a>
+          {{/if}}
+        {{/each}}
+      </div>
+    </div>
+    {{/each}}
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>How to read these guides</h2>
+      <p class="lead">Three numbers decide most applications. Each destination page separates them so nothing is hidden inside a single total.</p>
+    </div>
+    <div class="grid g3">
+      <div class="card"><span class="icon">1</span><h3>Spending</h3><p>Flights and monthly living costs — what you actually spend. Maintained statistical estimates with observation dates.</p></div>
+      <div class="card"><span class="icon">2</span><h3>Statutory funds</h3><p>The amount that must sit in a bank account, held for the mandated period, published with its authority and effective date.</p></div>
+      <div class="card"><span class="icon">3</span><h3>Documents</h3><p>The checklist that supports the application — attestations, letters, insurance and academic evidence.</p></div>
+    </div>
+  </div>
+</section>

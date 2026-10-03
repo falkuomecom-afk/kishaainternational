@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>{{title}} · Kishaa CMS</title>
+<link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <span class="mark">KI</span>
+      <span>
+        <strong>Kishaa CMS</strong>
+        <em>Content &amp; leads</em>
+      </span>
+    </div>
+    <nav>
+      {{> admin/nav}}
+    </nav>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="btn sm menu-toggle" data-nav-toggle type="button">☰</button>
+      <div class="crumbs">
+        <a href="/admin">Dashboard</a>
+        {{#if pageTitle}}<span>›</span><b>{{pageTitle}}</b>{{/if}}
+      </div>
+      <div class="spacer"></div>
+      <a class="btn sm" href="/" target="_blank" rel="noopener">View site</a>
+      <div class="who">
+        <span class="avatar">{{initials user.name}}</span>
+        <span>
+          <b>{{user.name}}</b>
+          <br><span class="muted tiny">{{roleLabel user.role}}</span>
+        </span>
+      </div>
+      <form method="post" action="/admin/logout">
+        <input type="hidden" name="_csrf" value="{{csrf}}">
+        <button class="btn sm" type="submit">Sign out</button>
+      </form>
+    </div>
+
+    <div class="content">
+      {{#if query.saved}}<div class="notice ok">Changes saved.</div>{{/if}}
+      {{#if query.created}}<div class="notice ok">Created successfully.</div>{{/if}}
+      {{#if query.deleted}}<div class="notice warn">Moved to trash. Restore it from the trash filter if this was a mistake.</div>{{/if}}
+      {{#if query.restored}}<div class="notice ok">Record restored.</div>{{/if}}
+      {{#if query.error}}<div class="notice bad">{{query.error}}</div>{{/if}}
+      {{#if query.notice}}<div class="notice">{{query.notice}}</div>{{/if}}
+      {{{body}}}
+    </div>
+  </div>
+</div>
+<script src="/js/admin.js" defer></script>
+</body>
+</html>

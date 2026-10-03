@@ -1,0 +1,137 @@
+{{> site/crumbs}}
+
+{{#if result.ok}}
+<section class="wrap" style="padding-top:10px">
+  <div class="between" style="margin-bottom:18px">
+    <div>
+      <span class="eyebrow">Cost estimate · {{result.country.name}}</span>
+      <h1 style="margin-bottom:6px">{{money result.totals.planning_total.amount result.totals.planning_total.currency}} planning total</h1>
+      <p class="muted" style="margin:0">{{result.message}}</p>
+    </div>
+    <div class="row">
+      <button class="btn btn-outline btn-sm" onclick="window.print()">Print / save as PDF</button>
+      <a class="btn btn-primary btn-sm" href="/contact?source=planner&country_id={{result.country.id}}&source_type=planner">Discuss this estimate</a>
+    </div>
+  </div>
+
+  {{#if result.missing}}
+  <div class="notice warn" style="margin-bottom:20px">
+    <span class="ico">!</span>
+    <div><h3>More information needed</h3>
+      <p>Some components could not be calculated and are shown as unavailable rather than estimated: {{join result.missing ', '}}.</p></div>
+  </div>
+  {{/if}}
+
+  <div class="totals">
+    <div class="total-card spend">
+      <span class="lbl">Estimated spending</span>
+      <b>{{money result.totals.spending.amount result.totals.spending.currency}}</b>
+      <span>Flights + living costs. Money you will actually spend.</span>
+      <span class="freshness info" style="margin-top:8px">Indicative estimate</span>
+    </div>
+    <div class="total-card funds">
+      <span class="lbl">Must remain in the bank</span>
+      {{#if result.totals.funds.amount}}
+        <b>{{money result.totals.funds.amount result.totals.funds.currency}}</b>
+        <span>Statutory requirement — not netted against spending.</span>
+        <span class="freshness ok" style="margin-top:8px">Official rule</span>
+        {{#if result.totals.funds.holding_period}}<span class="tiny muted" style="margin-top:6px">Holding: {{result.totals.funds.holding_period}}</span>{{/if}}
+      {{else}}
+        <b>Needs review</b>
+        <span>{{result.totals.funds.message}}</span>
+        <span class="freshness warn" style="margin-top:8px">Under review</span>
+      {{/if}}
+    </div>
+    <div class="total-card plan">
+      <span class="lbl">Planning total</span>
+      <b>{{money result.totals.planning_total.amount result.totals.planning_total.currency}}</b>
+      <span>Spending plus the statutory balance you must be able to show.</span>
+      <span class="tiny muted" style="margin-top:8px">Reference {{result.versions.engine}} · {{dateLong result.versions.generated_at}}</span>
+    </div>
+  </div>
+
+  {{#each result.sections}}
+  <div class="result-section">
+    <h3>{{title}} <span class="freshness {{tone freshness}}">{{freshnessLabel freshness}}</span></h3>
+
+    {{#if eq key 'flight'}}
+      {{#if data}}
+      <div class="breakdown">
+        <div class="rowb"><span>{{data.origin.city}} ({{data.origin.code}}) → {{data.destination.city}} ({{data.destination.code}})</span><span>{{data.cabin_label}} · {{data.passengers}} passenger(s)</span></div>
+        {{#each data.breakdown}}<div class="rowb"><span>{{label}}</span><span>{{money amount data.currency}}</span></div>{{/each}}
+        <div class="rowb total"><span>Per passenger</span><span>{{money data.per_passenger data.currency}}</span></div>
+        <div class="rowb total"><span>Total flight cost</span><span>{{money data.total data.currency}}</span></div>
+      </div>
+      <p class="tiny muted">{{data.note}} {{#if data.formula}}<br><em>Formula:</em> {{data.formula}}{{/if}}</p>
+      {{else}}
+      <p class="muted">No flight route is maintained for this origin and destination yet. A consultant can quote current fares and connect you to an approved provider.</p>
+      {{/if}}
+    {{/if}}
+
+    {{#if eq key 'living'}}
+      {{#if data}}
+      <div class="breakdown">
+        <div class="rowb"><span>{{data.city}} · {{data.city_tier}} tier · {{data.scenario}} scenario</span><span>{{data.months}} months{{#if data.dependents}} · {{data.dependents}} dependant(s){{/if}}</span></div>
+        {{#each data.breakdown}}<div class="rowb"><span>{{label}}</span><span>{{money amount data.currency}}</span></div>{{/each}}
+        <div class="rowb total"><span>Monthly total</span><span>{{money data.monthly data.currency}}</span></div>
+        <div class="rowb total"><span>For {{data.months}} months</span><span>{{money data.total data.currency}}</span></div>
+      </div>
+      <p class="tiny muted">{{data.note}}{{#if data.source.name}} Source: {{data.source.name}}{{#if data.source.observed_at}} (observed {{dateLong data.source.observed_at}}){{/if}}.{{/if}}</p>
+      {{else}}
+      <p class="muted">No living-cost profile is published for this city yet. Choose another city or ask a consultant for a maintained estimate.</p>
+      {{/if}}
+    {{/if}}
+
+    {{#if eq key 'funds'}}
+      {{#if eq data.status 'ok'}}
+      <div class="breakdown">
+        <div class="rowb"><span>{{data.rule_label}}</span><span>Version {{data.version}}</span></div>
+        {{#each data.breakdown}}<div class="rowb"><span>{{label}}</span><span>{{money amount data.currency}}</span></div>{{/each}}
+        <div class="rowb total"><span>Statutory requirement</span><span>{{money data.total data.currency}}</span></div>
+        {{#if data.pkr_equivalent}}<div class="rowb"><span>Indicative PKR equivalent</span><span>{{money data.pkr_equivalent 'PKR'}}</span></div>{{/if}}
+      </div>
+      <p class="tiny muted">{{data.formula}}{{#if data.family_rule}}<br><strong>Family rule:</strong> {{data.family_rule}}{{/if}}
+        {{#if data.source.name}}<br>Source: {{data.source.name}}{{#if data.source.url}} — <a href="{{data.source.url}}" rel="noopener nofollow" target="_blank">{{truncate data.source.url 60}}</a>{{/if}}{{/if}}</p>
+      {{else}}
+      <div class="notice warn"><span class="ico">!</span><div><h3>More information needed</h3><p>{{data.message}}</p>{{#if data.source.url}}<p class="tiny"><a href="{{data.source.url}}" rel="noopener nofollow" target="_blank">Check the issuing authority</a></p>{{/if}}</div></div>
+      {{/if}}
+    {{/if}}
+
+    {{#if eq key 'checklist'}}
+      <ul class="ticks" style="margin:0">
+        {{#each data.items}}<li>{{label}}{{#if eq state 'conditional'}} <span class="badge neutral">conditional</span>{{/if}}{{#if eq state 'not_applicable'}} <span class="badge neutral">usually not required</span>{{/if}}</li>{{/each}}
+      </ul>
+    {{/if}}
+  </div>
+  {{/each}}
+
+  <div class="result-section">
+    <h3>Sources behind these numbers</h3>
+    <div class="sources">
+      <ol>
+        {{#each result.sources}}<li>{{label}}{{#if url}} — <a href="{{url}}" rel="noopener nofollow" target="_blank">{{truncate url 70}}</a>{{/if}}{{#if date}} <span class="muted tiny">(observed {{dateLong date}})</span>{{/if}}</li>{{/each}}
+      </ol>
+      <p class="tiny muted" style="margin:12px 0 0">{{result.disclaimer}}</p>
+    </div>
+  </div>
+
+  <div class="cta-band" style="margin-top:22px">
+    <h2>Discuss this estimate with a consultant</h2>
+    <p>We will confirm the current statutory rule for your route, check whether your funds profile meets it, and map the documents you need. Consultation times are agreed with you before anything is booked.</p>
+    <div class="row" style="margin-top:18px;position:relative;z-index:1">
+      <a class="btn btn-gold" href="/contact?source=planner&country_id={{result.country.id}}">Discuss this estimate</a>
+      <a class="btn btn-ghost" href="/cost-planner">Adjust the inputs</a>
+    </div>
+  </div>
+</section>
+{{else}}
+<section class="wrap">
+  <div class="notice warn">
+    <span class="ico">!</span>
+    <div><h3>More information needed</h3>
+      <p>{{result.message}}</p>
+      <p><strong>Missing:</strong> {{join result.missing ', '}}</p></div>
+  </div>
+  <div class="row" style="margin-top:18px"><a class="btn btn-primary" href="/cost-planner">Back to the planner</a></div>
+</section>
+{{/if}}

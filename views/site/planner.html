@@ -1,0 +1,160 @@
+{{> site/crumbs}}
+
+<section class="hero compact">
+  <div class="wrap">
+    <span class="eyebrow">Cost planner</span>
+    <h1>Flights, living costs and the bank statement rule — separated, dated and sourced.</h1>
+    <p class="lead">Most applicants discover the statutory funds requirement after they have already spent on flights. Here you see both figures in one screen, labelled clearly, with the authority and effective date behind every number.</p>
+    <div class="hero-badges">
+      <span class="chip">No sign-up needed</span>
+      <span class="chip">Spending vs statutory funds separated</span>
+      <span class="chip">Missing data says “more information needed” — never a fake zero</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="split">
+      <div>
+        <form class="planner" method="post" action="/cost-planner">
+          <div class="planner-head">
+            <h3>1 · Choose destination, purpose and travel profile</h3>
+            <p>Dependant inputs appear progressively. Estimated in milliseconds against maintained, versioned data.</p>
+          </div>
+          <div class="planner-body">
+            <input type="hidden" name="_csrf" value="{{csrf}}">
+            <div class="field-grid">
+              <div>
+                <label class="fl" for="country">Destination country <span>required</span></label>
+                <select id="country" name="country" required>
+                  {{#each countries}}
+                  <option value="{{slug}}" data-cities="1" {{#if eq slug @root.prefill.countrySlug}}selected{{/if}}>{{name}} — {{region}}</option>
+                  {{/each}}
+                </select>
+              </div>
+              <div>
+                <label class="fl" for="city">Arrival city <span>required</span></label>
+                <select id="city" name="city"></select>
+                <p class="hint">City data overrides national averages.</p>
+              </div>
+              <div>
+                <label class="fl" for="purpose">Visa purpose</label>
+                <select id="purpose" name="purpose">
+                  <option value="study" {{#if eq prefill.purpose 'study'}}selected{{/if}}>Study</option>
+                  <option value="visit" {{#if eq prefill.purpose 'visit'}}selected{{/if}}>Visit / tourist</option>
+                  <option value="work" {{#if eq prefill.purpose 'work'}}selected{{/if}}>Work</option>
+                  <option value="business" {{#if eq prefill.purpose 'business'}}selected{{/if}}>Business</option>
+                </select>
+              </div>
+              <div>
+                <label class="fl" for="months">Duration of stay <span>months</span></label>
+                <input id="months" type="number" name="months" min="1" max="72" value="12" inputmode="numeric">
+              </div>
+              <div>
+                <label class="fl" for="scenario">Budget scenario</label>
+                <select id="scenario" name="scenario">
+                  <option value="budget">Budget</option>
+                  <option value="standard" selected>Standard</option>
+                  <option value="comfortable">Comfortable</option>
+                </select>
+              </div>
+              <div>
+                <label class="fl" for="dependents">Accompanying dependants</label>
+                <input id="dependents" type="number" name="dependents" min="0" max="6" value="0" inputmode="numeric">
+              </div>
+            </div>
+
+            <h4 style="margin:26px 0 10px">Flight parameters</h4>
+            <div class="field-grid">
+              <div>
+                <label class="fl" for="origin">Departure airport</label>
+                <select id="origin" name="origin">
+                  {{#each origins}}<option value="{{origin_code}}">{{origin_city}} ({{origin_code}})</option>{{/each}}
+                </select>
+              </div>
+              <div>
+                <label class="fl" for="month">Travel month</label>
+                <select id="month" name="month">
+                  {{#each monthNames}}<option value="{{add @index 1}}">{{this}}</option>{{/each}}
+                </select>
+              </div>
+              <div>
+                <label class="fl" for="passengers">Passengers</label>
+                <input id="passengers" type="number" name="passengers" min="1" max="6" value="1" inputmode="numeric">
+              </div>
+              <div>
+                <label class="fl" for="cabin">Cabin class</label>
+                <select id="cabin" name="cabin">
+                  <option value="economy">Economy</option>
+                  <option value="premium">Premium economy</option>
+                  <option value="business">Business</option>
+                </select>
+              </div>
+              <div>
+                <label class="fl" for="baggage">Baggage allowance <span>kg</span></label>
+                <input id="baggage" type="number" name="baggage" min="0" max="60" value="30" inputmode="numeric">
+              </div>
+            </div>
+
+            <h4 style="margin:26px 0 10px">Study & funds inputs <span class="tiny muted" style="font-weight:500">(optional — refines the statutory calculation)</span></h4>
+            <div class="field-grid">
+              <div>
+                <label class="fl" for="unpaid_tuition">Unpaid tuition balance</label>
+                <input id="unpaid_tuition" type="number" name="unpaid_tuition" min="0" value="0" inputmode="numeric">
+                <p class="hint">Added to the statutory requirement where the rule includes a tuition component.</p>
+              </div>
+              <div>
+                <label class="fl" for="self_funds">Your available funds <span>optional</span></label>
+                <input id="self_funds" type="number" name="self_funds" min="0" value="" inputmode="numeric">
+                <p class="hint">Used only to show an indicative gap. Never stored with your identity.</p>
+              </div>
+            </div>
+
+            <div class="row" style="margin-top:24px">
+              <button class="btn btn-primary" type="submit">Calculate my costs</button>
+              <button class="btn btn-outline" type="reset">Reset</button>
+              <span class="tiny muted">Free · no contact details required</span>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div>
+        <h2>What you get</h2>
+        <div class="steps" style="margin-bottom:24px">
+          <div class="step"><div><h4>1 · Live flight ticket</h4><p>Base airfare + departure and security taxes + fuel surcharge + baggage allowance, adjusted by cabin class and seasonal multiplier.</p></div></div>
+          <div class="step"><div><h4>2 · Country living cost</h4><p>Accommodation + food + transit + health insurance + utilities + contingency, by city tier and budget scenario.</p></div></div>
+          <div class="step"><div><h4>3 · Statutory bank statement</h4><p>Statutory monthly rate × mandated months + unpaid tuition + documented dependant surcharges, with the holding period.</p></div></div>
+          <div class="step"><div><h4>4 · Document checklist</h4><p>Exactly what the route expects, so nothing is discovered at the filing stage.</p></div></div>
+        </div>
+
+        <div class="notice">
+          <span class="ico">i</span>
+          <div>
+            <h3>What “live” and “verified” mean here</h3>
+            <p><strong>Live</strong> flight fares apply only when an approved airline API returns a quote for the exact itinerary, cabin and baggage with a booking timestamp. <strong>Official</strong> statutory rules carry a government source, effective date and reviewer. <strong>Indicative</strong> living costs are maintained statistical averages with observation dates, refreshed on a semi-annual cycle.</p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:18px">
+          <h3>Rules we deliberately withhold</h3>
+          <p>Where a statutory amount is pending reconfirmation, the planner shows <em>“more information needed”</em> and refers the case to a counselor instead of computing from a stale figure. That is why a few destinations show an empty funds card.</p>
+          <div class="row">
+            <span class="badge ok">Official</span>
+            <span class="badge info">Indicative</span>
+            <span class="badge warn">Under review</span>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:18px">
+          <h3>Need the full guide?</h3>
+          <p>Request the complete bank statement & travel budget guide for your route — it includes the checklist, the holding-period rules and the source list.</p>
+          <a class="link-arrow" href="/contact?source=planner">Request the guide</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script type="application/json" id="plannerCities">{{json citiesByCountry}}</script>

@@ -1,0 +1,75 @@
+<div class="page-head">
+  <div>
+    <h1>{{member.name}}</h1>
+    <p>{{member.role_title}}{{#if member.is_public}} · listed publicly at /team/{{member.slug}}{{else}} · internal only{{/if}}</p>
+  </div>
+  <div class="spacer"></div>
+  <div class="row">
+    {{#if member.is_public}}<a class="btn sm ghost" href="/team/{{member.slug}}" target="_blank" rel="noopener">View profile</a>{{/if}}
+    <a class="btn sm" href="/admin/team">All team</a>
+  </div>
+</div>
+
+<form method="post" action="/admin/team/{{member.id}}">
+  <input type="hidden" name="_csrf" value="{{csrf}}">
+  <div class="split">
+    <div class="stack">
+      <div class="card">
+        <header><h2>Profile</h2></header>
+        <div class="body">
+          <div class="field-row">
+            <label class="field"><span class="lab">Name</span><input type="text" name="name" value="{{member.name}}" required maxlength="120"></label>
+            <label class="field"><span class="lab">Title</span><input type="text" name="role_title" value="{{member.role_title}}" required maxlength="160"></label>
+          </div>
+          <label class="field">
+            <span class="lab">Short introduction</span>
+            <textarea name="intro" rows="3" maxlength="800">{{member.intro}}</textarea>
+            <span class="hint">Two sentences used on cards and search results. No performance claims or unverifiable results.</span>
+          </label>
+          <label class="field">
+            <span class="lab">Biography</span>
+            <textarea name="bio" rows="7" maxlength="4000">{{member.bio}}</textarea>
+          </label>
+          <div class="field-row">
+            <label class="field"><span class="lab">Credentials (one per line)</span><textarea name="credentials_text" rows="4">{{#each credentials}}{{this}}
+{{/each}}</textarea></label>
+            <label class="field"><span class="lab">Expertise (one per line)</span><textarea name="expertise_text" rows="4">{{#each expertise}}{{this}}
+{{/each}}</textarea></label>
+          </div>
+          <div class="field-row">
+            <label class="field"><span class="lab">Languages (comma separated)</span><input type="text" name="languages" value="{{join languages ', '}}"></label>
+            <label class="field"><span class="lab">Locations (one per line)</span><textarea name="locations_text" rows="3">{{#each locations}}{{this}}
+{{/each}}</textarea></label>
+          </div>
+          <div class="field-row">
+            <label class="field"><span class="lab">Email</span><input type="text" name="email" value="{{member.email}}"></label>
+            <label class="field"><span class="lab">Phones (one per line)</span><textarea name="phones_text" rows="3">{{#each phones}}{{this}}
+{{/each}}</textarea></label>
+          </div>
+          <div class="field-row">
+            <label class="field"><span class="lab">SEO title</span><input type="text" name="seo_title" value="{{member.seo_title}}" maxlength="200"></label>
+            <label class="field"><span class="lab">Meta description</span><input type="text" name="seo_description" value="{{member.seo_description}}" maxlength="400"></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stack">
+      <div class="card">
+        <header><h3>Visibility</h3></header>
+        <div class="body">
+          <label class="inline-check"><input type="checkbox" name="is_public" value="1" {{#if member.is_public}}checked{{/if}}> Show on the public site</label>
+          <label class="field" style="margin-top:12px"><span class="lab">Sort order</span><input type="number" name="sort_order" value="{{member.sort_order}}"></label>
+          <button class="btn primary block" type="submit">Save profile</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <header><h3>Guarded wording</h3></header>
+        <div class="body tiny muted">
+          Keep the exact title <b>{{setting 'brand.name' 'Kishaa International'}}</b> uses in printed material. Never add ratings, rankings, pass rates or guaranteed outcomes — the platform blocks unverified claim language in published copy.
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

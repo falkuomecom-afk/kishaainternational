@@ -1,0 +1,73 @@
+<div class="page-head">
+  <div>
+    <h1>Site settings</h1>
+    <p>Identity, contact points, SEO defaults, lead operations, design tokens, feature flags and legal notices.</p>
+  </div>
+  <div class="spacer"></div>
+  <div class="row"><span class="muted tiny">{{count rows}} keys stored</span></div>
+</div>
+
+<div class="tabs">
+  {{#each groups}}
+  <a href="/admin/settings?group={{@key}}" class="{{#if eq @key @root.group}}on{{/if}}">{{label}}</a>
+  {{/each}}
+</div>
+
+{{#with groups}}
+<form method="post" action="/admin/settings">
+  <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+  <input type="hidden" name="_group" value="{{@root.group}}">
+
+  <div class="split">
+    <div class="card">
+      <header>
+        <h2>{{#each this}}{{#if eq @key @root.group}}{{label}}{{/if}}{{/each}}</h2>
+        <div class="spacer"></div>
+        <span class="muted tiny">Values save together</span>
+      </header>
+      <div class="body">
+        {{#each @root.rows}}{{#if eq group_name @root.group}}
+        <label class="field">
+          <span class="lab">{{key}}</span>
+          {{#if gt (len (unwrap value)) 120}}
+          <textarea name="{{replace key '.' '__'}}" rows="3">{{unwrap value}}</textarea>
+          {{else}}
+          <input type="text" name="{{replace key '.' '__'}}" value="{{unwrap value}}">
+          {{/if}}
+          <span class="hint">
+            {{#if eq (unwrap value) 'true'}}Boolean — use true or false.{{/if}}
+            {{#if eq (unwrap value) 'false'}}Boolean — use true or false.{{/if}}
+            Updated {{ago updated_at}}{{#if updated_by}} · user #{{updated_by}}{{/if}}
+          </span>
+        </label>
+        {{/if}}{{/each}}
+      </div>
+      <div class="foot">
+        <button class="btn primary" type="submit">Save {{#each this}}{{#if eq @key @root.group}}{{label}}{{/if}}{{/each}}</button>
+      </div>
+    </div>
+
+    <div class="stack">
+      <div class="card">
+        <header><h3>Where these appear</h3></header>
+        <div class="body tiny">
+          <div class="kv"><span>Brand &amp; contact</span><span class="muted">Header, footer, enquiry routing</span></div>
+          <div class="kv"><span>SEO defaults</span><span class="muted">Meta tags, sitemap, llms.txt</span></div>
+          <div class="kv"><span>Lead operations</span><span class="muted">Response promise, retention, recipients</span></div>
+          <div class="kv"><span>Design tokens</span><span class="muted">CSS custom properties + brand markup</span></div>
+          <div class="kv"><span>Feature flags</span><span class="muted">Cookie bar, beta notice, planner fares</span></div>
+          <div class="kv"><span>Legal</span><span class="muted">Disclaimer wording, consent version</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <header><h3>Safety rails</h3></header>
+        <div class="body tiny muted">
+          Changing <span class="mono">ops.privacy_notice_version</span> changes the consent wording stamped onto every new
+          enquiry. Do it only when the published notice itself changes, so consent records stay provable.
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+{{/with}}

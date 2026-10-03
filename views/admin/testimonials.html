@@ -1,0 +1,112 @@
+<div class="page-head">
+  <div>
+    <h1>Testimonials &amp; consent</h1>
+    <p>Written testimonials need a recorded consent note before they can be published. Nothing here is invented, and no ratings are stated unless the client supplied them.</p>
+  </div>
+  <div class="spacer"></div>
+  <div class="row"><span class="muted tiny">{{count testimonials}} records</span></div>
+</div>
+
+<div class="card" style="margin-bottom:16px">
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th>Quote</th><th>Author</th><th>Program</th><th>Consent</th><th>Status</th><th class="actions">Actions</th></tr></thead>
+      <tbody>
+      {{#each testimonials}}
+        <tr>
+          <td style="max-width:420px">
+            <form method="post" action="/admin/testimonials/{{id}}">
+              <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+              <textarea name="quote" rows="3" style="margin-bottom:5px">{{quote}}</textarea>
+              <div class="row">
+                <input type="text" name="author_display" value="{{author_display}}" placeholder="Display name" style="max-width:170px">
+                <input type="text" name="context" value="{{context}}" placeholder="Context (e.g. UK admission 2026)" style="max-width:220px">
+                <input type="number" name="rating" value="{{rating}}" min="1" max="5" placeholder="Rating" style="max-width:90px" title="Leave blank when the client did not give a rating">
+              </div>
+              <div class="row" style="margin-top:5px">
+                <input type="text" name="consent_record" value="{{consent_record}}" placeholder="Consent record (email/date/ref)" style="max-width:260px">
+                <input type="text" name="evidence_note" value="{{evidence_note}}" placeholder="Evidence retained" style="max-width:220px">
+                <select name="program_id" style="max-width:190px">
+                  <option value="">No program link</option>
+                  {{#each @root.programs}}<option value="{{id}}" {{#if eq id ../../program_id}}selected{{/if}}>{{name}}</option>{{/each}}
+                </select>
+                <select name="status" style="max-width:140px">
+                  <option value="pending" {{#if eq status 'pending'}}selected{{/if}}>Pending</option>
+                  <option value="approved" {{#if eq status 'approved'}}selected{{/if}}>Approved</option>
+                  <option value="hidden" {{#if eq status 'hidden'}}selected{{/if}}>Hidden</option>
+                  <option value="archived" {{#if eq status 'archived'}}selected{{/if}}>Archived</option>
+                </select>
+                <label class="inline-check"><input type="checkbox" name="featured" value="1" {{#if featured}}checked{{/if}}> featured</label>
+                <button class="btn sm" type="submit">Save</button>
+              </div>
+            </form>
+          </td>
+          <td class="tiny">{{author_display}}{{#if approver_name}}<br><span class="muted">checked by {{approver_name}}</span>{{/if}}</td>
+          <td class="tiny">{{default program_name '—'}}</td>
+          <td class="tiny">{{#if consent_record}}<span class="badge ok">recorded</span><br><span class="muted">{{truncate consent_record 60}}</span>{{else}}<span class="badge bad">missing</span>{{/if}}</td>
+          <td>
+            {{#if eq status 'approved'}}<span class="badge ok">Approved</span>{{/if}}
+            {{#if eq status 'pending'}}<span class="badge warn">Pending</span>{{/if}}
+            {{#if eq status 'hidden'}}<span class="badge">Hidden</span>{{/if}}
+            {{#if eq status 'archived'}}<span class="badge line">Archived</span>{{/if}}
+            {{#if rating}}<br><span class="tiny">{{stars rating}}</span>{{/if}}
+          </td>
+          <td class="actions"><span class="tiny muted">{{ago created_at}}</span></td>
+        </tr>
+      {{else}}
+        <tr><td colspan="6" class="empty"><b>No written testimonials</b>Add one only with a recorded consent note from the client.</td></tr>
+      {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="grid g2">
+  {{#if can 'content.review'}}
+  <div class="card">
+    <header><h2>Add a testimonial</h2></header>
+    <div class="body">
+      <form method="post" action="/admin/testimonials">
+        <input type="hidden" name="_csrf" value="{{csrf}}">
+        <label class="field"><span class="lab">Quote</span><textarea name="quote" rows="4" required maxlength="800"></textarea></label>
+        <div class="field-row">
+          <label class="field"><span class="lab">Display name</span><input type="text" name="author_display" required placeholder="Ayesha R."></label>
+          <label class="field"><span class="lab">Context</span><input type="text" name="context" placeholder="Finland master's, 2026 intake"></label>
+        </div>
+        <div class="field-row">
+          <label class="field"><span class="lab">Consent record</span><input type="text" name="consent_record" placeholder="Email dated 2026-08-14, retained in CRM" required></label>
+          <label class="field"><span class="lab">Evidence note</span><input type="text" name="evidence_note" placeholder="Original email filed under ref KI-2026-0481"></label>
+        </div>
+        <div class="field-row">
+          <label class="field"><span class="lab">Rating (optional)</span><input type="number" name="rating" min="1" max="5" placeholder="Only if the client gave one"></label>
+          <label class="field"><span class="lab">Program</span>
+            <select name="program_id"><option value="">No program link</option>{{#each programs}}<option value="{{id}}">{{name}}</option>{{/each}}</select>
+          </label>
+        </div>
+        <label class="field"><span class="lab">Status</span>
+          <select name="status">
+            <option value="pending">Pending review</option>
+            <option value="approved">Approved</option>
+          </select>
+        </label>
+        <button class="btn primary" type="submit">Save testimonial</button>
+      </form>
+    </div>
+  </div>
+  {{/if}}
+
+  <div class="card">
+    <header><h2>Publication rules</h2></header>
+    <div class="body tiny">
+      <div class="kv"><span>Consent recorded before publishing</span><span class="badge ok">enforced</span></div>
+      <div class="kv"><span>Display name shortened on request</span><span class="badge ok">supported</span></div>
+      <div class="kv"><span>Ratings only when supplied</span><span class="badge ok">enforced</span></div>
+      <div class="kv"><span>Exit or deletion request</span><span class="badge ok">set to hidden</span></div>
+      <div class="kv"><span>Reviews from platforms</span><span class="badge info">attributed + cached</span></div>
+    </div>
+    <div class="foot tiny muted">
+      Platform reviews are cached with their original link and platform name so visitors can verify them at the source.
+      Moderation lives under Integrations.
+    </div>
+  </div>
+</div>

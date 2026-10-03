@@ -1,0 +1,103 @@
+<div class="page-head">
+  <div>
+    <h1>Lead workspace</h1>
+    <p>Every enquiry, its stage, owner and next follow-up. Visibility is scoped by role on the server.</p>
+  </div>
+  <div class="spacer"></div>
+  <div class="row">
+    {{#if can 'leads.export'}}<a class="btn" href="/admin/leads/export?{{#if filters.stage}}stage={{filters.stage}}&{{/if}}q={{filters.q}}">Export CSV</a>{{/if}}
+  </div>
+</div>
+
+<div class="grid g4" style="margin-bottom:16px">
+  <div class="stat"><div class="k">In scope</div><div class="v">{{stats.total}}</div><div class="d">matching current filters</div></div>
+  <div class="stat"><div class="k">New</div><div class="v">{{stats.new}}</div><div class="d">not yet contacted</div></div>
+  <div class="stat {{#if gt stats.overdue 0}}warn{{/if}}"><div class="k">Overdue follow-ups</div><div class="v">{{stats.overdue}}</div><div class="d">past the scheduled date</div></div>
+  <div class="stat {{#if gt stats.unassigned 0}}warn{{/if}}"><div class="k">Unassigned</div><div class="v">{{stats.unassigned}}</div><div class="d">sitting in the shared queue</div></div>
+</div>
+
+<div class="card" style="margin-bottom:16px">
+  <div class="body">
+    <form class="filters" method="get" action="/admin/leads">
+      <label class="field" style="margin:0"><span class="lab">Search</span><input type="text" name="q" value="{{filters.q}}" placeholder="Name, reference, email or phone"></label>
+      <label class="field" style="margin:0">
+        <span class="lab">Stage</span>
+        <select name="stage">
+          <option value="">Any stage</option>
+          <option value="new" {{#if eq filters.stage 'new'}}selected{{/if}}>New</option>
+          <option value="contacted" {{#if eq filters.stage 'contacted'}}selected{{/if}}>Contacted</option>
+          <option value="qualified" {{#if eq filters.stage 'qualified'}}selected{{/if}}>Qualified</option>
+          <option value="consultation" {{#if eq filters.stage 'consultation'}}selected{{/if}}>Consultation</option>
+          <option value="enrolled" {{#if eq filters.stage 'enrolled'}}selected{{/if}}>Enrolled</option>
+          <option value="closed" {{#if eq filters.stage 'closed'}}selected{{/if}}>Closed</option>
+        </select>
+      </label>
+      <label class="field" style="margin:0">
+        <span class="lab">Interest</span>
+        <select name="interest">
+          <option value="">Any interest</option>
+          <option value="immigration" {{#if eq filters.interest 'immigration'}}selected{{/if}}>Immigration</option>
+          <option value="career" {{#if eq filters.interest 'career'}}selected{{/if}}>Career counseling</option>
+          <option value="cambridge" {{#if eq filters.interest 'cambridge'}}selected{{/if}}>Cambridge &amp; IELTS</option>
+          <option value="other" {{#if eq filters.interest 'other'}}selected{{/if}}>General</option>
+        </select>
+      </label>
+      <label class="field" style="margin:0">
+        <span class="lab">Follow-up</span>
+        <select name="due">
+          <option value="">Any</option>
+          <option value="overdue" {{#if eq filters.due 'overdue'}}selected{{/if}}>Overdue</option>
+          <option value="today" {{#if eq filters.due 'today'}}selected{{/if}}>Due today</option>
+        </select>
+      </label>
+      <label class="field" style="margin:0"><span class="lab">Owner</span><input type="text" name="owner" value="{{filters.owner}}" placeholder="Name or email" style="min-width:150px"></label>
+      <button class="btn primary" type="submit">Apply</button>
+      <a class="btn ghost" href="/admin/leads">Reset</a>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr><th>Reference</th><th>Client</th><th>Interest</th><th>Stage</th><th>Owner</th><th>Next follow-up</th><th>Received</th><th class="actions">Actions</th></tr>
+      </thead>
+      <tbody>
+      {{#each leads}}
+        <tr>
+          <td class="mono tiny"><a href="/admin/leads/{{id}}">{{reference}}</a>{{#if spam_score}}<br><span class="badge warn">check spam</span>{{/if}}</td>
+          <td>
+            <b>{{full_name}}</b><br>
+            <span class="tiny muted">{{#if country_name}}{{country_name}}{{else}}{{service_context}}{{/if}}</span>
+            {{#if activity_count}}<br><span class="tiny muted">{{activity_count}} note{{plural activity_count '' 's'}}</span>{{/if}}
+          </td>
+          <td class="tiny">{{interestLabel interest}}</td>
+          <td>
+            {{#if eq stage 'new'}}<span class="badge info">New</span>{{/if}}
+            {{#if eq stage 'contacted'}}<span class="badge">Contacted</span>{{/if}}
+            {{#if eq stage 'qualified'}}<span class="badge gold">Qualified</span>{{/if}}
+            {{#if eq stage 'consultation'}}<span class="badge info">Consultation</span>{{/if}}
+            {{#if eq stage 'enrolled'}}<span class="badge ok">Enrolled</span>{{/if}}
+            {{#if eq stage 'closed'}}<span class="badge line">Closed</span>{{/if}}
+          </td>
+          <td class="tiny">{{default owner_name 'Unassigned'}}</td>
+          <td class="tiny">{{#if next_follow_up_at}}{{date next_follow_up_at}}{{else}}<span class="muted">not set</span>{{/if}}</td>
+          <td class="tiny muted">{{ago created_at}}</td>
+          <td class="actions"><a class="btn sm" href="/admin/leads/{{id}}">Open</a></td>
+        </tr>
+      {{else}}
+        <tr><td colspan="8" class="empty"><b>No leads match these filters</b>Try resetting, or check the shared intake queue.</td></tr>
+      {{/each}}
+      </tbody>
+    </table>
+  </div>
+  {{#if gt pagination.pages 1}}
+  <div class="pager">
+    {{#if pagination.hasPrev}}<a href="/admin/leads?page={{sub pagination.page 1}}">← Previous</a>{{/if}}
+    <span class="on">{{pagination.page}}</span>
+    <span class="muted">of {{pagination.pages}}</span>
+    {{#if pagination.hasNext}}<a href="/admin/leads?page={{add pagination.page 1}}">Next →</a>{{/if}}
+  </div>
+  {{/if}}
+</div>

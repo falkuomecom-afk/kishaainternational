@@ -1,0 +1,65 @@
+<div class="page-head">
+  <div>
+    <h1>Menus &amp; global navigation</h1>
+    <p>Header, utility strip, footer columns and the mobile drawer. Order controls left-to-right position.</p>
+  </div>
+  <div class="spacer"></div>
+  <div class="row"><a class="btn sm" href="/" target="_blank" rel="noopener">Preview site</a></div>
+</div>
+
+<div class="grid g2">
+  {{#each menus}}
+  <div class="card">
+    <header>
+      <h3>{{titlecase @key}}</h3>
+      <div class="spacer"></div>
+      <span class="muted tiny">{{count this}} item{{plural (count this) '' 's'}}</span>
+    </header>
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Label</th><th>URL</th><th>Order</th><th>Live</th><th class="actions">Actions</th></tr></thead>
+        <tbody>
+        {{#each this}}
+          <tr>
+            <td>
+              <form method="post" action="/admin/menus" class="row">
+                <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+                <input type="hidden" name="id" value="{{id}}">
+                <input type="hidden" name="location" value="{{@key}}">
+                <input type="text" name="label" value="{{label}}" style="max-width:170px">
+                <input type="text" name="url" value="{{url}}" style="max-width:200px">
+                <input type="number" name="sort_order" value="{{sort_order}}" style="max-width:70px">
+                <label class="inline-check"><input type="checkbox" name="published" value="1" {{#if published}}checked{{/if}}> live</label>
+                <button class="btn sm" type="submit">Save</button>
+              </form>
+            </td>
+            <td class="tiny mono">{{url}}</td>
+            <td class="tiny">{{sort_order}}</td>
+            <td>{{#if published}}<span class="badge ok">Live</span>{{else}}<span class="badge">Hidden</span>{{/if}}</td>
+            <td class="actions">
+              <form method="post" action="/admin/menus/{{id}}/delete" data-confirm="Remove “{{label}}” from this menu?">
+                <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+                <button class="btn sm danger" type="submit">Remove</button>
+              </form>
+            </td>
+          </tr>
+        {{else}}
+          <tr><td colspan="5" class="empty"><b>This menu is empty</b>Add the first link below.</td></tr>
+        {{/each}}
+        </tbody>
+      </table>
+    </div>
+    <div class="foot">
+      <form method="post" action="/admin/menus" class="row" style="align-items:flex-end">
+        <input type="hidden" name="_csrf" value="{{@root.csrf}}">
+        <input type="hidden" name="location" value="{{@key}}">
+        <label class="field" style="margin:0;flex:1"><span class="lab">New label</span><input type="text" name="label" required></label>
+        <label class="field" style="margin:0;flex:1"><span class="lab">URL</span><input type="text" name="url" required placeholder="/cost-planner"></label>
+        <label class="field" style="margin:0;max-width:100px"><span class="lab">Order</span><input type="number" name="sort_order" value="50"></label>
+        <label class="inline-check" style="margin-bottom:11px"><input type="checkbox" name="published" value="1" checked> live</label>
+        <button class="btn gold" type="submit" style="margin-bottom:8px">Add link</button>
+      </form>
+    </div>
+  </div>
+  {{/each}}
+</div>
