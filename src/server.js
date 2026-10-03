@@ -105,8 +105,8 @@ app.use((req, res, next) => {
   res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
   if (!req.path.startsWith('/admin')) {
     res.setHeader('Content-Security-Policy',
-      "default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self' 'unsafe-inline'; " +
-      "font-src 'self' data: https://fonts.gstatic.com; connect-src 'self'; frame-src 'self' https://www.youtube.com https://www.instagram.com; " +
+      "default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self' 'unsafe-inline' https://invitejs.trustpilot.com https://*.trustpilot.com; " +
+      "font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://*.trustpilot.com https://invitejs.trustpilot.com; frame-src 'self' https://www.youtube.com https://www.instagram.com https://*.trustpilot.com; " +
       "base-uri 'self'; form-action 'self'; object-src 'none'");
   }
   next();
