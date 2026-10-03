@@ -118,9 +118,12 @@ app.get('/healthz', (req, res) => res.json({ ok: true, uptime: process.uptime(),
 /* ------------------------------------------------------------- tRPC API */
 const { fetchRequestHandler } = require('@trpc/server/adapters/fetch');
 let cachedRouter = null;
-function getAppRouter() {
+async function getAppRouter() {
   if (!cachedRouter) {
     const trpcModule = require('./lib/trpc-router');
+    if (trpcModule.superjsonReady) {
+      await trpcModule.superjsonReady;
+    }
     cachedRouter = trpcModule.appRouter || trpcModule;
   }
   return cachedRouter;
@@ -128,7 +131,7 @@ function getAppRouter() {
 
 async function handleTrpc(req, res) {
   try {
-    const router = getAppRouter();
+    const router = await getAppRouter();
     if (!router || !router._def) {
       throw new Error(`tRPC router unavailable (keys: ${Object.keys(require('./lib/trpc-router'))})`);
     }

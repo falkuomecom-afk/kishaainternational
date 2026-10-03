@@ -5,7 +5,6 @@
  * Serves the modern React frontend while connecting directly to CMS data and lead operations.
  */
 const { initTRPC, TRPCError } = require('@trpc/server');
-const superjson = require('superjson');
 const { z } = require('zod');
 const { db, setting, audit } = require('./db');
 const H = require('./helpers');
@@ -13,8 +12,35 @@ const mailer = require('./mailer');
 const integrations = require('./integrations');
 const supabase = require('./supabase');
 
+let superjson = null;
+const superjsonReady = import('superjson').then((m) => {
+  superjson = m.default || m;
+  return superjson;
+}).catch((err) => {
+  console.warn('[trpc:superjson] Failed to load superjson ESM:', err.message);
+});
+
+const transformer = {
+  input: {
+    serialize: (obj) => (superjson ? superjson.serialize(obj) : { json: obj }),
+    deserialize: (obj) => {
+      if (superjson) return superjson.deserialize(obj);
+      if (obj && typeof obj === 'object' && 'json' in obj) return obj.json;
+      return obj;
+    },
+  },
+  output: {
+    serialize: (obj) => (superjson ? superjson.serialize(obj) : { json: obj }),
+    deserialize: (obj) => {
+      if (superjson) return superjson.deserialize(obj);
+      if (obj && typeof obj === 'object' && 'json' in obj) return obj.json;
+      return obj;
+    },
+  },
+};
+
 const t = initTRPC.context().create({
-  transformer: superjson,
+  transformer,
 });
 
 const router = t.router;
@@ -211,7 +237,7 @@ const appRouter = router({
 
     programs: router({
       list: publicProcedure
-        .input(z.object({ pillar: z.string().optional() }).optional())
+        .input(z.object({ pillar: z.string().optional() }).nullish())
         .query(async ({ input }) => {
           if (supabase.isAvailable()) {
             const rows = await supabase.getPrograms(input?.pillar);
@@ -419,7 +445,7 @@ const appRouter = router({
 
     feeds: router({
       list: publicProcedure
-        .input(z.object({ platform: z.string().optional() }).optional())
+        .input(z.object({ platform: z.string().optional() }).nullish())
         .query(async ({ input }) => {
           if (supabase.isAvailable()) {
             const rows = await supabase.getFeeds(input?.platform);
@@ -467,7 +493,7 @@ const appRouter = router({
 
     faqs: router({
       list: publicProcedure
-        .input(z.object({ category: z.string().optional() }).optional())
+        .input(z.object({ category: z.string().optional() }).nullish())
         .query(async ({ input }) => {
           if (supabase.isAvailable()) {
             const rows = await supabase.getFaqs(input?.category);
@@ -758,4 +784,4 @@ const appRouter = router({
   }),
 });
 
-module.exports = { appRouter };
+module.exports = { appRouter, superjsonReady };
