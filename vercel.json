@@ -6,10 +6,10 @@
       "framework": "express",
       "functions": {
         "src/**": {
-          "includeFiles": "{views/**,data/**}"
+          "includeFiles": "{views/**,data/**,client/dist/**,public/dist/**}"
         },
         "api/**": {
-          "includeFiles": "{views/**,data/**}"
+          "includeFiles": "{views/**,data/**,client/dist/**,public/dist/**}"
         }
       }
     },
@@ -114,8 +114,7 @@
     {
       "source": "/(.*)",
       "destination": {
-        "service": "client",
-        "path": "/index.html"
+        "service": "app"
       }
     }
   ]
