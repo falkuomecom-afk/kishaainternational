@@ -88,9 +88,34 @@
       }
     },
     {
-      "source": "/(.*)",
+      "source": "/assets/(.*)",
       "destination": {
         "service": "client"
+      }
+    },
+    {
+      "source": "/img/(.*)",
+      "destination": {
+        "service": "client"
+      }
+    },
+    {
+      "source": "/favicon.svg",
+      "destination": {
+        "service": "client"
+      }
+    },
+    {
+      "source": "/logo.png",
+      "destination": {
+        "service": "client"
+      }
+    },
+    {
+      "source": "/(.*)",
+      "destination": {
+        "service": "client",
+        "path": "/index.html"
       }
     }
   ]
