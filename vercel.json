@@ -3,15 +3,7 @@
   "services": {
     "app": {
       "root": ".",
-      "framework": "express",
-      "bindings": [
-        {
-          "type": "service",
-          "service": "client",
-          "format": "url",
-          "env": "CLIENT_URL"
-        }
-      ]
+      "framework": "express"
     },
     "client": {
       "root": "client",
