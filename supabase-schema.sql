@@ -142,7 +142,9 @@ CREATE TABLE IF NOT EXISTS posts (
   noindex          INTEGER NOT NULL DEFAULT 0,
   created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  deleted_at       TEXT
+  deleted_at       TEXT,
+  geo_summary      TEXT,
+  primary_pillar   TEXT DEFAULT 'resources'
 );
 CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status, publish_at);
 
@@ -230,7 +232,8 @@ CREATE TABLE IF NOT EXISTS fee_versions (
   reviewed_at   TEXT,
   version       TEXT NOT NULL DEFAULT 'v1',
   published     INTEGER NOT NULL DEFAULT 1,
-  created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  note          TEXT
 );
 
 -- ---------------------------------------------------------------------------
@@ -488,7 +491,8 @@ CREATE TABLE IF NOT EXISTS leads (
   next_follow_up_at TEXT,
   created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  closed_at       TEXT
+  closed_at       TEXT,
+  region          TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_leads_stage ON leads(stage, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_leads_owner ON leads(owner_id, stage);
@@ -639,16 +643,25 @@ CREATE TABLE IF NOT EXISTS events (
 );
 
 -- ---------------------------------------------------------------------------
--- 9. PUBLIC SEARCH INDEX (FTS5) — published content only
+-- 9. PUBLIC SEARCH INDEX — published content only (PostgreSQL Full-Text Search)
 -- ---------------------------------------------------------------------------
-CREATE VIRTUAL TABLE IF NOT EXISTS search_index USING fts5(
-  entity, entity_id UNINDEXED, title, body, url UNINDEXED, tokenize='porter unicode61'
+CREATE TABLE IF NOT EXISTS search_index (
+  id         SERIAL PRIMARY KEY,
+  entity     TEXT NOT NULL,
+  entity_id  INTEGER,
+  title      TEXT,
+  body       TEXT,
+  url        TEXT,
+  search_vec TSVECTOR GENERATED ALWAYS AS (
+    to_tsvector('english', coalesce(title, '') || ' ' || coalesce(body, ''))
+  ) STORED
 );
+CREATE INDEX IF NOT EXISTS idx_search_index_vec ON search_index USING GIN (search_vec);
 
 -- ---------------------------------------------------------------------------
 -- 10. REPORTING VIEWS
 -- ---------------------------------------------------------------------------
-CREATE VIEW IF NOT EXISTS v_lead_summary AS
+CREATE OR REPLACE VIEW v_lead_summary AS
 SELECT l.id, l.reference, l.full_name, l.stage, l.interest, l.source_type,
        l.created_at, l.next_follow_up_at, u.name AS owner_name,
        (SELECT COUNT(*) FROM lead_activities a WHERE a.lead_id = l.id) AS activity_count
