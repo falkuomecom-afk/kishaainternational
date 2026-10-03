@@ -153,7 +153,7 @@ module.exports = function seedContent(db) {
       delivery: 'Dubai HQ', duration: 'Typically 5–20 working days by category',
       fee_from: 2500, fee_to: 15000, currency: 'AED',
       fee_notes: 'Government fees vary by category and duration; advisory and PRO service fees are quoted per case after assessment.',
-      location: 'United Arab Emirates', processing_time: '5–20 working days', sort_order: 6, icon: 'desert',
+      location: 'United Arab Emirates', processing_time: '5–20 working days', featured: 1, sort_order: 6, icon: 'desert',
       urgency: 'Category rules change — confirm current eligibility with the team.' },
 
     { name: 'Schengen, Serbia & Romania Work Pathways', slug: 'europe-work-pathways', pillar: 'immigration', type: 'visa',
@@ -186,7 +186,7 @@ module.exports = function seedContent(db) {
       delivery: 'Dubai HQ', duration: 'Varies by current route rules',
       fee_from: 900, fee_to: 2200, currency: 'AED',
       fee_notes: 'Advisory fee per application; government fees payable separately. Rules for this route change frequently — the team confirms the current position at enquiry stage.',
-      location: 'UAE → Turkey', processing_time: 'Routed by current rules', sort_order: 8, icon: 'crescent',
+      location: 'UAE → Turkey', processing_time: 'Routed by current rules', featured: 1, sort_order: 8, icon: 'crescent',
       urgency: 'Policy settings for this route change without notice — check current position.' },
 
     { name: 'Spoken English & Communication Skills', slug: 'spoken-english', pillar: 'cambridge', type: 'course',

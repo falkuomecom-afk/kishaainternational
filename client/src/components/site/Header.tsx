@@ -5,19 +5,19 @@ import { SITE } from "@/lib/site";
 
 export function Wordmark({ light = false }: { light?: boolean }) {
   return (
-    <Link to="/" className="flex items-center gap-1.5 xl:gap-2 shrink-0" aria-label="Kishaa International — home">
+    <Link to="/" className="flex items-center gap-2 sm:gap-2.5 xl:gap-2 shrink-0" aria-label="Kishaa International — home">
       <img
         src="/img/logo.png"
         alt="Kishaa International"
-        width={32}
-        height={32}
-        className="h-7.5 w-7.5 xl:h-8 xl:w-8 object-contain rounded-full shadow-[0_0_8px_rgba(201,162,39,0.3)] shrink-0"
+        width={40}
+        height={40}
+        className="h-9 w-9 sm:h-10 sm:w-10 lg:h-8 lg:w-8 xl:h-8.5 xl:w-8.5 object-contain rounded-full shadow-[0_0_12px_rgba(201,162,39,0.35)] shrink-0"
       />
       <div className="leading-tight">
-        <span className={`block font-serif text-[12px] xl:text-[13px] 2xl:text-[14px] font-semibold tracking-tight whitespace-nowrap ${light ? "text-white" : "text-navy"}`}>
+        <span className={`block font-serif text-[16px] sm:text-[17px] lg:text-[12px] xl:text-[13px] 2xl:text-[14px] font-semibold tracking-tight whitespace-nowrap ${light ? "text-white" : "text-navy"}`}>
           Kishaa International
         </span>
-        <span className={`block text-[6px] xl:text-[6.5px] uppercase tracking-[0.16em] font-semibold mt-0.5 whitespace-nowrap ${light ? "text-[#93a7c3]" : "text-navy/60"}`}>
+        <span className={`block text-[8px] sm:text-[8.5px] lg:text-[6px] xl:text-[6.5px] uppercase tracking-[0.18em] font-semibold mt-0.5 whitespace-nowrap ${light ? "text-[#93a7c3]" : "text-navy/60"}`}>
           Gateway to Global Careers
         </span>
       </div>
@@ -88,8 +88,8 @@ export function Header() {
           visible ? "translate-y-0 shadow-[0_4px_25px_rgba(2,12,28,0.5)]" : "-translate-y-full"
         }`}
       >
-        <div className="w-full max-w-[1920px] mx-auto px-2 sm:px-3 xl:px-5">
-          <div className="flex h-14 sm:h-15 xl:h-16 items-center justify-between gap-1 xl:gap-2">
+        <div className="w-full max-w-[1920px] mx-auto px-3 sm:px-4 xl:px-5">
+          <div className="flex h-16 sm:h-17 lg:h-15 xl:h-16 items-center justify-between gap-1 xl:gap-2">
             {/* Left: Brand with official circular logo */}
             <Wordmark light />
 
@@ -164,21 +164,21 @@ export function Header() {
             </div>
 
             {/* Mobile Menu Toggle Button */}
-            <div className="flex md:hidden items-center gap-2">
+            <div className="flex md:hidden items-center gap-2.5">
               <Link
                 to="/contact"
-                className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#F5C344] to-[#E5A720] px-3 py-1.5 text-[11px] font-bold text-[#06162D]"
+                className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#F5C344] via-[#F1BE3B] to-[#E5A720] px-3.5 py-1.5 sm:px-4 sm:py-2 text-[12px] sm:text-[13px] font-bold text-[#06162D] shadow-[0_2px_10px_rgba(245,195,68,0.3)] hover:brightness-105 active:scale-[0.98] transition-all whitespace-nowrap"
               >
-                <Calendar className="h-3 w-3" />
+                <Calendar className="h-3.5 w-3.5" />
                 <span>Consult</span>
               </Link>
               <button
-                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/20 bg-white/5 text-white"
+                className="inline-flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white shadow-sm hover:bg-white/15 active:scale-95 transition-all"
                 onClick={() => setOpen(!open)}
                 aria-label={open ? "Close menu" : "Open menu"}
                 aria-expanded={open}
               >
-                {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                {open ? <X className="h-5.5 w-5.5" /> : <Menu className="h-5.5 w-5.5" />}
               </button>
             </div>
           </div>

@@ -251,7 +251,17 @@ export default function Home() {
   useReveal(programsList);
 
   const career = programsList.filter((p: Program) => p.pillar === "career").slice(0, 4);
-  const immigration = programsList.filter((p: Program) => p.pillar === "immigration").slice(0, 3);
+  const immigrationRaw = programsList.filter((p: Program) => p.pillar === "immigration");
+  const immigration: Program[] = [...immigrationRaw.slice(0, 3)];
+  if (immigration.length < 3) {
+    const defaultImm = DEFAULT_PROGRAMS.filter((p: Program) => p.pillar === "immigration");
+    const existingSlugs = new Set(immigration.map((p) => p.slug));
+    for (const item of defaultImm) {
+      if (!existingSlugs.has(item.slug) && immigration.length < 3) {
+        immigration.push(item);
+      }
+    }
+  }
   const cambridge = programsList.filter((p: Program) => p.pillar === "cambridge").slice(0, 2);
 
   const selected = countryList.find((c) => c.slug === teaserCountry) || countryList[0];

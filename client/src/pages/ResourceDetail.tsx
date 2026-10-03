@@ -13,7 +13,7 @@ export default function ResourceDetail() {
     { retry: 1 }
   );
 
-  if (isLoading) return <div className="mx-auto max-w-3xl px-4 py-24 text-navy/50">Loading…</div>;
+  if (isLoading) return <div className="mx-auto max-w-3xl px-4 pt-28 pb-24 text-navy/50">Loading…</div>;
   if (isError || !post) return <NotFound />;
 
   const formattedDate = post.publishedAt
@@ -49,7 +49,7 @@ export default function ResourceDetail() {
         ]}
       />
 
-      <section className="pt-6 pb-16">
+      <section className="pt-24 sm:pt-28 pb-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-10 items-start">
             <article className="min-w-0">
