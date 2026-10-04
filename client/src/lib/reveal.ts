@@ -11,15 +11,6 @@ export function useReveal(dep: unknown = null) {
       return;
     }
 
-    // Immediately show elements already in or near viewport
-    const vh = window.innerHeight || 800;
-    els.forEach((el) => {
-      const rect = el.getBoundingClientRect();
-      if (rect.top <= vh + 400) {
-        el.classList.add("is-visible");
-      }
-    });
-
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {

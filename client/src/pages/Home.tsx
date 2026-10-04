@@ -36,6 +36,7 @@ const TRIAD = [
     icon: GraduationCap,
     title: "Career Counseling & Admissions",
     badge: "2027 Intakes Open",
+    shortBadge: "2027 Intakes",
     pulseColor: "bg-emerald-400",
     statusText: "Active Intakes",
     highlights: ["UK (MOI Accepted)", "Italy Full Scholarships", "Finland Family Route"],
@@ -46,6 +47,7 @@ const TRIAD = [
     icon: Globe2,
     title: "Immigration Consultancy",
     badge: "Official PRO & GDRFA",
+    shortBadge: "PRO & GDRFA",
     pulseColor: "bg-[#ECC248]",
     statusText: "Verified Channels",
     highlights: ["Canada 10-Yr LOI", "UAE Golden & Green", "Schengen 4-Pillar"],
@@ -56,6 +58,7 @@ const TRIAD = [
     icon: BookOpenCheck,
     title: "Cambridge Courses Training",
     badge: "British Council Certified",
+    shortBadge: "British Council",
     pulseColor: "bg-cyan-400",
     statusText: "Zeb Khan Masterclass",
     highlights: ["Band 6.5 to 7.5 Plan", "Spoken English Track", "Executive Coaching"],
@@ -313,14 +316,16 @@ export default function Home() {
 
       {/* 01 — Triad Hero */}
       <section className="relative overflow-hidden bg-[#00142e] text-white flex flex-col justify-center min-h-[540px] lg:min-h-[580px]">
-        {/* Background photo - Mobile portrait (.webp) */}
-        <div
-          className="absolute inset-0 bg-cover bg-no-repeat bg-[position:center_top] sm:hidden pointer-events-none"
-          style={{
-            backgroundImage: "url('/img/hero-global-career-mobile.webp')",
-          }}
-          role="img"
-          aria-label="Global traveler overlooking international destination skyline"
+        {/* Background photo - Mobile portrait (.webp) with high fetchpriority for instant LCP */}
+        <img
+          src="/img/hero-global-career-mobile.webp"
+          alt="Global traveler overlooking international destination skyline"
+          fetchPriority="high"
+          loading="eager"
+          decoding="async"
+          width="682"
+          height="1024"
+          className="absolute inset-0 h-full w-full object-cover object-[center_top] sm:hidden pointer-events-none"
         />
         {/* Soft mobile overlay: keeps image vibrant while guaranteeing text contrast */}
         <div
@@ -328,13 +333,15 @@ export default function Home() {
         />
 
         {/* Background photo - Desktop landscape (.webp) */}
-        <div
-          className="absolute inset-0 bg-cover bg-no-repeat bg-right hidden sm:block pointer-events-none"
-          style={{
-            backgroundImage: "url('/img/hero-global-career.webp')",
-          }}
-          role="img"
-          aria-label="Global traveler overlooking international destination skyline"
+        <img
+          src="/img/hero-global-career.webp"
+          alt="Global traveler overlooking international destination skyline"
+          fetchPriority="high"
+          loading="eager"
+          decoding="async"
+          width="1024"
+          height="479"
+          className="absolute inset-0 h-full w-full object-cover object-right hidden sm:block pointer-events-none"
         />
         {/* Subtle desktop left-edge gradient to ensure seamless dark navy behind text across all screen widths */}
         <div
@@ -533,7 +540,7 @@ export default function Home() {
               <Link
                 key={t.title}
                 to={t.to}
-                className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gold/30 bg-gradient-to-br from-[#0c284d] via-[#071d38] to-[#030e1d] p-4 sm:p-7 sm:p-8 transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#ECC248] hover:shadow-[0_20px_50px_rgba(201,162,39,0.25)] ${
+                className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gold/30 bg-gradient-to-br from-[#0c284d] via-[#071d38] to-[#030e1d] p-3.5 sm:p-7 sm:p-8 transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#ECC248] hover:shadow-[0_20px_50px_rgba(201,162,39,0.25)] ${
                   idx === 2
                     ? "col-span-2 lg:col-span-1 max-w-sm sm:max-w-md lg:max-w-none mx-auto w-full"
                     : "col-span-1"
@@ -545,16 +552,17 @@ export default function Home() {
 
                 <div>
                   <div className="flex items-center justify-between gap-1">
-                    <div className="inline-flex h-9 w-9 sm:h-13 sm:w-13 items-center justify-center rounded-xl bg-gradient-to-br from-gold/25 via-gold/10 to-transparent border border-gold/40 text-[#ECC248] shadow-[0_4px_20px_rgba(201,162,39,0.2)] group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shrink-0">
+                    <div className="inline-flex h-8 w-8 sm:h-13 sm:w-13 items-center justify-center rounded-lg sm:rounded-xl bg-gradient-to-br from-gold/25 via-gold/10 to-transparent border border-gold/40 text-[#ECC248] shadow-[0_4px_20px_rgba(201,162,39,0.2)] group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shrink-0">
                       <t.icon className="h-4 w-4 sm:h-6 sm:w-6" strokeWidth={1.75} />
                     </div>
                     {t.badge && (
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/15 px-2 py-0.5 sm:px-3 sm:py-1 text-[9px] sm:text-[10.5px] font-bold uppercase tracking-wider text-gold border border-gold/30">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-gold/15 px-1.5 py-0.5 sm:px-3 sm:py-1 text-[7px] min-[360px]:text-[7.5px] min-[400px]:text-[8px] sm:text-[10.5px] font-bold uppercase tracking-tight sm:tracking-wider text-gold border border-gold/30 shrink-0 max-w-[calc(100%-2.25rem)]">
                         <span className="relative flex h-1.5 w-1.5 shrink-0">
                           <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${t.pulseColor || 'bg-gold'} opacity-75`}></span>
                           <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${t.pulseColor || 'bg-gold'}`}></span>
                         </span>
-                        <span className="truncate">{t.badge}</span>
+                        <span className="hidden sm:inline truncate">{t.badge}</span>
+                        <span className="sm:hidden truncate">{t.shortBadge || t.badge}</span>
                       </span>
                     )}
                   </div>
@@ -579,11 +587,11 @@ export default function Home() {
                   )}
                 </div>
 
-                <div className="mt-5 sm:mt-8 pt-3 sm:pt-5 border-t border-white/10 flex items-center justify-between text-[11px] sm:text-[12px]">
-                  <span className="inline-flex items-center gap-1.5 font-semibold uppercase tracking-[0.14em] text-[#ECC248]">
-                    Explore <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform group-hover:translate-x-1.5 text-gold shrink-0" />
+                <div className="mt-4 sm:mt-8 pt-2.5 sm:pt-5 border-t border-white/10 flex items-center justify-between text-[11px] sm:text-[12px]">
+                  <span className="inline-flex items-center gap-1 sm:gap-1.5 font-semibold uppercase tracking-[0.08em] sm:tracking-[0.14em] text-[#ECC248] text-[9.5px] sm:text-[12px]">
+                    Explore <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 transition-transform group-hover:translate-x-1.5 text-gold shrink-0" />
                   </span>
-                  <span className="text-[9.5px] sm:text-[10.5px] font-semibold uppercase tracking-wider text-white/40 flex items-center gap-1 shrink-0">
+                  <span className="text-[8px] sm:text-[10.5px] font-semibold uppercase tracking-tight sm:tracking-wider text-white/50 flex items-center gap-1 shrink-0">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
                     <span className="hidden sm:inline">Official advisory</span>
                     <span className="sm:hidden">Advisory</span>
@@ -983,8 +991,12 @@ export default function Home() {
 
               <div className="relative mx-auto mb-6 h-64 w-52 sm:h-72 sm:w-60 overflow-hidden rounded-2xl border-2 border-gold/40 shadow-[0_4px_30px_rgba(201,162,39,0.3)]">
                 <img
-                  src="/img/zeb-khan.png"
+                  src="/img/zeb-khan.webp"
                   alt="Zeb Khan - Senior Consultant & Executive Trainer"
+                  width="240"
+                  height="288"
+                  loading="lazy"
+                  decoding="async"
                   className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
                 />
               </div>

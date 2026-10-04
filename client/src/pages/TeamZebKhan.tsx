@@ -34,8 +34,12 @@ export default function TeamZebKhan() {
             <div className="overflow-hidden rounded-2xl border border-gold/30 bg-[#021226]/80 p-6 sm:p-8 text-center shadow-2xl">
               <div className="relative mx-auto mb-6 h-64 w-52 sm:h-72 sm:w-60 overflow-hidden rounded-2xl border-2 border-gold/40 shadow-[0_4px_30px_rgba(201,162,39,0.3)]">
                 <img
-                  src="/img/zeb-khan.png"
+                  src="/img/zeb-khan.webp"
                   alt={zeb.name}
+                  loading="lazy"
+                  decoding="async"
+                  width={240}
+                  height={288}
                   className="h-full w-full object-cover object-top"
                 />
               </div>

@@ -1,26 +1,29 @@
+import { lazy, Suspense, useEffect } from "react";
 import { Routes, Route, Navigate, Outlet, useLocation } from "react-router";
-import { useEffect } from "react";
 import { MessageCircle } from "lucide-react";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { Analytics } from "@/components/site/Analytics";
 import { waLink } from "@/lib/site";
 import Home from "./pages/Home";
-import CareerCounseling from "./pages/CareerCounseling";
-import Immigration from "./pages/Immigration";
-import Cambridge from "./pages/Cambridge";
-import Destinations from "./pages/Destinations";
-import DestinationDetail from "./pages/DestinationDetail";
-import CostPlanner from "./pages/CostPlanner";
-import Reviews from "./pages/Reviews";
-import TeamZebKhan from "./pages/TeamZebKhan";
-import About from "./pages/About";
-import Resources from "./pages/Resources";
-import ResourceDetail from "./pages/ResourceDetail";
-import Contact from "./pages/Contact";
-import BankStatements from "./pages/BankStatements";
-import { Privacy, Terms } from "./pages/Legal";
-import NotFound from "./pages/NotFound";
+
+// Code-split secondary routes to shrink the initial JavaScript bundle
+const CareerCounseling = lazy(() => import("./pages/CareerCounseling"));
+const Immigration = lazy(() => import("./pages/Immigration"));
+const Cambridge = lazy(() => import("./pages/Cambridge"));
+const Destinations = lazy(() => import("./pages/Destinations"));
+const DestinationDetail = lazy(() => import("./pages/DestinationDetail"));
+const CostPlanner = lazy(() => import("./pages/CostPlanner"));
+const Reviews = lazy(() => import("./pages/Reviews"));
+const TeamZebKhan = lazy(() => import("./pages/TeamZebKhan"));
+const About = lazy(() => import("./pages/About"));
+const Resources = lazy(() => import("./pages/Resources"));
+const ResourceDetail = lazy(() => import("./pages/ResourceDetail"));
+const Contact = lazy(() => import("./pages/Contact"));
+const BankStatements = lazy(() => import("./pages/BankStatements"));
+const Privacy = lazy(() => import("./pages/Legal").then((m) => ({ default: m.Privacy })));
+const Terms = lazy(() => import("./pages/Legal").then((m) => ({ default: m.Terms })));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -37,7 +40,15 @@ function SiteLayout() {
       <ScrollToTop />
       <Header />
       <main id="main">
-        <Outlet />
+        <Suspense
+          fallback={
+            <div className="flex min-h-[60vh] items-center justify-center">
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-gold border-t-transparent" />
+            </div>
+          }
+        >
+          <Outlet />
+        </Suspense>
       </main>
       <Footer />
       <a

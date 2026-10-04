@@ -1,9 +1,25 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router";
-import { ArrowLeft, ArrowRight, Plane, Wallet, Landmark, ExternalLink } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Plane,
+  Wallet,
+  Landmark,
+  ExternalLink,
+  Briefcase,
+  Clock,
+  GraduationCap,
+  ShieldCheck,
+  Users,
+  Calendar,
+  Building,
+  Sparkles,
+} from "lucide-react";
 import { trpc } from "@/providers/trpc";
 import { Seo, breadcrumbJsonLd } from "@/lib/seo";
 import { useReveal } from "@/lib/reveal";
+import { waLink } from "@/lib/site";
 import NotFound from "./NotFound";
 
 export default function DestinationDetail() {
@@ -119,7 +135,7 @@ export default function DestinationDetail() {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-        <div className="grid gap-10 lg:grid-cols-3">
+        <div className="grid gap-10 lg:grid-cols-3 items-start">
           {/* Visa & tuition */}
           <div className="space-y-8 lg:col-span-2">
             <div className="reveal">
@@ -158,10 +174,177 @@ export default function DestinationDetail() {
                 )}
               </div>
             )}
+
+            {/* Post-Study Work & Employment Rights */}
+            <div className="reveal">
+              <h2 className="border-b-2 border-gold pb-3 font-serif text-2xl font-medium text-navy flex items-center gap-2.5">
+                <Briefcase className="h-6 w-6 text-gold-dark" />
+                Work Rights & Post-Study Career Pathway
+              </h2>
+              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-xl border border-navy/10 bg-white p-5 shadow-xs transition-all hover:border-gold hover:shadow-sm">
+                  <div className="flex items-center gap-2 text-gold-dark">
+                    <Clock className="h-5 w-5" />
+                    <span className="text-[12px] font-bold uppercase tracking-wider">During Studies</span>
+                  </div>
+                  <h3 className="mt-2 text-base font-semibold text-navy">20 Hours / Week Part-Time</h3>
+                  <p className="mt-1.5 text-[13.5px] leading-relaxed text-navy/70">
+                    International students are permitted to work up to 20 hours per week during term-time and full-time (40 hrs/week) during scheduled university vacations and holidays.
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-navy/10 bg-white p-5 shadow-xs transition-all hover:border-gold hover:shadow-sm">
+                  <div className="flex items-center gap-2 text-gold-dark">
+                    <GraduationCap className="h-5 w-5" />
+                    <span className="text-[12px] font-bold uppercase tracking-wider">After Graduation</span>
+                  </div>
+                  <h3 className="mt-2 text-base font-semibold text-navy">2 to 3-Year Post-Study Visa</h3>
+                  <p className="mt-1.5 text-[13.5px] leading-relaxed text-navy/70">
+                    Graduates qualify for the post-study work route (2 years for Bachelor’s/Master’s degrees, 3 years for Doctoral/PhD programs) without mandatory employer sponsorship.
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-navy/10 bg-white p-5 shadow-xs transition-all hover:border-gold hover:shadow-sm">
+                  <div className="flex items-center gap-2 text-gold-dark">
+                    <Users className="h-5 w-5" />
+                    <span className="text-[12px] font-bold uppercase tracking-wider">Spouse & Family</span>
+                  </div>
+                  <h3 className="mt-2 text-base font-semibold text-navy">Dependants & Healthcare</h3>
+                  <p className="mt-1.5 text-[13.5px] leading-relaxed text-navy/70">
+                    Postgraduate research candidates and eligible routes permit spouses with full-time open work permits and access to statutory national healthcare coverage.
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-navy/10 bg-white p-5 shadow-xs transition-all hover:border-gold hover:shadow-sm">
+                  <div className="flex items-center gap-2 text-gold-dark">
+                    <ShieldCheck className="h-5 w-5" />
+                    <span className="text-[12px] font-bold uppercase tracking-wider">Permanent Residency</span>
+                  </div>
+                  <h3 className="mt-2 text-base font-semibold text-navy">Long-Term Settlement</h3>
+                  <p className="mt-1.5 text-[13.5px] leading-relaxed text-navy/70">
+                    Direct conversion route into Skilled Worker status or regional migration permits upon receiving a qualifying employer offer, building seniority toward PR.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* 5-Stage Admissions & Visa Roadmap */}
+            <div className="reveal">
+              <h2 className="border-b-2 border-gold pb-3 font-serif text-2xl font-medium text-navy flex items-center gap-2.5">
+                <Calendar className="h-6 w-6 text-gold-dark" />
+                Intake & Visa Application Roadmap
+              </h2>
+              <div className="mt-6 space-y-4">
+                {[
+                  {
+                    step: "01",
+                    title: "Program Selection & Document Audit",
+                    desc: "Review academic transcripts, gap explanations, English language proficiency (IELTS/MOI letter), and verify eligibility for partner institutions.",
+                  },
+                  {
+                    step: "02",
+                    title: "Conditional Offer & Scholarship Review",
+                    desc: "Submission of admission dossiers, securing university conditional offer letter, and applying for institutional tuition fee grants up to £5,000 / €4,000.",
+                  },
+                  {
+                    step: "03",
+                    title: "Maintenance Funds & Bank Statement Maturation",
+                    desc: "Structuring the statutory proof-of-funds in personal/parent bank account with exact 28-day / 30-day holding rules verified by our advisors.",
+                  },
+                  {
+                    step: "04",
+                    title: "CAS / Visa Letter & Biometrics Filing",
+                    desc: "Issuance of Confirmation of Acceptance for Studies (CAS) or acceptance certificate, appointment booking at VFS/Gedex, and digital visa file preparation.",
+                  },
+                  {
+                    step: "05",
+                    title: "Decision, Travel Briefing & Settlement Support",
+                    desc: "Visa decision receipt, flight itinerary confirmation, university student housing arrangements, and pre-departure orientation with Zeb Khan.",
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.step}
+                    className="flex items-start gap-4 rounded-xl border border-navy/10 bg-white p-4.5 transition-all hover:border-gold hover:shadow-xs"
+                  >
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold/15 text-gold-dark font-serif text-lg font-bold border border-gold/30">
+                      {item.step}
+                    </span>
+                    <div>
+                      <h3 className="font-serif text-[16px] font-medium text-navy">{item.title}</h3>
+                      <p className="mt-1 text-[13.5px] leading-relaxed text-navy/70">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Living Essentials & Ancillary Costs Breakdown */}
+            <div className="reveal">
+              <h2 className="border-b-2 border-gold pb-3 font-serif text-2xl font-medium text-navy flex items-center gap-2.5">
+                <Building className="h-6 w-6 text-gold-dark" />
+                Living Essentials & Student Housing Breakdown
+              </h2>
+              <div className="mt-5 grid gap-4 sm:grid-cols-3">
+                <div className="rounded-xl border border-navy/10 bg-white p-5">
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-gold-dark">Accommodation</p>
+                  <p className="mt-2 text-base font-semibold text-navy">University Halls / Flats</p>
+                  <p className="mt-1 text-[12.5px] leading-relaxed text-navy/65">
+                    On-campus student rooms or private student halls including high-speed internet, water and heating.
+                  </p>
+                </div>
+                <div className="rounded-xl border border-navy/10 bg-white p-5">
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-gold-dark">Healthcare & Cover</p>
+                  <p className="mt-2 text-base font-semibold text-navy">Statutory Health Access</p>
+                  <p className="mt-1 text-[12.5px] leading-relaxed text-navy/65">
+                    Official health surcharge (IHS / OSHC / National Insurance) granting full public medical access.
+                  </p>
+                </div>
+                <div className="rounded-xl border border-navy/10 bg-white p-5">
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-gold-dark">Transport & Food</p>
+                  <p className="mt-2 text-base font-semibold text-navy">Monthly Passes & Living</p>
+                  <p className="mt-1 text-[12.5px] leading-relaxed text-navy/65">
+                    Subsidised student transit passes, campus meal plans, groceries, and telecom mobile SIM contracts.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Consultation Banner for this specific country */}
+            <div className="reveal rounded-2xl bg-gradient-to-br from-navy via-[#021327] to-[#041021] p-7 text-white shadow-md border border-gold/30">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+                <div>
+                  <div className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-gold">
+                    <Sparkles className="h-3 w-3 text-gold" /> Personalized {c.name} Advisory
+                  </div>
+                  <h3 className="mt-3 font-serif text-2xl font-medium text-white">
+                    Need end-to-end guidance for {c.name}?
+                  </h3>
+                  <p className="mt-2 max-w-lg text-[14px] leading-relaxed text-white/70">
+                    Get your academic profile evaluated, admission requirements confirmed, and proof-of-funds roadmap structured with our British Council Certified Trainer Zeb Khan.
+                  </p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 shrink-0">
+                  <a
+                    href={waLink(`Hello — I would like an advisory consultation for ${c.name} admissions and visa requirements.`)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-gold text-center whitespace-nowrap"
+                  >
+                    WhatsApp Advisor
+                  </a>
+                  <Link
+                    to={`/cost-planner?country=${c.slug}`}
+                    className="btn-frame-light text-center whitespace-nowrap"
+                  >
+                    Cost Planner →
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Sidebar: funds + flights + CTA */}
-          <aside className="space-y-6">
+          <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-6.5rem)] lg:overflow-y-auto no-scrollbar pr-1">
             {liveCosts && (
               <div className="reveal border-2 border-gold/60 bg-[#fffdf5] p-6 shadow-sm">
                 <div className="flex items-center justify-between">

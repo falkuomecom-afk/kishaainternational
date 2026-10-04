@@ -129,6 +129,14 @@
   .rule-gold {
     @apply h-px w-16 bg-gold;
   }
+  /* Hide scrollbar while preserving scrollability */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
   /* Prose for CMS bodies */
   .cms-prose {
     @apply text-[17px] leading-relaxed text-navy/80;

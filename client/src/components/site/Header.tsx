@@ -7,10 +7,11 @@ export function Wordmark({ light = false }: { light?: boolean }) {
   return (
     <Link to="/" className="flex items-center gap-2 sm:gap-2.5 xl:gap-2 shrink-0" aria-label="Kishaa International — home">
       <img
-        src="/img/logo.png"
+        src="/img/logo.webp"
         alt="Kishaa International"
         width={40}
         height={40}
+        decoding="async"
         className="h-9 w-9 sm:h-10 sm:w-10 lg:h-8 lg:w-8 xl:h-8.5 xl:w-8.5 object-contain rounded-full shadow-[0_0_12px_rgba(201,162,39,0.35)] shrink-0"
       />
       <div className="leading-tight">
