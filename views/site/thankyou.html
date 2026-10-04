@@ -30,3 +30,23 @@
     </div>
   </div>
 </section>
+
+{{#if lead.email}}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof window !== 'undefined' && typeof window.tp === 'function') {
+      try {
+        window.tp('createInvitation', {
+          recipientEmail: '{{lead.email}}',
+          recipientName: '{{lead.full_name}}',
+          referenceId: '{{lead.reference}}',
+          source: 'InvitationScript',
+          tags: ['{{lead.interest}}'],
+        });
+      } catch (err) {
+        console.warn('Trustpilot invitation error:', err);
+      }
+    }
+  });
+</script>
+{{/if}}

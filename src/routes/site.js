@@ -568,7 +568,7 @@ router.post('/contact', (req, res) => {
 
 router.get('/thank-you', (req, res) => {
   const ref = String(req.query.ref || '').slice(0, 40);
-  const lead = ref ? db.prepare('SELECT reference, full_name, contact_preference, interest, created_at FROM leads WHERE reference = ?').get(ref) : null;
+  const lead = ref ? db.prepare('SELECT reference, full_name, email, contact_preference, interest, created_at FROM leads WHERE reference = ?').get(ref) : null;
   const page = publishedPage('thank-you');
   const ctx = baseContext(req, {
     page, ref, lead,
