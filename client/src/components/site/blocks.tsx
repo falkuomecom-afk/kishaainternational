@@ -55,7 +55,7 @@ export function ProgramCard({ program, index }: { program: Program; index?: numb
           {meta?.label}
         </span>
         {index !== undefined && (
-          <span className="font-serif text-2xl text-navy/15">
+          <span className="font-serif text-2xl font-semibold text-navy/60">
             {String(index + 1).padStart(2, "0")}
           </span>
         )}
@@ -82,9 +82,9 @@ export function ProgramCard({ program, index }: { program: Program; index?: numb
 export function TestimonialCard({ t }: { t: Testimonial }) {
   return (
     <figure className="flex h-full flex-col border border-navy/10 bg-white p-7">
-      <div className="flex gap-1 text-gold" aria-label={`${t.rating} out of 5 stars`}>
+      <div className="flex gap-1 text-gold" role="img" aria-label={`${t.rating} out of 5 stars`}>
         {Array.from({ length: t.rating }).map((_, i) => (
-          <Star key={i} className="h-4 w-4 fill-current" />
+          <Star key={i} className="h-4 w-4 fill-current" aria-hidden="true" />
         ))}
       </div>
       <blockquote className="mt-4 flex-1 font-serif text-lg leading-relaxed text-navy">
@@ -92,7 +92,7 @@ export function TestimonialCard({ t }: { t: Testimonial }) {
       </blockquote>
       <figcaption className="mt-5 border-t border-navy/10 pt-4">
         <p className="text-[14px] font-semibold text-navy">{t.authorName}</p>
-        {t.context && <p className="text-[13px] text-navy/55">{t.context}</p>}
+        {t.context && <p className="text-[13px] text-navy/70">{t.context}</p>}
       </figcaption>
     </figure>
   );

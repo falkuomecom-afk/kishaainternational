@@ -485,7 +485,7 @@ export default function Home() {
                       : "—"}
                   </span>
                 </div>
-                <p className="text-[12px] leading-relaxed text-navy/50">
+                <p className="text-[12px] leading-relaxed text-navy/70">
                   {selectedFunds?.note ?? "Select a destination to preview verified figures."}
                 </p>
                 <Link
@@ -520,7 +520,7 @@ export default function Home() {
                 key={p.step}
                 className="reveal flex flex-col rounded-xl border border-navy/10 bg-[#FAF9F5] p-7 transition-all hover:border-gold hover:shadow-md"
               >
-                <span className="font-serif text-4xl font-medium text-gold">{p.step}</span>
+                <span className="font-serif text-4xl font-semibold text-gold-dark">{p.step}</span>
                 <h3 className="mt-4 font-serif text-xl font-medium text-navy">{p.title}</h3>
                 <p className="mt-3 text-[14px] leading-relaxed text-navy/65">{p.detail}</p>
               </div>
@@ -650,7 +650,7 @@ export default function Home() {
                   <div>
                     <div className="flex items-center justify-between">
                       <span className="text-3xl">{c.flag}</span>
-                      <span className="text-[11px] font-semibold uppercase tracking-wider text-navy/40">
+                      <span className="text-[11px] font-semibold uppercase tracking-wider text-navy/70">
                         {c.region || "Destination"}
                       </span>
                     </div>
@@ -790,7 +790,7 @@ export default function Home() {
                 Where our figures come from
               </h2>
             </div>
-            <span className="text-[12px] font-semibold uppercase tracking-wider text-navy/40 hidden sm:inline-block">
+            <span className="text-[12px] font-semibold uppercase tracking-wider text-navy/70 hidden sm:inline-block">
               Government Verified
             </span>
           </div>
@@ -809,11 +809,11 @@ export default function Home() {
                     <span className="text-[14px] font-semibold text-navy group-hover:text-gold-dark transition-colors">
                       {s.authority}
                     </span>
-                    <ExternalLink className="h-3.5 w-3.5 text-navy/40 group-hover:text-gold-dark" />
+                    <ExternalLink className="h-3.5 w-3.5 text-navy/70 group-hover:text-gold-dark" />
                   </div>
-                  <p className="mt-1 text-[13px] text-navy/60">{s.rule}</p>
+                  <p className="mt-1 text-[13px] text-navy/75">{s.rule}</p>
                 </div>
-                <div className="mt-3 border-t border-navy/5 pt-2 text-[11px] font-medium text-navy/40">
+                <div className="mt-3 border-t border-navy/5 pt-2 text-[11px] font-medium text-navy/70">
                   Effective: {s.effective} · Verified
                 </div>
               </a>

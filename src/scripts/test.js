@@ -477,6 +477,15 @@ function csrfFrom(html) {
       db.prepare('DELETE FROM pages WHERE id = ?').run(created.pageId);
       db.prepare("DELETE FROM search_index WHERE entity = 'page' AND entity_id = ?").run(String(created.pageId));
     }
+    if (created.leadRef) {
+      const l = db.prepare('SELECT id FROM leads WHERE reference = ?').get(created.leadRef);
+      if (l) {
+        db.prepare('DELETE FROM lead_activities WHERE lead_id = ?').run(l.id);
+        db.prepare('DELETE FROM notifications WHERE lead_id = ?').run(l.id);
+        db.prepare('DELETE FROM leads WHERE id = ?').run(l.id);
+      }
+    }
+    db.prepare("DELETE FROM leads WHERE full_name LIKE '%Test%' OR full_name LIKE '%Idempotency%'").run();
   } catch (e) { console.log('  (cleanup warning: ' + e.message + ')'); }
 
   console.log(`\n${pass} passed, ${fail} failed\n`);

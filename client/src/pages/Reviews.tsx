@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Star, ExternalLink, Play, CheckCircle2 } from "lucide-react";
+import { Star, ExternalLink, Play, CheckCircle2, ThumbsUp, MessageCircle, Share2, Globe, X } from "lucide-react";
 import { trpc } from "@/providers/trpc";
 import { Seo, breadcrumbJsonLd } from "@/lib/seo";
 import { useReveal } from "@/lib/reveal";
@@ -36,6 +36,13 @@ function TrustpilotStars({ rating = 5, size = "md" }: { rating?: number; size?: 
 export default function Reviews() {
   const [feedFilter, setFeedFilter] = useState<"all" | "facebook" | "instagram">("all");
   const [reviewFilter, setReviewFilter] = useState<"all" | "trustpilot" | "google" | "facebook">("all");
+  const [playingVideoId, setPlayingVideoId] = useState<number | null>(null);
+  const [expandedCaptions, setExpandedCaptions] = useState<Record<string, boolean>>({});
+
+  const toggleCaption = (key: string) => {
+    setExpandedCaptions((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
   const { data: testimonials } = trpc.content.testimonials.list.useQuery();
   const { data: reviews } = trpc.content.reviews.list.useQuery();
   const { data: aggregates } = trpc.content.reviews.aggregate.useQuery();
@@ -243,64 +250,335 @@ export default function Reviews() {
           </div>
         </div>
 
+        {/* Official Facebook Page Banner */}
+        {(feedFilter === "all" || feedFilter === "facebook") && (
+          <div className="mt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-[#1877F2]/25 bg-gradient-to-r from-[#1877F2]/10 via-white to-[#1877F2]/5 p-4 sm:px-6 shadow-sm">
+            <div className="flex items-center gap-3">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#1877F2] text-white font-bold text-xl shadow-sm">
+                f
+              </span>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-serif font-medium text-navy text-base">Kishaa International Official Page</span>
+                  <CheckCircle2 className="h-4 w-4 fill-[#1877F2] text-white" />
+                </div>
+                <p className="text-xs text-navy/70">
+                  Follow @kishaainternational for real-time visa decisions, live webinars, and student admissions.
+                </p>
+              </div>
+            </div>
+            <a
+              href="https://www.facebook.com/kishaainternational"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#1877F2] px-4 py-2.5 text-xs font-semibold text-white shadow hover:bg-[#166fe5] transition-colors shrink-0"
+            >
+              Direct Link to Facebook Page <ExternalLink className="h-3.5 w-3.5" />
+            </a>
+          </div>
+        )}
+
         {filteredFeeds.length > 0 ? (
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filteredFeeds.map((feed) => {
               const isInsta = feed.platform === "instagram";
+              const isFb = feed.platform === "facebook";
               const isVideo = feed.kind === "video" || feed.kind === "reel";
+              const cardKey = `${feed.platform}-${feed.id}`;
+              const isExpanded = !!expandedCaptions[cardKey];
+              const isPlaying = playingVideoId === feed.id;
 
+              if (isFb) {
+                return (
+                  <article
+                    key={cardKey}
+                    className="group flex flex-col justify-between overflow-hidden rounded-xl border border-navy/10 bg-white shadow-sm transition-all duration-300 hover:border-gold/50 hover:shadow-md"
+                  >
+                    <div>
+                      {/* Facebook Post Header */}
+                      <div className="flex items-center justify-between border-b border-navy/5 bg-paper/40 p-4">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-navy text-gold font-serif font-bold text-sm border border-gold/40 shadow-sm">
+                            KI
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-1">
+                              <span className="text-[13px] font-bold text-navy hover:underline">
+                                Kishaa International
+                              </span>
+                              <CheckCircle2 className="h-3.5 w-3.5 fill-[#1877F2] text-white" />
+                            </div>
+                            <div className="flex items-center gap-1.5 text-[11px] text-navy/70">
+                              <span>{feed.publishedAt?.slice(0, 10)}</span>
+                              <span>·</span>
+                              <Globe className="h-3 w-3" />
+                            </div>
+                          </div>
+                        </div>
+                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#1877F2] text-white font-bold text-xs shadow-sm">
+                          f
+                        </span>
+                      </div>
+
+                      {/* Post Caption (Above media like Facebook) */}
+                      {feed.caption && (
+                        <div className="p-4 pb-3">
+                          <p
+                            className={`text-[13px] leading-relaxed text-navy/85 whitespace-pre-line ${
+                              isExpanded ? "" : "line-clamp-3"
+                            }`}
+                          >
+                            {feed.caption}
+                          </p>
+                          {feed.caption.length > 100 && (
+                            <button
+                              type="button"
+                              onClick={() => toggleCaption(cardKey)}
+                              className="mt-1 text-xs font-semibold text-navy/70 hover:text-navy hover:underline"
+                            >
+                              {isExpanded ? "Show less" : "See more"}
+                            </button>
+                          )}
+                        </div>
+                      )}
+
+                      {/* 1:1 Aspect Ratio Media Frame */}
+                      {feed.thumbUrl || isVideo ? (
+                        <div className="relative aspect-square w-full overflow-hidden bg-black/5">
+                          {isPlaying && feed.mediaUrl ? (
+                            <div className="relative h-full w-full bg-black">
+                              <video
+                                src={feed.mediaUrl}
+                                poster={feed.thumbUrl}
+                                controls
+                                autoPlay
+                                playsInline
+                                className="h-full w-full object-contain"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setPlayingVideoId(null)}
+                                className="absolute top-3 right-3 rounded-full bg-black/60 p-1.5 text-white hover:bg-black/90 transition-colors z-10"
+                                aria-label="Close video"
+                              >
+                                <X className="h-4 w-4" />
+                              </button>
+                            </div>
+                          ) : (
+                            <div
+                              className={`relative h-full w-full ${isVideo ? "cursor-pointer group/media" : ""}`}
+                              onClick={() => {
+                                if (isVideo) {
+                                  if (feed.mediaUrl) {
+                                    setPlayingVideoId(feed.id);
+                                  } else if (feed.permalink) {
+                                    window.open(feed.permalink, "_blank");
+                                  }
+                                }
+                              }}
+                            >
+                              {feed.thumbUrl ? (
+                                <img
+                                  src={feed.thumbUrl}
+                                  alt={feed.caption?.slice(0, 50) || "Facebook post media"}
+                                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                  loading="lazy"
+                                />
+                              ) : (
+                                <div className="h-full w-full flex items-center justify-center bg-navy/5">
+                                  <Play className="h-10 w-10 text-navy/30" />
+                                </div>
+                              )}
+
+                              {isVideo && (
+                                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/25 group-hover/media:bg-black/40 transition-colors">
+                                  <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/95 text-navy shadow-lg transition-transform group-hover/media:scale-110">
+                                    <Play className="h-6 w-6 fill-navy ml-0.5" />
+                                  </span>
+                                  <span className="mt-2 rounded bg-black/70 px-2.5 py-0.5 text-xs font-semibold text-white backdrop-blur-sm">
+                                    Click to Play Direct Video
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        /* Text Update Card with Direct Facebook Page Link */
+                        <div className="relative aspect-square w-full flex flex-col items-center justify-center bg-gradient-to-br from-[#1877F2]/10 via-paper to-white p-6 text-center border-y border-navy/5">
+                          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#1877F2] text-white font-bold text-2xl shadow-md mb-2">
+                            f
+                          </div>
+                          <p className="font-serif text-lg font-medium text-navy">Official Facebook Update</p>
+                          <p className="mt-1 text-xs text-navy/70 max-w-[220px]">
+                            Direct consultation announcement from Kishaa International official feed.
+                          </p>
+                          <a
+                            href="https://www.facebook.com/kishaainternational"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-[#1877F2] px-4 py-2 text-xs font-semibold text-white shadow hover:bg-[#166fe5] transition-colors"
+                          >
+                            Open Facebook Page <ExternalLink className="h-3 w-3" />
+                          </a>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Facebook Post Action Bar */}
+                    <div className="border-t border-navy/10 bg-paper/30 px-4 py-2.5">
+                      <div className="flex items-center justify-between text-navy/70 text-xs">
+                        <div className="flex items-center gap-3">
+                          <button
+                            type="button"
+                            className="flex items-center gap-1 hover:text-[#1877F2] transition-colors"
+                            aria-label="Like post"
+                          >
+                            <ThumbsUp className="h-3.5 w-3.5" /> <span className="hidden xs:inline">Like</span>
+                          </button>
+                          <button
+                            type="button"
+                            className="flex items-center gap-1 hover:text-[#1877F2] transition-colors"
+                            aria-label="Comment on post"
+                          >
+                            <MessageCircle className="h-3.5 w-3.5" /> <span className="hidden xs:inline">Comment</span>
+                          </button>
+                          <button
+                            type="button"
+                            className="flex items-center gap-1 hover:text-[#1877F2] transition-colors"
+                            aria-label="Share post"
+                          >
+                            <Share2 className="h-3.5 w-3.5" /> <span className="hidden xs:inline">Share</span>
+                          </button>
+                        </div>
+                        <a
+                          href={feed.permalink || "https://www.facebook.com/kishaainternational"}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-semibold text-[#1877F2] hover:underline inline-flex items-center gap-1 text-[11px]"
+                        >
+                          View on FB <ExternalLink className="h-3 w-3" />
+                        </a>
+                      </div>
+                    </div>
+                  </article>
+                );
+              }
+
+              /* Instagram Post Card */
               return (
                 <article
-                  key={`${feed.platform}-${feed.id}`}
-                  className="group flex flex-col justify-between overflow-hidden rounded-lg border border-navy/10 bg-white transition-all duration-300 hover:border-gold/50 hover:shadow-md animate-in fade-in-50"
+                  key={cardKey}
+                  className="group flex flex-col justify-between overflow-hidden rounded-xl border border-navy/10 bg-white shadow-sm transition-all duration-300 hover:border-gold/50 hover:shadow-md"
                 >
                   <div>
-                    {/* Media Thumbnail */}
-                    {feed.thumbUrl ? (
-                      <div className="relative aspect-[16/10] w-full overflow-hidden bg-navy/5">
-                        <img
-                          src={feed.thumbUrl}
-                          alt={feed.caption?.slice(0, 50) || "Social update"}
-                          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                          loading="lazy"
-                        />
-                        {isVideo && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-black/25">
-                            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-navy shadow-md transition-transform group-hover:scale-110">
-                              <Play className="h-5 w-5 fill-navy ml-0.5" />
-                            </span>
+                    {/* Instagram Header */}
+                    <div className="flex items-center justify-between border-b border-navy/5 bg-paper/40 p-3.5">
+                      <div className="flex items-center gap-2.5">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 p-0.5">
+                          <div className="flex h-full w-full items-center justify-center rounded-full bg-white text-navy font-bold text-xs">
+                            KI
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-[13px] font-bold text-navy">kishaainternational</p>
+                          <p className="text-[10px] text-navy/60 font-mono">{feed.publishedAt?.slice(0, 10)}</p>
+                        </div>
+                      </div>
+                      <span className="rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white bg-gradient-to-r from-purple-600 to-pink-600 shadow-sm">
+                        {feed.kind}
+                      </span>
+                    </div>
+
+                    {/* 1:1 Aspect Ratio Media Frame */}
+                    {feed.thumbUrl || isVideo ? (
+                      <div className="relative aspect-square w-full overflow-hidden bg-black/5">
+                        {isPlaying && feed.mediaUrl ? (
+                          <div className="relative h-full w-full bg-black">
+                            <video
+                              src={feed.mediaUrl}
+                              poster={feed.thumbUrl}
+                              controls
+                              autoPlay
+                              playsInline
+                              className="h-full w-full object-contain"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setPlayingVideoId(null)}
+                              className="absolute top-3 right-3 rounded-full bg-black/60 p-1.5 text-white hover:bg-black/90 transition-colors z-10"
+                              aria-label="Close video"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ) : (
+                          <div
+                            className={`relative h-full w-full ${isVideo ? "cursor-pointer group/media" : ""}`}
+                            onClick={() => {
+                              if (isVideo) {
+                                if (feed.mediaUrl) {
+                                  setPlayingVideoId(feed.id);
+                                } else if (feed.permalink) {
+                                  window.open(feed.permalink, "_blank");
+                                }
+                              }
+                            }}
+                          >
+                            {feed.thumbUrl && (
+                              <img
+                                src={feed.thumbUrl}
+                                alt={feed.caption?.slice(0, 50) || "Instagram post"}
+                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                loading="lazy"
+                              />
+                            )}
+                            {isVideo && (
+                              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/25 group-hover/media:bg-black/40 transition-colors">
+                                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/95 text-navy shadow-lg transition-transform group-hover/media:scale-110">
+                                  <Play className="h-6 w-6 fill-navy ml-0.5" />
+                                </span>
+                                <span className="mt-2 rounded bg-black/70 px-2.5 py-0.5 text-xs font-semibold text-white backdrop-blur-sm">
+                                  Click to Play Reel
+                                </span>
+                              </div>
+                            )}
                           </div>
                         )}
-                        <span
-                          className={`absolute top-3 left-3 rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm ${
-                            isInsta ? "bg-gradient-to-r from-purple-600 to-pink-600" : "bg-[#1877F2]"
-                          }`}
-                        >
-                          {feed.kind}
-                        </span>
                       </div>
                     ) : (
                       <div className="border-b border-navy/5 bg-paper/60 px-5 py-3">
-                        <span
-                          className={`inline-block rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white ${
-                            isInsta ? "bg-gradient-to-r from-purple-600 to-pink-600" : "bg-[#1877F2]"
-                          }`}
-                        >
-                          {feed.platform} update
+                        <span className="inline-block rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white bg-gradient-to-r from-purple-600 to-pink-600">
+                          Instagram update
                         </span>
                       </div>
                     )}
 
                     {/* Content */}
-                    <div className="p-5">
-                      <p className="line-clamp-4 text-[14px] leading-relaxed text-navy/85 whitespace-pre-line">
-                        {feed.caption}
-                      </p>
-                    </div>
+                    {feed.caption && (
+                      <div className="p-4">
+                        <p
+                          className={`text-[13px] leading-relaxed text-navy/85 whitespace-pre-line ${
+                            isExpanded ? "" : "line-clamp-3"
+                          }`}
+                        >
+                          {feed.caption}
+                        </p>
+                        {feed.caption.length > 100 && (
+                          <button
+                            type="button"
+                            onClick={() => toggleCaption(cardKey)}
+                            className="mt-1 text-xs font-semibold text-navy/70 hover:text-navy hover:underline"
+                          >
+                            {isExpanded ? "Show less" : "See more"}
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {/* Card Footer */}
-                  <div className="flex items-center justify-between border-t border-navy/5 bg-paper/30 px-5 py-3.5 text-xs">
+                  <div className="flex items-center justify-between border-t border-navy/5 bg-paper/30 px-4 py-3 text-xs">
                     <span className="text-navy/50 font-mono text-[11px]">
                       {feed.publishedAt?.slice(0, 10)}
                     </span>
@@ -308,9 +586,9 @@ export default function Reviews() {
                       href={feed.permalink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 font-semibold text-gold-dark hover:text-navy hover:underline"
+                      className="inline-flex items-center gap-1 font-semibold text-purple-700 hover:text-navy hover:underline"
                     >
-                      View on {isInsta ? "Instagram" : "Facebook"} <ExternalLink className="h-3 w-3" />
+                      View on Instagram <ExternalLink className="h-3 w-3" />
                     </a>
                   </div>
                 </article>

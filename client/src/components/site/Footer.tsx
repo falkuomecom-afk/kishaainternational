@@ -179,18 +179,18 @@ export function Footer() {
       <div className="border-t border-white/10 bg-white/5 py-4">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 text-xs text-slate-300 sm:px-6">
           <span className="font-semibold uppercase tracking-wider text-gold">Statutory Intelligence:</span>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-slate-200">
-            <Link to="/bank-statements" className="hover:text-gold transition-colors">Proof of Funds Register</Link>
-            <span>·</span>
-            <Link to="/cost-planner" className="hover:text-gold transition-colors">Interactive Cost Planner</Link>
-            <span>·</span>
-            <Link to="/resources/ukvi-28-day-rule-explained-how-much-must-sit-in-the-bank-for-a-student-visa-2026" className="hover:text-gold transition-colors">UKVI 28 Days</Link>
-            <span>·</span>
-            <Link to="/resources/germany-blocked-account-sperrkonto-2026-exact-amount-and-payout-rules" className="hover:text-gold transition-colors">Germany €11,904</Link>
-            <span>·</span>
-            <Link to="/resources/finland-student-permit-why-9-600-covers-you-and-your-family-2026-guide" className="hover:text-gold transition-colors">Finland €9,600</Link>
-            <span>·</span>
-            <Link to="/resources/canada-10-year-multiple-entry-visit-visa-requirements-cost-and-timeline-2026" className="hover:text-gold transition-colors">Canada 10-Yr LOI</Link>
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-slate-200">
+            <Link to="/bank-statements" className="inline-flex items-center min-h-[36px] py-1.5 px-3 rounded hover:bg-white/10 hover:text-gold transition-colors">Proof of Funds Register</Link>
+            <span className="hidden sm:inline text-white/20">·</span>
+            <Link to="/cost-planner" className="inline-flex items-center min-h-[36px] py-1.5 px-3 rounded hover:bg-white/10 hover:text-gold transition-colors">Interactive Cost Planner</Link>
+            <span className="hidden sm:inline text-white/20">·</span>
+            <Link to="/resources/ukvi-28-day-rule-explained-how-much-must-sit-in-the-bank-for-a-student-visa-2026" className="inline-flex items-center min-h-[36px] py-1.5 px-3 rounded hover:bg-white/10 hover:text-gold transition-colors">UKVI 28 Days</Link>
+            <span className="hidden sm:inline text-white/20">·</span>
+            <Link to="/resources/germany-blocked-account-sperrkonto-2026-exact-amount-and-payout-rules" className="inline-flex items-center min-h-[36px] py-1.5 px-3 rounded hover:bg-white/10 hover:text-gold transition-colors">Germany €11,904</Link>
+            <span className="hidden sm:inline text-white/20">·</span>
+            <Link to="/resources/finland-student-permit-why-9-600-covers-you-and-your-family-2026-guide" className="inline-flex items-center min-h-[36px] py-1.5 px-3 rounded hover:bg-white/10 hover:text-gold transition-colors">Finland €9,600</Link>
+            <span className="hidden sm:inline text-white/20">·</span>
+            <Link to="/resources/canada-10-year-multiple-entry-visit-visa-requirements-cost-and-timeline-2026" className="inline-flex items-center min-h-[36px] py-1.5 px-3 rounded hover:bg-white/10 hover:text-gold transition-colors">Canada 10-Yr LOI</Link>
           </div>
         </div>
       </div>
@@ -201,14 +201,14 @@ export function Footer() {
             © {new Date().getFullYear()} Kishaa International. Advisory and official fees are always
             itemised separately. Visa decisions rest solely with the respective authorities.
           </p>
-          <div className="flex gap-5">
-            <Link to="/privacy" className="text-slate-300 hover:text-gold transition-colors">
+          <div className="flex flex-wrap gap-2 text-[12px]">
+            <Link to="/privacy" className="inline-flex items-center min-h-[36px] px-3 py-1.5 rounded hover:bg-white/10 text-slate-300 hover:text-gold transition-colors">
               Privacy Policy
             </Link>
-            <Link to="/terms" className="text-slate-300 hover:text-gold transition-colors">
+            <Link to="/terms" className="inline-flex items-center min-h-[36px] px-3 py-1.5 rounded hover:bg-white/10 text-slate-300 hover:text-gold transition-colors">
               Terms of Service
             </Link>
-            <a href="/admin" className="text-slate-300 hover:text-gold transition-colors">
+            <a href="/admin" className="inline-flex items-center min-h-[36px] px-3 py-1.5 rounded hover:bg-white/10 text-slate-300 hover:text-gold transition-colors">
               Staff Sign-in
             </a>
           </div>
