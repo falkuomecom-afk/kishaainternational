@@ -32,6 +32,14 @@ export const GUIDE_THUMBNAIL_MAP: Record<string, string> = {
     "/img/guides/romania-and-serbia-work-permits-what-a-realistic-timeline-looks-like.svg",
   "australia-subclass-500-financial-capacity-oshc-and-the-genuine-student-requirement":
     "/img/guides/australia-subclass-500-financial-capacity-oshc-and-the-genuine-student-requirement.svg",
+  "canada-student-visa-proof-of-funds-living-costs-2026":
+    "/uploads/1791073931621-international-university-students-walkin.png",
+  "uk-student-visa-london-vs-outer-london-living-expenses-2027":
+    "/uploads/1791073940202-diverse-group-of-postgraduate-students-w.png",
+  "germany-blocked-account-sperrkonto-statutory-requirement-2026":
+    "/uploads/1791073948097-modern-university-lecture-hall-and-glass.png",
+  "uae-golden-green-visa-dubai-residence-cost-calculator-2026":
+    "/uploads/1791073955588-executive-boardroom-overlooking-the-duba.png",
 };
 
 export const DEFAULT_GUIDE_THUMBNAIL = "/img/guides/default-guide.svg";

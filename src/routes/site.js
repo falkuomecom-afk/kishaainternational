@@ -12,6 +12,7 @@ const integrations = require('../lib/integrations');
 const { queueLeadNotifications } = require('../lib/mailer');
 const { rateLimit: rl } = require('../lib/auth');
 const qwenSearch = require('../lib/qwen-search');
+const supabase = require('../lib/supabase');
 
 const router = express.Router();
 const clientDistIndex = path.join(__dirname, '..', '..', 'client', 'dist', 'index.html');
@@ -392,12 +393,31 @@ router.get('/resources', (req, res) => {
 
 router.get('/resources/category/:slug', (req, res) => { res.redirect(301, '/resources?category=' + encodeURIComponent(req.params.slug)); });
 
-router.get('/resources/:slug', (req, res) => {
-  const post = db.prepare(`SELECT p.*, c.name AS category_name, c.slug AS category_slug, u.name AS author_name
+router.get('/resources/:slug', async (req, res) => {
+  let post = db.prepare(`SELECT p.*, c.name AS category_name, c.slug AS category_slug, u.name AS author_name
       FROM posts p LEFT JOIN categories c ON c.id = p.category_id LEFT JOIN users u ON u.id = p.author_id
       WHERE p.slug = ? AND p.status = 'published'`).get(req.params.slug);
+
+  if (!post && supabase.isAvailable()) {
+    try {
+      const sbPost = await supabase.getPostBySlug(req.params.slug);
+      if (sbPost && sbPost.status === 'published') {
+        post = {
+          ...sbPost,
+          category_name: sbPost.categories?.name || 'Guides',
+          category_slug: sbPost.primary_pillar || 'resources',
+          author_name: 'Kishaa International',
+        };
+      }
+    } catch (sbErr) {
+      console.warn('[site:resources:slug] supabase fallback note:', sbErr.message);
+    }
+  }
+
   if (!post) return notFound(req, res);
-  db.prepare('UPDATE posts SET views = views + 1 WHERE id = ?').run(post.id);
+  try {
+    db.prepare('UPDATE posts SET views = views + 1 WHERE id = ?').run(post.id);
+  } catch {}
   post.tags_list = H.parseJson(post.tags, []);
   post.takeaways = H.parseJson(post.key_takeaways, []);
   post.answer_first = post.answer_summary || H.answerSummary(post.body);

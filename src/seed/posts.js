@@ -276,26 +276,246 @@ module.exports = function seedPosts(db, ctx) {
 <h2>The Genuine Student requirement</h2><p>Assessors read for specificity. A statement that could be copied into any applicant's file is a liability. Explain why this course, at this institution, at this point in your career — and what you will do next.</p>
 <h2>Post-study work rights</h2><p>Work rights after graduation depend on the qualification level and on the rules in force at the time you apply. We brief you on the current position during planning so that your course choice matches your longer-term migration objective.</p>`,
     },
+    {
+      category: 'visa-immigration', country: 'canada', target_query: 'canada student visa proof of funds 2026 living costs ircc',
+      title: 'Canada 2026 Student Visa Proof of Funds & Living Costs: New IRCC Financial Guidelines Explained',
+      slug: 'canada-student-visa-proof-of-funds-living-costs-2026',
+      cover_filename: '1791073931621-international-university-students-walkin.png',
+      read_minutes: 6,
+      seo_title: 'Canada Student Visa Proof of Funds 2026: IRCC $20,635 Rule & Living Costs',
+      seo_description: 'Official 2026 IRCC proof-of-funds guidelines for Canada study permits: $20,635 CAD living funds, GIC procedures, tuition requirements, and city rent comparisons.',
+      excerpt: 'Complete breakdown of the official IRCC $20,635 CAD proof-of-funds rule, GIC purchase procedure, provincial attestation letters (PAL), and actual Canadian living expenses for 2026 applicants.',
+      answer_summary: 'Under current IRCC financial guidelines for 2026, single study permit applicants must demonstrate CAD $20,635 for living expenses in addition to their first-year tuition fees and return airfare. Funds are verified via a Guaranteed Investment Certificate (GIC) from an approved Canadian financial institution, seasoned bank statements, and a provincial attestation letter (PAL).',
+      geo_summary: 'IRCC, Ottawa, Toronto, Vancouver, Montreal, GIC, Canada Study Permit, PAL, 2026',
+      key_takeaways: [
+        'Statutory living funds requirement is CAD $20,635 for single applicants (excluding Quebec).',
+        'First-year tuition must be paid in full or shown seasoned in a verified bank account for at least 4 months.',
+        'GIC certificates must be issued by CDIC-insured banks (Scotiabank, CIBC, RBC, or ICICI Canada).',
+        'Spouse and dependent additions require an extra CAD $5,055 and CAD $3,892 respectively.',
+        'Provincial Attestation Letter (PAL) is mandatory for undergraduate applicants under the national cap.'
+      ],
+      tags: ['Canada', 'IRCC', 'Proof of funds', 'Student visa', 'GIC'],
+      body: `<h2>The 2026 IRCC Proof of Funds Standard</h2>
+<p>In response to rising housing and living costs across Canada, Immigration, Refugees and Citizenship Canada (IRCC) updated the baseline financial threshold for international students. As of 2026, a single applicant must demonstrate a minimum of <strong>CAD $20,635</strong> in available living expenses — representing 75% of Statistics Canada's low-income cut-off (LICO) — alongside full first-year tuition fees and travel allowances.</p>
+
+<div class="table-wrap">
+  <table class="table">
+    <thead>
+      <tr><th>Applicant Category</th><th>Statutory Living Funds (CAD)</th><th>Monthly Living Allowance</th><th>First-Year Tuition</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Single Student</strong></td><td>CAD $20,635</td><td>~CAD $1,720 / month</td><td>CAD $15,000 – $38,000</td></tr>
+      <tr><td><strong>Student + 1 Family Member (Spouse)</strong></td><td>CAD $25,690</td><td>~CAD $2,140 / month</td><td>As per DLI letter of acceptance</td></tr>
+      <tr><td><strong>Student + 2 Family Members</strong></td><td>CAD $29,582</td><td>~CAD $2,465 / month</td><td>As per DLI letter of acceptance</td></tr>
+      <tr><td><strong>Each Additional Dependent</strong></td><td>+ CAD $3,892</td><td>—</td><td>—</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>How to Secure and Prove Your Funds (The GIC System)</h2>
+<p>For students applying under standard study permit streams or expedited student pathways, purchasing a <strong>Guaranteed Investment Certificate (GIC)</strong> of CAD $20,635 is the most reliable financial evidence. Approved financial institutions include Scotiabank, CIBC, RBC, BMO, and ICICI Bank Canada.</p>
+<p>Upon arrival in Canada, students receive an initial disbursement (typically CAD $4,000 – $5,000) to cover upfront rental deposits and lease agreements, with the remaining balance paid out in equal monthly installments over 10 to 12 months.</p>
+
+<h2>Real-World City Living Cost Comparison</h2>
+<p>While IRCC enforces a uniform national standard, local rental and grocery expenses vary significantly by province and municipality:</p>
+<ul>
+  <li><strong>Toronto &amp; Greater Vancouver:</strong> Private 1-bedroom apartments range from $2,100 to $2,500/month. Shared student accommodation averages $900 – $1,250/month.</li>
+  <li><strong>Montreal &amp; Ottawa:</strong> Shared housing costs typically range between $650 and $950/month, offering superior budget flexibility for international students.</li>
+  <li><strong>Calgary &amp; Edmonton (Alberta):</strong> High employment growth and lower provincial sales taxes make average student room rentals $700 – $950/month.</li>
+</ul>
+
+<h2>Work Rights &amp; Off-Campus Employment in 2026</h2>
+<p>IRCC has established a permanent off-campus working cap of <strong>24 hours per week</strong> during regular academic terms, increasing to full-time (up to 40 hours) during scheduled academic breaks, winter holidays, and summer sessions. Minimum wages across provinces currently range from CAD $15.00 to $17.30 per hour, allowing students to earn between $1,400 and $1,650 gross per month to offset daily living costs.</p>
+
+<h2>Expert Advisory from Zeb Khan (British Council Certified Trainer)</h2>
+<blockquote>
+  <p>"The single most common ground for Canadian study permit refusals is financial credibility. Officers scrutinize unexplained lump-sum deposits made shortly before application filing. Every dollar must be accompanied by a traceable tax return, business ledger, or audited gift deed. At Kishaa International, we conduct a pre-filing funds audit to ensure your bank certificate withstands IRCC verification."</p>
+</blockquote>`,
+    },
+    {
+      category: 'study-abroad', country: 'uk', target_query: 'uk student visa living costs 2027 maintenance funds london ukvi',
+      title: 'UK Student Visa (2027 Intakes): London vs Outer London Living Expenses & Maintenance Funds Guide',
+      slug: 'uk-student-visa-london-vs-outer-london-living-expenses-2027',
+      cover_filename: '1791073940202-diverse-group-of-postgraduate-students-w.png',
+      read_minutes: 6,
+      seo_title: 'UK Student Visa Maintenance Funds 2027: London vs Outer London Rates & 28-Day Rule',
+      seo_description: 'UKVI statutory maintenance funds requirements for 2027 intakes: £1,483/month in London vs £1,136/month outer London, the strict 28-day holding rule, and CAS tuition deposits.',
+      excerpt: 'Official UKVI 2026/2027 maintenance funds rates: £1,483/month inside London vs £1,136/month outer London, the strict 28-day holding rule, CAS deposit requirements, and MOI admissions.',
+      answer_summary: 'For the UK 2027 intake, UKVI requires £1,483 per month (up to 9 months, totaling £13,347) for study in Greater London, and £1,136 per month (£10,224 total) outside London, plus unpaid course fees. Funds must be held continuously for a minimum 28-day seasoning period in a regulated financial institution before CAS visa filing.',
+      geo_summary: 'UKVI, Home Office, London, Manchester, Birmingham, Edinburgh, CAS, UK Student Visa, 2027',
+      key_takeaways: [
+        'Inner London maintenance requirement is £13,347 (£1,483/month for 9 months).',
+        'Outer London / regional maintenance requirement is £10,224 (£1,136/month for 9 months).',
+        'The 28-day rule is absolute: the closing balance must not dip below the required threshold for even one day.',
+        'Partner universities accepting MOI (Medium of Instruction) letters eliminate the need for IELTS.',
+        'Initial university tuition deposits typically range from £4,000 to £6,500, deducted directly from your CAS fee.'
+      ],
+      tags: ['UK', 'UKVI', 'Living costs', 'London', 'Maintenance funds', 'CAS'],
+      body: `<h2>UKVI Financial Requirements for 2027 Intakes</h2>
+<p>International students planning for the 2027 intakes at UK partner universities must comply with the financial maintenance guidelines stipulated by the UK Home Office (UKVI). The required funds depend entirely on whether your university campus is classified as inside Greater London or in outer London and regional areas.</p>
+
+<div class="table-wrap">
+  <table class="table">
+    <thead>
+      <tr><th>Study Location</th><th>Monthly UKVI Benchmark</th><th>Total Living Funds (9 Months Max)</th><th>Typical Tuition Deposit</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Inner London (Greater London)</strong></td><td>£1,483 / month</td><td><strong>£13,347</strong></td><td>£4,000 – £6,500</td></tr>
+      <tr><td><strong>Outer London &amp; Rest of UK</strong></td><td>£1,136 / month</td><td><strong>£10,224</strong></td><td>£4,000 – £5,500</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>The Strict 28-Day Holding Rule</h2>
+<p>UKVI enforces a rigorous 28-day holding requirement. The total maintenance funds plus any outstanding first-year tuition balance must be maintained in an acceptable financial institution for a consecutive 28-day period ending no more than 31 days prior to visa application submission.</p>
+<ul>
+  <li><strong>Acceptable Account Types:</strong> Personal savings or current accounts in the student's name or their legal parent/guardian's name (accompanied by birth certificate and consent affidavit).</li>
+  <li><strong>Critical Compliance Rule:</strong> If the balance drops below the required sum for even a single hour during the 28 days, UKVI will issue an automatic mandatory refusal.</li>
+</ul>
+
+<h2>MOI Admissions (No IELTS) for 2027</h2>
+<p>Many Pakistani and international candidates with an English-medium degree can secure unconditional admission to over 25 UK partner universities without taking the IELTS exam, utilizing an official <strong>Medium of Instruction (MOI)</strong> certificate issued by their degree-granting institution. Kishaa International maintains direct partnerships with participating universities offering MOI waivers, internal university English assessments, and scholarships up to £5,000.</p>
+
+<h2>Graduate Route (Post-Study Work Rights)</h2>
+<p>Upon completing an eligible undergraduate or master's program, international graduates are entitled to apply for the <strong>2-year Graduate Route visa</strong> (3 years for PhD holders), granting unencumbered employment rights in the UK without employer sponsorship.</p>`,
+    },
+    {
+      category: 'cost-planning', country: 'germany', target_query: 'germany blocked account sperrkonto 2026 11904 expatrio coracle fintiba',
+      title: 'Germany Blocked Account (Sperrkonto) 2026: €11,904 Statutory Requirement & Monthly Payouts',
+      slug: 'germany-blocked-account-sperrkonto-statutory-requirement-2026',
+      cover_filename: '1791073948097-modern-university-lecture-hall-and-glass.png',
+      read_minutes: 5,
+      seo_title: 'Germany Blocked Account 2026: €11,904 Sperrkonto Requirement & Monthly Payouts',
+      seo_description: 'Complete 2026 guide to Germany blocked account (Sperrkonto): €11,904 statutory deposit, €992/month payout, provider comparison (Expatrio, Coracle, Fintiba), and free tuition routes.',
+      excerpt: 'The official BAföG statutory benchmark for Germany student visas requires €11,904 in a Sperrkonto (€992/month). Compare Expatrio, Coracle, and Fintiba with health insurance bundles.',
+      answer_summary: 'Germany\'s Federal Foreign Office requires international students to deposit €11,904 into an approved blocked account (Sperrkonto) for the 2026/2027 academic year. This releases €992 per month to cover living expenses, health insurance, and semester contributions across German public universities.',
+      geo_summary: 'Germany, Berlin, Munich, Sperrkonto, BAföG, Expatrio, Coracle, Fintiba, 2026',
+      key_takeaways: [
+        'Statutory blocked amount is €11,904 (€992 per month for 12 months).',
+        'Public university tuition in Germany remains €0 (free) in most federal states, with only a €150–€350 semester fee.',
+        'Approved providers include Expatrio, Coracle, and Fintiba with integrated public health insurance (TK/Barmer).',
+        'Students are legally permitted to work 140 full days or 280 half days per calendar year.',
+        'Blocked accounts must be opened and funded prior to your German embassy / VFS visa appointment.'
+      ],
+      tags: ['Germany', 'Sperrkonto', 'Blocked account', 'Living costs', 'BAföG'],
+      body: `<h2>Germany's Sperrkonto Rule Explained</h2>
+<p>Germany remains one of the world's most attractive higher education destinations because public universities across almost all 16 federal states charge <strong>€0 tuition fees</strong> for international students. To guarantee that students can sustain themselves without public assistance, the German government mandates proof of funds through a <strong>Blocked Account (Sperrkonto)</strong>.</p>
+<p>In accordance with the 29th BAföG amendment, the annual statutory amount is <strong>€11,904</strong> (€992 per month) for the 2026/2027 academic year.</p>
+
+<div class="table-wrap">
+  <table class="table">
+    <thead>
+      <tr><th>Blocked Account Provider</th><th>Account Opening Fee</th><th>Monthly Maintenance</th><th>Health Insurance Integration</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Expatrio (Value Package)</strong></td><td>€49 (often refunded)</td><td>€5 / month</td><td>TK / Techniker Krankenkasse</td></tr>
+      <tr><td><strong>Coracle (Prime Package)</strong></td><td>€59 flat</td><td>€0 (no monthly fee)</td><td>Barmer / TK public insurance</td></tr>
+      <tr><td><strong>Fintiba (Plus Package)</strong></td><td>€89</td><td>€4.90 / month</td><td>DAK / Barmer health bundle</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>What Does the Monthly €992 Cover?</h2>
+<p>International students in cities like Munich, Frankfurt, Berlin, and Hamburg budget their monthly disbursement across the following necessities:</p>
+<ul>
+  <li><strong>Student Dormitory / WG (Shared Flat):</strong> €350 – €550 / month</li>
+  <li><strong>Mandatory Public Health Insurance:</strong> ~€125 – €135 / month</li>
+  <li><strong>Food &amp; Groceries:</strong> €200 – €250 / month</li>
+  <li><strong>Semester Ticket (Public Transit):</strong> Included in semester contribution (€25 – €40/month amortized)</li>
+</ul>
+
+<h2>Working Rights for International Students</h2>
+<p>Students can work <strong>140 full days or 280 half days</strong> per year under standard student visa rules. With Germany's statutory minimum wage at €12.41+ per hour, part-time student employment ("Werkstudent") frequently yields €800 to €1,200 per month, allowing students to cover ongoing expenses after their first year.</p>`,
+    },
+    {
+      category: 'visa-immigration', country: 'uae', target_query: 'uae golden visa requirements 2026 salary criteria 30000 gdrfa icp property',
+      title: 'UAE Golden Visa & Green Visa 2026: Salary Criteria, Property Investment & GDRFA Filing',
+      slug: 'uae-golden-green-visa-dubai-residence-cost-calculator-2026',
+      cover_filename: '1791073955588-executive-boardroom-overlooking-the-duba.png',
+      read_minutes: 6,
+      seo_title: 'UAE Golden Visa 2026 Requirements: AED 30,000 Salary, Real Estate & GDRFA Filing',
+      seo_description: 'Complete 2026 guide to UAE 10-year Golden Visas: AED 30,000 professional salary rule, AED 2M property criteria, family sponsorship, and Dubai GDRFA application steps.',
+      excerpt: 'The definitive 2026 guide to UAE 10-Year Golden Visas and 5-Year Green Visas: AED 30,000 professional salary criteria, AED 2M real estate pathways, freelance permits, and ICP/GDRFA documentation.',
+      answer_summary: 'The UAE 10-Year Golden Visa is granted to skilled professionals with an attested bachelor degree and a minimum basic salary of AED 30,000/month under MOHRE category 1 or 2, as well as property investors with AED 2,000,000 in real estate equity. Applications are processed through GDRFA (Dubai) or ICP (Abu Dhabi and Northern Emirates).',
+      geo_summary: 'UAE, Dubai, Abu Dhabi, Golden Visa, GDRFA, ICP, MOHRE, Emirates ID, 2026',
+      key_takeaways: [
+        'Skilled professional category requires AED 30,000 monthly salary and attested degree.',
+        'Real estate Golden Visa requires AED 2 Million property valuation (off-plan and mortgaged accepted with bank NOC).',
+        'Golden Visa holders can stay outside the UAE for more than 6 months without invalidating residency.',
+        'Sponsorship extends to spouses, children of any age, and domestic helpers with no maximum limit.',
+        'Freelance Green Visas offer 5-year residency with AED 15,000 monthly income evidence and freelance permit.'
+      ],
+      tags: ['UAE', 'Dubai', 'Golden Visa', 'Green Visa', 'GDRFA', 'Residency'],
+      body: `<h2>UAE Golden Visa Overview &amp; 2026 Criteria</h2>
+<p>The UAE 10-Year Golden Visa represents one of the world's most sought-after long-term residency frameworks. It provides 100% foreign ownership, freedom from national sponsor requirements, and exemption from the traditional requirement to re-enter the UAE every six months to keep residency active.</p>
+
+<div class="table-wrap">
+  <table class="table">
+    <thead>
+      <tr><th>Residency Stream</th><th>Minimum Requirement</th><th>Validity</th><th>Key Documentation Required</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Skilled Professionals</strong></td><td>AED 30,000 / month salary</td><td>10 Years</td><td>MOHRE contract, 6-month bank statements, MOFA attested degree</td></tr>
+      <tr><td><strong>Real Estate Investors</strong></td><td>AED 2,000,000 property value</td><td>10 Years</td><td>Title deed from Dubai Land Department (DLD) or equivalent</td></tr>
+      <tr><td><strong>Entrepreneurs &amp; Tech Founders</strong></td><td>AED 500,000 project or incubator approval</td><td>5–10 Years</td><td>Auditor financial statement, Ministry of Economy approval</td></tr>
+      <tr><td><strong>Green Visa (Freelancers/Professionals)</strong></td><td>AED 15,000 / month income</td><td>5 Years</td><td>Freelance permit, bachelor's degree, proof of self-employment</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>Step-by-Step Filing via GDRFA &amp; ICP</h2>
+<p>Kishaa International's Dubai headquarters in Business Bay assists professionals and high-net-worth investors through official channels:</p>
+<ol>
+  <li><strong>Eligibility Screening:</strong> Review of employment contract classification, salary slips, and educational degree attestation (UAE Ministry of Foreign Affairs - MOFA).</li>
+  <li><strong>Initial Nomination / Approval:</strong> Submission of candidate file via the GDRFA Dubai smart services portal or ICP federal channel.</li>
+  <li><strong>Medical Fitness &amp; Biometrics:</strong> Priority VIP medical examination and Emirates ID biometric capture in Dubai.</li>
+  <li><strong>Residency Stamping:</strong> Digital 10-year Golden Visa issuance and express delivery of the physical Emirates ID.</li>
+</ol>
+
+<h2>Family &amp; Dependent Benefits</h2>
+<p>Unlike standard 2-year employment visas, Golden Visa sponsors can include spouses and unmarried children of any age (no age 25 cutoff for male dependents). In the event of the primary visa holder's demise, family members may legally remain in the UAE until the full expiration of their 10-year term.</p>`,
+    },
   ];
 
   const authorId = db.prepare("SELECT id FROM users WHERE role = 'administrator' ORDER BY id LIMIT 1").get()?.id
     || db.prepare('SELECT id FROM users ORDER BY id LIMIT 1').get().id;
   const inserted = [];
   for (const p of posts) {
+    let coverMediaId = null;
+    if (p.cover_filename) {
+      try {
+        let m = db.prepare('SELECT id FROM media WHERE filename = ?').get(p.cover_filename);
+        if (!m) {
+          const info = db.prepare(`INSERT INTO media (filename, original_name, mime, size, folder, uploaded_by)
+            VALUES (?, ?, 'image/png', 2000000, 'guides', ?)`).run(p.cover_filename, p.cover_filename, authorId);
+          coverMediaId = info.lastInsertRowid;
+        } else {
+          coverMediaId = m.id;
+        }
+      } catch {}
+    }
+
     const daysAgo = createdDays(posts.indexOf(p));
+    const slug = p.slug || require('../lib/helpers').slugify(p.title);
+    const existing = db.prepare('SELECT id FROM posts WHERE slug = ?').get(slug);
+    if (existing) {
+      inserted.push(existing.id);
+      continue;
+    }
     const id = ins('posts', {
-      title: p.title, slug: require('../lib/helpers').slugify(p.title),
-      excerpt: p.answer_summary.slice(0, 220),
-      body: p.body, category_id: cats[p.category], tags: J(p.tags || []),
+      title: p.title, slug,
+      excerpt: p.excerpt || p.answer_summary.slice(0, 220),
+      body: p.body, category_id: cats[p.category] || 1, tags: J(p.tags || []),
       author_id: authorId, status: 'published',
       publish_at: daysAgo, answer_summary: p.answer_summary,
       key_takeaways: J(p.key_takeaways || []),
-      seo_title: p.title.length > 60 ? p.title.slice(0, 57) + '…' : p.title,
-      seo_description: p.answer_summary.slice(0, 300),
+      seo_title: p.seo_title || (p.title.length > 60 ? p.title.slice(0, 57) + '…' : p.title),
+      seo_description: p.seo_description || p.answer_summary.slice(0, 300),
       target_query: p.target_query, primary_pillar: p.category,
-      read_minutes: Math.max(3, Math.round(p.body.replace(/<[^>]*>/g, ' ').split(/\s+/).length / 200)),
+      cover_media_id: coverMediaId,
+      read_minutes: p.read_minutes || Math.max(3, Math.round(p.body.replace(/<[^>]*>/g, ' ').split(/\s+/).length / 200)),
       views: 40 + Math.round(Math.random() * 900),
-      geo_summary: p.answer_summary.slice(0, 320),
+      geo_summary: p.geo_summary || p.answer_summary.slice(0, 320),
       created_at: daysAgo, updated_at: daysAgo,
     });
     inserted.push(id);

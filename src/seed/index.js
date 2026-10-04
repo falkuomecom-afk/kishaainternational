@@ -22,6 +22,7 @@ function seed() {
     const z = db.prepare('SELECT id FROM users WHERE email = ?').get('zeb@kishaainternational.com');
     if (!z) createUsers();
     if (db.prepare('SELECT COUNT(*) AS n FROM programs').get().n === 0) runContentSeed();
+    ensurePostsSeed();
     reindex();
     console.log('✔ Database already contains content — seeder completed the missing pieces only.');
     return summary();
@@ -89,6 +90,18 @@ function runContentSeed() {
     `${db.prepare('SELECT COUNT(*) AS n FROM flight_routes').get().n} flight routes, ` +
     `${db.prepare('SELECT COUNT(*) AS n FROM pages').get().n} pages, ${postIds.length} guides, ` +
     `${trust.reviews} cached reviews, ${trust.feeds} feed items, ${trust.faqs} FAQs.`);
+}
+
+function ensurePostsSeed() {
+  const ins = (table, obj) => {
+    const keys = Object.keys(obj).filter(k => obj[k] !== undefined);
+    return db.prepare(`INSERT INTO ${table} (${keys.join(',')}) VALUES (${keys.map(() => '?').join(',')})`)
+      .run(...keys.map(k => obj[k])).lastInsertRowid;
+  };
+  const ownerId = db.prepare("SELECT id FROM users WHERE role = 'administrator' ORDER BY id LIMIT 1").get()?.id || null;
+  const cats = {};
+  for (const c of db.prepare('SELECT id, slug FROM categories').all()) cats[c.slug] = c.id;
+  seedPosts(db, { ins, ownerId, cats });
 }
 
 /** A realistic lead pipeline so the dashboard, follow-up queue and reporting are meaningful. */
