@@ -76,7 +76,6 @@ export default function DestinationDetail() {
 
   let living: any = null;
   let funds: any = null;
-  let flights: any[] = [];
   try {
     living = c.livingCosts ? (typeof c.livingCosts === "string" ? JSON.parse(c.livingCosts) : c.livingCosts) : null;
   } catch {
@@ -87,11 +86,16 @@ export default function DestinationDetail() {
   } catch {
     funds = null;
   }
+  let rawFlights: any[] = [];
   try {
-    flights = c.flightGuide ? (typeof c.flightGuide === "string" ? JSON.parse(c.flightGuide) : c.flightGuide) : [];
+    rawFlights = c.flightGuide ? (typeof c.flightGuide === "string" ? JSON.parse(c.flightGuide) : c.flightGuide) : [];
   } catch {
-    flights = [];
+    rawFlights = [];
   }
+  const flights = rawFlights.filter(
+    (f: any, idx: number, arr: any[]) =>
+      f.priceMax > 0 && arr.findIndex((item: any) => item.from === f.from) === idx
+  );
 
   return (
     <>
@@ -343,125 +347,111 @@ export default function DestinationDetail() {
             </div>
           </div>
 
-          {/* Sidebar: funds + flights + CTA */}
-          <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-6.5rem)] lg:overflow-y-auto no-scrollbar pr-1">
-            {liveCosts && (
-              <div className="reveal border-2 border-gold/60 bg-[#fffdf5] p-6 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-base">⚡</span>
-                    <h3 className="text-[12px] font-bold uppercase tracking-[0.16em] text-navy">
-                      Live Web Intelligence
+          {/* Sticky Sidebar: Stays pinned as the left side content scrolls */}
+          <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
+            {/* 1. Official Bank Statement Rule (with Live Verification badge & tip) */}
+            {(funds || liveCosts?.proofOfFunds) && (
+              <div className="reveal border border-gold/40 bg-paper p-6 sm:p-7 rounded-2xl shadow-xs">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 text-gold-dark">
+                    <Landmark className="h-5 w-5" />
+                    <h3 className="text-[12px] font-semibold uppercase tracking-[0.16em]">
+                      Official bank statement rule
                     </h3>
                   </div>
-                  <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-800">
-                    Verified 2026
-                  </span>
-                </div>
-                <div className="mt-4 border-t border-gold/20 pt-3">
-                  <p className="text-[11px] font-semibold uppercase tracking-wider text-navy/60">
-                    {liveCosts.proofOfFunds?.authority} Verified Funds:
-                  </p>
-                  <p className="mt-1 font-serif text-3xl font-bold text-navy">
-                    {liveCosts.proofOfFunds?.displayAmount || (liveCosts.proofOfFunds?.amount ? `${liveCosts.currency} ${Number(liveCosts.proofOfFunds.amount).toLocaleString()}` : "—")}
-                  </p>
-                  <p className="mt-2 text-[13px] leading-relaxed text-navy/80">
-                    {liveCosts.proofOfFunds?.summary}
-                  </p>
-                  {liveCosts.proofOfFunds?.sourceUrl && (
-                    <a
-                      href={liveCosts.proofOfFunds.sourceUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-2.5 inline-flex items-center gap-1 text-[12px] font-semibold text-gold-dark hover:underline"
-                    >
-                      Official {liveCosts.proofOfFunds?.authority} source <ExternalLink className="h-3 w-3" />
-                    </a>
+                  {liveCosts && (
+                    <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-800 shrink-0">
+                      Verified 2026/27
+                    </span>
                   )}
                 </div>
-                {liveCosts.keyAdvice && (
-                  <p className="mt-3 border-t border-gold/20 pt-3 text-[12px] leading-relaxed text-navy/70">
-                    💡 <strong className="text-navy">Advisory Tip:</strong> {liveCosts.keyAdvice}
+
+                <p className="mt-4 font-serif text-3xl sm:text-4xl font-bold text-navy">
+                  {(funds?.currency || liveCosts?.currency || "")}{" "}
+                  {funds?.amount != null
+                    ? Number(funds.amount).toLocaleString()
+                    : liveCosts?.proofOfFunds?.displayAmount || (liveCosts?.proofOfFunds?.amount ? Number(liveCosts.proofOfFunds.amount).toLocaleString() : "—")}
+                </p>
+
+                {(funds?.months || liveCosts?.proofOfFunds?.authority) && (
+                  <p className="mt-1 text-[13px] text-navy/60 font-medium">
+                    {funds?.months ? `${funds.months}-month requirement` : `${liveCosts?.proofOfFunds?.authority} requirement`}
                   </p>
                 )}
-              </div>
-            )}
 
-            {funds && (
-              <div className="reveal border border-gold/40 bg-paper p-7">
-                <div className="flex items-center gap-2">
-                  <Landmark className="h-5 w-5 text-gold-dark" />
-                  <h3 className="text-[12px] font-semibold uppercase tracking-[0.16em] text-gold-dark">
-                    Official bank statement rule
-                  </h3>
-                </div>
-                <p className="mt-4 font-serif text-4xl text-navy">
-                  {funds.currency || ""} {funds.amount != null ? Number(funds.amount).toLocaleString() : "—"}
+                <p className="mt-3.5 border-t border-navy/10 pt-3.5 text-[13.5px] leading-relaxed text-navy/75">
+                  {funds?.note || liveCosts?.proofOfFunds?.summary}
                 </p>
-                {funds.months && (
-                  <p className="mt-1 text-[13px] text-navy/60">{funds.months}-month requirement</p>
-                )}
-                <p className="mt-4 border-t border-navy/10 pt-4 text-[14px] leading-relaxed text-navy/75">
-                  {funds.note}
-                </p>
-                {funds.holderRule && (
-                  <p className="mt-3 text-[13px] font-medium text-navy">
+
+                {funds?.holderRule && (
+                  <p className="mt-2.5 text-[13px] font-medium text-navy">
                     Holder: {funds.holderRule}
                   </p>
                 )}
-                <p className="mt-4 text-[11px] uppercase tracking-[0.1em] text-navy/40">
-                  Official rule · effective {funds.effectiveDate}
-                </p>
-                {funds.sourceUrl && (
-                  <a
-                    href={funds.sourceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-2 inline-flex items-center gap-1 text-[12px] font-semibold text-gold-dark hover:underline"
-                  >
-                    Government source <ExternalLink className="h-3 w-3" />
-                  </a>
+
+                {liveCosts?.keyAdvice && (
+                  <p className="mt-3 rounded-lg bg-gold/10 border border-gold/20 p-2.5 text-[12px] leading-relaxed text-navy/80">
+                    💡 <strong className="text-navy">Advisory Tip:</strong> {liveCosts.keyAdvice}
+                  </p>
                 )}
+
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-navy/10 pt-3 text-[11px] text-navy/40">
+                  <span className="uppercase tracking-[0.1em]">
+                    Effective {funds?.effectiveDate || "2026"}
+                  </span>
+                  {(funds?.sourceUrl || liveCosts?.proofOfFunds?.sourceUrl) && (
+                    <a
+                      href={funds?.sourceUrl || liveCosts?.proofOfFunds?.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 font-semibold text-gold-dark hover:underline"
+                    >
+                      Government source <ExternalLink className="h-3 w-3" />
+                    </a>
+                  )}
+                </div>
               </div>
             )}
+
+            {/* 2. Indicative Flight Ranges */}
             {flights.length > 0 && (
-              <div className="reveal border border-navy/10 bg-white p-7">
-                <div className="flex items-center gap-2">
-                  <Plane className="h-5 w-5 text-gold-dark" />
-                  <h3 className="text-[12px] font-semibold uppercase tracking-[0.16em] text-gold-dark">
+              <div className="reveal border border-navy/10 bg-white p-6 sm:p-7 rounded-2xl shadow-xs">
+                <div className="flex items-center gap-2 text-gold-dark">
+                  <Plane className="h-5 w-5" />
+                  <h3 className="text-[12px] font-semibold uppercase tracking-[0.16em]">
                     Indicative flight ranges
                   </h3>
                 </div>
-                <ul className="mt-4 space-y-3">
-                  {flights
-                    .filter((f: any) => f.priceMax > 0)
-                    .map((f: any) => (
-                      <li
-                        key={f.from}
-                        className="flex items-center justify-between text-[14px] text-navy/80"
-                      >
-                        <span>From {f.from}</span>
-                        <span className="font-semibold text-navy">
-                          {f.currency} {f.priceMin}–{f.priceMax}
-                        </span>
-                      </li>
-                    ))}
+                <ul className="mt-4 space-y-2.5">
+                  {flights.map((f: any) => (
+                    <li
+                      key={f.from}
+                      className="flex items-center justify-between text-[13.5px] text-navy/80 border-b border-navy/5 pb-2 last:border-0 last:pb-0"
+                    >
+                      <span className="text-navy/70">From {f.from}</span>
+                      <span className="font-semibold text-navy">
+                        {f.currency} {f.priceMin}–{f.priceMax}
+                      </span>
+                    </li>
+                  ))}
                 </ul>
-                <p className="mt-4 text-[12px] text-navy/45">
+                <p className="mt-3.5 border-t border-navy/10 pt-3 text-[11.5px] text-navy/45">
                   Live fares are confirmed by our team via the airline search API at consultation.
                 </p>
               </div>
             )}
-            <div className="reveal bg-navy p-7 text-white">
+
+            {/* 3. Cost Planner CTA */}
+            <div className="reveal rounded-2xl bg-navy p-6 sm:p-7 text-white shadow-md">
               <Wallet className="h-6 w-6 text-gold" />
-              <h3 className="mt-3 font-serif text-xl font-medium">
+              <h3 className="mt-3 font-serif text-xl font-medium text-white">
                 Calculate your full {c.name} budget
               </h3>
-              <p className="mt-2 text-[14px] text-white/65">
+              <p className="mt-2 text-[13.5px] text-white/65 leading-relaxed">
                 Flight + living + official funds, itemised and separated.
               </p>
-              <Link to={`/cost-planner?country=${c.slug}`} className="btn-gold mt-5 w-full">
-                Plan my budget <ArrowRight className="h-4 w-4" />
+              <Link to={`/cost-planner?country=${c.slug}`} className="btn-gold mt-5 w-full text-center block font-semibold text-sm">
+                Plan my budget <ArrowRight className="h-4 w-4 inline ml-1" />
               </Link>
             </div>
           </aside>
