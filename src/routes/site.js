@@ -698,10 +698,10 @@ router.get('/api/content/countries/:slug', async (req, res) => {
     res.status(500).json({ ok: false, error: err.message });
   }
 });
-router.post('/api/content/countries/live-costs', express.json(), async (req, res) => {
+router.all('/api/content/countries/live-costs', express.json(), async (req, res) => {
   try {
-    const country = String(req.body.country || '').trim();
-    const city = String(req.body.city || '').trim();
+    const country = String(req.body?.country || req.query?.country || '').trim();
+    const city = String(req.body?.city || req.query?.city || '').trim();
     if (!country) return res.status(400).json({ ok: false, error: 'country_required' });
     const data = await qwenSearch.getLiveDestinationCosts(country, city);
     res.json({ ok: true, data });
