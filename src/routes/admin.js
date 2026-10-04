@@ -1382,8 +1382,26 @@ router.get('/preview/pages/:id', requirePermission('content.view'), (req, res) =
 
 /* ========================================================== AI AGENT HUB == */
 router.get('/ai-agent', requirePermission('content.view'), (req, res) => {
-  const recentLeads = db.prepare('SELECT id, name, country, interest, email, phone, notes, created_at FROM leads ORDER BY id DESC LIMIT 15').all();
-  const destinations = db.prepare('SELECT id, name, slug FROM countries WHERE published = 1 ORDER BY name').all();
+  let recentLeads = [];
+  try {
+    recentLeads = db.prepare(`
+      SELECT l.id, l.full_name AS name, l.interest, l.email, l.phone, l.message AS notes, l.created_at,
+             COALESCE(c.name, 'General') AS country
+      FROM leads l
+      LEFT JOIN countries c ON c.id = l.country_id
+      ORDER BY l.id DESC LIMIT 15
+    `).all();
+  } catch (e) {
+    console.warn('[admin:ai-agent] leads query error:', e.message);
+  }
+
+  let destinations = [];
+  try {
+    destinations = db.prepare('SELECT id, name, slug FROM countries WHERE published = 1 ORDER BY name').all();
+  } catch (e) {
+    console.warn('[admin:ai-agent] destinations query error:', e.message);
+  }
+
   view(res, 'ai-agent', {
     title: 'AI Agent Studio & Profile Examiner',
     pageTitle: 'AI Agent Studio · Case Examiner & Content Copilot',
