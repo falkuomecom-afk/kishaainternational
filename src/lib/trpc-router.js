@@ -135,12 +135,18 @@ const appRouter = router({
     posts: router({
       list: publicProcedure.query(async () => {
         const resolvePostCover = (r) => {
-          if (r.cover_image) return r.cover_image;
-          if (r.cover_media_id) {
+          if (r.cover_image && r.cover_image.trim()) return r.cover_image;
+          let filename = r.media?.filename;
+          if (!filename && r.cover_media_id) {
             try {
-              const m = db.prepare('SELECT filename FROM media WHERE id = ?').get(r.cover_media_id);
-              if (m?.filename) return `/uploads/${m.filename}`;
+              const m = db.prepare('SELECT filename, public_url FROM media WHERE id = ?').get(r.cover_media_id);
+              if (m?.public_url) return m.public_url;
+              if (m?.filename) filename = m.filename;
             } catch {}
+          }
+          if (filename) {
+            if (filename.startsWith('http')) return filename;
+            return `https://jpwgnepvudbqgmrtfxjs.supabase.co/storage/v1/object/public/media/guides/${filename}`;
           }
           return `/img/guides/${r.slug}.svg`;
         };
@@ -207,12 +213,18 @@ const appRouter = router({
           }
 
           const resolvePostCover = (item) => {
-            if (item.cover_image) return item.cover_image;
-            if (item.cover_media_id) {
+            if (item.cover_image && item.cover_image.trim()) return item.cover_image;
+            let filename = item.media?.filename;
+            if (!filename && item.cover_media_id) {
               try {
-                const m = db.prepare('SELECT filename FROM media WHERE id = ?').get(item.cover_media_id);
-                if (m?.filename) return `/uploads/${m.filename}`;
+                const m = db.prepare('SELECT filename, public_url FROM media WHERE id = ?').get(item.cover_media_id);
+                if (m?.public_url) return m.public_url;
+                if (m?.filename) filename = m.filename;
               } catch {}
+            }
+            if (filename) {
+              if (filename.startsWith('http')) return filename;
+              return `https://jpwgnepvudbqgmrtfxjs.supabase.co/storage/v1/object/public/media/guides/${filename}`;
             }
             return `/img/guides/${item.slug}.svg`;
           };

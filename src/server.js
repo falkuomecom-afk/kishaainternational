@@ -183,6 +183,26 @@ async function handleTrpc(req, res) {
 app.all('/api/trpc*', handleTrpc);
 app.all('/trpc*', handleTrpc);
 
+// Daily Autonomous Autoblogger Cron Endpoint
+app.all('/api/cron/autoblog', async (req, res) => {
+  const secret = process.env.CRON_SECRET;
+  if (secret) {
+    const authHeader = req.headers.authorization || '';
+    const querySecret = req.query.secret;
+    if (authHeader !== `Bearer ${secret}` && querySecret !== secret) {
+      return res.status(401).json({ ok: false, error: 'Unauthorized cron request' });
+    }
+  }
+  try {
+    const autoblogger = require('./lib/autoblogger');
+    const result = await autoblogger.publishDailyPost();
+    res.json(result);
+  } catch (err) {
+    console.error('[cron:autoblog]', err);
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
 /* ------------------------------------------------------------------ routes */
 app.use('/admin', require('./routes/admin'));
 app.use('/', require('./routes/site'));
@@ -240,6 +260,20 @@ function startScheduler() {
       }
     } catch (e) { console.error('scheduler', e.message); }
   }, 60e3).unref();
+
+  // Daily Autonomous Niche Autoblogger (runs check every hour)
+  setInterval(async () => {
+    try {
+      const autoblogger = require('./lib/autoblogger');
+      const status = autoblogger.getAutobloggerStatus();
+      if (!status.publishedToday) {
+        console.log('[scheduler] Autoblogger running daily publishing...');
+        await autoblogger.publishDailyPost();
+      }
+    } catch (e) {
+      console.error('[scheduler:autoblogger]', e.message);
+    }
+  }, 60 * 60e3).unref();
 
   // On startup, if COMPOSIO_API_KEY is present, refresh Composio feeds in background
   if (process.env.COMPOSIO_API_KEY) {

@@ -17,6 +17,7 @@ const supabase = require('../lib/supabase');
 const gsc = require('../lib/google-search-console');
 const qwenSearch = require('../lib/qwen-search');
 const qwenImage = require('../lib/qwen-image');
+const autoblogger = require('../lib/autoblogger');
 
 const router = express.Router();
 const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
@@ -1402,12 +1403,76 @@ router.get('/ai-agent', requirePermission('content.view'), (req, res) => {
     console.warn('[admin:ai-agent] destinations query error:', e.message);
   }
 
+  let autobloggerStatus = null;
+  try {
+    autobloggerStatus = autoblogger.getAutobloggerStatus();
+  } catch (e) {
+    console.warn('[admin:ai-agent] autoblogger status error:', e.message);
+  }
+
   view(res, 'ai-agent', {
     title: 'AI Agent Studio & Profile Examiner',
     pageTitle: 'AI Agent Studio · Case Examiner & Content Copilot',
     recentLeads,
     destinations,
+    autoblogger: autobloggerStatus,
   });
+});
+
+router.get('/api/autoblogger/status', requirePermission('content.view'), async (req, res) => {
+  try {
+    const status = autoblogger.getAutobloggerStatus();
+    res.json({ ok: true, ...status });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+router.post('/api/autoblogger/run', express.json(), requirePermission('content.publish'), async (req, res) => {
+  try {
+    const result = await autoblogger.publishDailyPost({
+      topic: req.body.topic ? String(req.body.topic).trim() : null,
+    });
+    res.json(result);
+  } catch (err) {
+    console.error('[admin:autoblogger:run]', err);
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+router.post('/api/ai/auto-generate-post', express.json(), requirePermission('content.edit'), async (req, res) => {
+  try {
+    const topic = String(req.body.topic || '').trim();
+    if (!topic) return res.status(400).json({ ok: false, error: 'Topic or title is required' });
+
+    console.log(`🤖 Auto-generating full article and cover image for: "${topic}"`);
+    const postData = await autoblogger.generateArticleContent({ topic });
+
+    let mediaRecord = null;
+    const prompt = postData.image_prompt || `Editorial photorealistic wide angle shot of international students in university campus, soft cinematic lighting, 8k resolution`;
+    try {
+      mediaRecord = await qwenImage.generateAndSaveImage(prompt, {
+        folder: 'guides',
+        size: '1664*928',
+        user: req.user,
+      });
+    } catch (imgErr) {
+      console.warn('⚠️ Cover image generation warning in auto-generate-post:', imgErr.message);
+    }
+
+    res.json({
+      ok: true,
+      post: postData,
+      media: mediaRecord ? {
+        id: mediaRecord.mediaId,
+        url: mediaRecord.publicUrl || mediaRecord.url,
+        filename: mediaRecord.filename,
+      } : null,
+    });
+  } catch (err) {
+    console.error('[admin:auto-generate-post]', err);
+    res.status(500).json({ ok: false, error: err.message });
+  }
 });
 
 router.post('/api/ai/examine-profile', express.json(), requirePermission('leads.view'), async (req, res) => {

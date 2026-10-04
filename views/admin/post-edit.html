@@ -33,30 +33,27 @@
       <div class="card" style="border: 1px solid #c9a227; background: #fffdf5;">
         <header style="background: #fbf5e6; border-bottom: 1px solid #e9d8a6; display: flex; justify-content: space-between; align-items: center;">
           <h2 style="font-size: 15px; color: #854d0e; display: flex; align-items: center; gap: 8px;">
-            <span>⚡</span> AI Copilot: Title, Description &amp; Cover Image Assistant
+            <span>⚡</span> AI Autoblog Copilot: One-Click Full Article &amp; AI Cover
           </h2>
           <button type="button" class="btn sm" onclick="togglePostAi()" id="toggleAiBtn">Open AI Assistant</button>
         </header>
         <div class="body" id="postAiPanel" style="display: none; padding: 16px;">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-            <div>
-              <label class="field">
-                <span class="lab">Topic / Focus</span>
-                <input type="text" id="aiTopicPrompt" placeholder="e.g. Canada 2026 Student Visa Proof of Funds">
-              </label>
-              <button type="button" class="btn sm gold" style="margin-top: 8px;" onclick="runPostAiSuggest()">
-                ✨ Suggest Titles &amp; Meta Descriptions
+          <div>
+            <label class="field">
+              <span class="lab">Topic / Focus or Title</span>
+              <input type="text" id="aiTopicPrompt" placeholder="e.g. Canada 2026 Student Visa Proof of Funds &amp; GIC Matrix">
+            </label>
+            <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; align-items: center;">
+              <button type="button" class="btn gold" onclick="runAutoGenerateFullPost()" style="font-weight: 600;">
+                ✨ Auto-Generate Full EEAT Article &amp; AI Cover
+              </button>
+              <button type="button" class="btn sm" onclick="runPostAiSuggest()">
+                💡 Suggest Titles &amp; SEO Only
               </button>
             </div>
-            <div>
-              <label class="field">
-                <span class="lab">AI Cover Image Prompt</span>
-                <input type="text" id="aiImgPrompt" placeholder="e.g. Modern university students in London with passports">
-              </label>
-              <button type="button" class="btn sm" style="margin-top: 8px;" onclick="runPostAiImage()">
-                🎨 Generate 16:9 Cover Image
-              </button>
-            </div>
+            <p class="muted tiny" style="margin-top: 8px; margin-bottom: 0;">
+              Hands-free publishing: creates EEAT content, statutory tables, quotes Zeb Khan, and automatically generates a 16:9 photorealistic cover uploaded to Supabase Storage.
+            </p>
           </div>
           <div id="postAiLoading" style="display: none; margin-top: 12px; font-size: 13px; color: #854d0e; font-weight: 500;">
             ⏳ Processing with Qwen AI &amp; Web Search...
@@ -138,8 +135,13 @@
               <input type="text" name="tags" value="{{join tags ', '}}" placeholder="uk student visa, bank statement, 28 days">
             </label>
             <label class="field">
-              <span class="lab">Cover image (media ID)</span>
-              <input type="text" name="cover_media_id" value="{{post.cover_media_id}}">
+              <span class="lab">Cover Thumbnail</span>
+              <input type="text" name="cover_media_id" id="coverMediaInput" value="{{post.cover_media_id}}" placeholder="Media ID (e.g. 1)">
+              <input type="hidden" name="cover_image" id="coverImageInput" value="{{post.cover_image}}">
+              <div id="coverThumbnailPreview" style="margin-top: 8px; {{#unless post.cover_image}}{{#unless post.cover_media_id}}display: none;{{/unless}}{{/unless}}">
+                <img id="coverThumbnailImg" src="{{#if post.cover_image}}{{post.cover_image}}{{else}}{{#if post.cover_media_id}}/uploads/{{post.cover_media_id}}{{/if}}{{/if}}" style="width: 100%; max-height: 140px; object-fit: cover; border-radius: 4px; border: 1px solid #cbd5e1;" alt="Cover thumbnail">
+                <span class="tiny muted" id="coverThumbnailNote" style="display: block; margin-top: 4px;">Registered on guide thumbnail</span>
+              </div>
             </label>
           </div>
         </div>
@@ -347,46 +349,121 @@ function applyAnswer(ans, takeaways) {
   alert('Applied Answer-first summary & key takeaways!');
 }
 
-async function runPostAiImage() {
-  const prompt = document.getElementById('aiImgPrompt').value;
-  if (!prompt) { alert('Please enter an image prompt.'); return; }
+async function runAutoGenerateFullPost() {
+  const topic = document.getElementById('aiTopicPrompt').value || document.getElementById('postTitleInput').value;
+  if (!topic) {
+    alert('Please enter a topic, keyword, or guide title first.');
+    return;
+  }
 
   const loader = document.getElementById('postAiLoading');
   const resultBox = document.getElementById('postAiSuggestions');
   loader.style.display = 'block';
-  loader.textContent = '🎨 Synthesizing 16:9 photorealistic image with qwen-image-plus (10–15s)...';
+  loader.innerHTML = '🤖 Generating comprehensive EEAT article &amp; synthesizing 16:9 AI cover image (uploading to Supabase Storage)...';
   resultBox.style.display = 'none';
 
   try {
-    const res = await fetch('/admin/api/ai/generate-image', {
+    const res = await fetch('/admin/api/ai/auto-generate-post', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt, size: '1664*928', folder: 'guides' }),
+      body: JSON.stringify({ topic }),
     });
     const data = await res.json();
     loader.style.display = 'none';
 
     if (!data.ok) {
-      resultBox.innerHTML = `<span style="color:#b91c1c;">Image generation error: ${data.error}</span>`;
+      resultBox.innerHTML = `<span style="color:#b91c1c;font-weight:600;">Generation Error: ${data.error}</span>`;
       resultBox.style.display = 'block';
       return;
     }
 
-    // Set media cover input if available
-    const coverInput = document.querySelector('input[name="cover_media_id"]');
-    if (coverInput && data.mediaId) coverInput.value = data.mediaId;
+    const p = data.post;
+    const media = data.media;
+
+    // Apply values to form fields
+    if (p.title) {
+      document.getElementById('postTitleInput').value = p.title;
+      const seoTitle = document.querySelector('input[name="seo_title"]');
+      if (seoTitle) seoTitle.value = p.seo_title || p.title.slice(0, 60);
+    }
+    if (p.slug) {
+      const slugInput = document.querySelector('input[name="slug"]');
+      if (slugInput) slugInput.value = p.slug;
+    }
+    if (p.excerpt) {
+      const excerptInput = document.querySelector('textarea[name="excerpt"]');
+      if (excerptInput) excerptInput.value = p.excerpt;
+      const seoDesc = document.querySelector('textarea[name="seo_description"]');
+      if (seoDesc) seoDesc.value = p.seo_description || p.excerpt.slice(0, 155);
+    }
+    if (p.answer_summary) {
+      const ansInput = document.querySelector('textarea[name="answer_summary"]');
+      if (ansInput) ansInput.value = p.answer_summary;
+    }
+    if (p.geo_summary) {
+      const geoInput = document.querySelector('textarea[name="geo_summary"]');
+      if (geoInput) geoInput.value = p.geo_summary;
+    }
+    if (p.key_takeaways && Array.isArray(p.key_takeaways)) {
+      const tkInput = document.querySelector('textarea[name="key_takeaways_text"]');
+      if (tkInput) tkInput.value = p.key_takeaways.join('\n');
+    }
+    if (p.body) {
+      const bodyInput = document.querySelector('textarea[name="body"]');
+      if (bodyInput) bodyInput.value = p.body;
+    }
+    if (p.target_query) {
+      const tqInput = document.querySelector('input[name="target_query"]');
+      if (tqInput) tqInput.value = p.target_query;
+    }
+    if (p.tags && Array.isArray(p.tags)) {
+      const tagsInput = document.querySelector('input[name="tags"]');
+      if (tagsInput) tagsInput.value = p.tags.join(', ');
+    }
+    if (p.primary_pillar) {
+      const pillarSelect = document.querySelector('select[name="primary_pillar"]');
+      if (pillarSelect) pillarSelect.value = p.primary_pillar;
+    }
+
+    // Apply cover media and thumbnail
+    if (media) {
+      const coverMediaInput = document.getElementById('coverMediaInput');
+      if (coverMediaInput && media.id) coverMediaInput.value = media.id;
+      const coverImageInput = document.getElementById('coverImageInput');
+      if (coverImageInput && media.url) coverImageInput.value = media.url;
+
+      const previewDiv = document.getElementById('coverThumbnailPreview');
+      const previewImg = document.getElementById('coverThumbnailImg');
+      if (previewDiv && previewImg) {
+        previewImg.src = media.url;
+        previewDiv.style.display = 'block';
+      }
+    }
 
     resultBox.innerHTML = `
-      <div style="text-align:center;">
-        <span style="font-size:12px;color:#166534;font-weight:700;">✅ Generated &amp; Saved to Media Library!</span>
-        <img src="${data.url}" style="width:100%;max-height:220px;object-fit:cover;border-radius:4px;margin-top:6px;">
-        <p style="font-size:12px;color:#64748b;margin:4px 0 0 0;">File: <code>${data.filename}</code></p>
+      <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 12px; margin-top: 6px;">
+        <div style="font-weight: 700; color: #166534; font-size: 14px; margin-bottom: 6px;">
+          🎉 Article &amp; AI Cover Generated Successfully!
+        </div>
+        <div style="font-size: 13px; color: #15803d; line-height: 1.5;">
+          All fields populated: Title, SEO metadata, AEO answer summary, takeaways, and structured HTML body with regulatory tables.
+        </div>
+        ${media ? `
+          <div style="margin-top: 10px; display: flex; align-items: center; gap: 12px;">
+            <img src="${media.url}" style="width: 140px; height: 80px; object-fit: cover; border-radius: 4px; border: 1px solid #cbd5e1;">
+            <div style="font-size: 12px; color: #334155;">
+              <strong>Cover Image Stored in Supabase:</strong><br>
+              <code>${media.filename}</code><br>
+              <span style="color:#166534; font-weight: 600;">Registered as guide thumbnail.</span>
+            </div>
+          </div>
+        ` : ''}
       </div>
     `;
     resultBox.style.display = 'block';
   } catch (err) {
     loader.style.display = 'none';
-    resultBox.innerHTML = `<span style="color:#b91c1c;">Request failed: ${err.message}</span>`;
+    resultBox.innerHTML = `<span style="color:#b91c1c;font-weight:600;">Request failed: ${err.message}</span>`;
     resultBox.style.display = 'block';
   }
 }

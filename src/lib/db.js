@@ -61,6 +61,8 @@ function migrate() {
     addColumn('fee_versions', 'note', 'TEXT');
     addColumn('posts', 'geo_summary', 'TEXT');
     addColumn('posts', 'primary_pillar', "TEXT DEFAULT 'resources'");
+    addColumn('posts', 'cover_image', 'TEXT');
+    addColumn('media', 'public_url', 'TEXT');
     addColumn('leads', 'region', 'TEXT');
     addColumn('site_settings', 'group_name', "TEXT DEFAULT 'general'");
   } catch (err) {

@@ -35,7 +35,7 @@
 <div class="ai-tabs">
   <button class="ai-tab-btn active" onclick="switchAiTab('profileTab', this)">👤 Candidate Profile Examiner</button>
   <button class="ai-tab-btn" onclick="switchAiTab('seoTab', this)">✍️ SEO &amp; Content Copilot</button>
-  <button class="ai-tab-btn" onclick="switchAiTab('imageTab', this)">🎨 AI Image Generator</button>
+  <button class="ai-tab-btn" onclick="switchAiTab('autoblogTab', this)">🤖 Autonomous Niche Autoblogger</button>
   <button class="ai-tab-btn" onclick="switchAiTab('costsTab', this)">🌐 Live Destination Cost Verifier</button>
 </div>
 
@@ -188,60 +188,97 @@
   </div>
 </div>
 
-<!-- ============================================== TAB 3: IMAGE GENERATOR -->
-<div id="imageTab" class="ai-panel">
+<!-- ============================================== TAB 3: AUTOBLOGGER -->
+<div id="autoblogTab" class="ai-panel">
   <div class="ai-grid">
     <div class="ai-card">
-      <h3 style="margin-top:0;font-size:18px;color:#0b2447;">AI Photorealistic Image Generator</h3>
-      <p class="muted" style="font-size:13px;margin-bottom:18px;">
-        Powered by Alibaba Cloud DashScope <strong>qwen-image-plus</strong>. Generates 16:9 ultra-detailed editorial artwork, downloads it locally to <code>/public/uploads/</code>, and registers it directly into your Media Library.
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="margin:0; font-size:18px; color:#0b2447;">🤖 Autonomous Niche Autoblogger</h3>
+        <span class="badge-pill badge-high">● Daily Publishing Active</span>
+      </div>
+      <p class="muted" style="font-size:13px; margin-bottom:16px;">
+        Autonomous AI publishing system tuned exclusively for Kishaa International's study abroad, immigration, statutory proof-of-funds, and IELTS niche. Automatically generates EEAT guides, synthesizes 16:9 cover images via <code>qwen-image-plus</code>, uploads directly to Supabase Storage, and registers guide thumbnails.
       </p>
 
-      <label class="field">
-        <span class="lab">Image Prompt</span>
-        <textarea id="imgPrompt" rows="3" placeholder="e.g. Modern executive airport lounge in Dubai with luxury travelers holding passports, floor-to-ceiling windows showing runway and skyline, cinematic lighting, 8K photorealistic"></textarea>
-      </label>
-
-      <div class="field-row">
-        <label class="field">
-          <span class="lab">Aspect Ratio / Size</span>
-          <select id="imgSize">
-            <option value="1664*928" selected>16:9 Widescreen (1664x928 — Recommended for Blog Covers)</option>
-            <option value="1328*1328">1:1 Square (1328x1328 — Social / Instagram)</option>
-            <option value="928*1664">9:16 Portrait (928x1664 — Reels / Stories)</option>
-          </select>
-        </label>
-        <label class="field">
-          <span class="lab">Folder Tag</span>
-          <select id="imgFolder">
-            <option value="guides">Guides &amp; Posts</option>
-            <option value="destinations">Destinations</option>
-            <option value="marketing">Marketing</option>
-            <option value="general">General</option>
-          </select>
-        </label>
+      <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; padding:14px; margin-bottom:18px;">
+        <div style="font-size:11px; font-weight:700; text-transform:uppercase; color:#64748b; margin-bottom:4px;">Next Queued Niche Topic</div>
+        <div style="font-size:14px; font-weight:700; color:#0b2447;" id="autoblogNextTopic">
+          {{#if autoblogger.nextTopic}}{{autoblogger.nextTopic.topic}}{{else}}Canada Student Visa 2026: Proof of Funds CAD $20,635, GIC &amp; Cost of Living Matrix{{/if}}
+        </div>
+        <div style="font-size:12px; color:#64748b; margin-top:4px;">
+          Pillar: <span class="badge sm" id="autoblogNextPillar">{{#if autoblogger.nextTopic}}{{autoblogger.nextTopic.pillar}}{{else}}resources{{/if}}</span> · Category: <span id="autoblogNextCategory">{{#if autoblogger.nextTopic}}{{autoblogger.nextTopic.category}}{{else}}Student Visas{{/if}}</span>
+        </div>
       </div>
 
-      <button type="button" class="btn-gold-ai" style="margin-top:16px;" onclick="runImageGenerator()">
-        🎨 Generate &amp; Save to Media Library
-      </button>
+      <label class="field">
+        <span class="lab">Custom Topic / Focus (Optional)</span>
+        <input type="text" id="autoblogCustomTopic" placeholder="Leave blank to use next queued topic above...">
+        <span class="hint">Override queue with any specific 2026/2027 visa or educational topic.</span>
+      </label>
+
+      <div style="margin-top:16px; display:flex; gap:10px; align-items:center;">
+        <button type="button" class="btn-gold-ai" onclick="runAutobloggerNow()">
+          🚀 Run Autoblogger Now (Publish Live Article)
+        </button>
+      </div>
+
+      <div style="margin-top:20px; border-top:1px solid #e2e8f0; padding-top:14px;">
+        <h4 style="font-size:12px; text-transform:uppercase; color:#64748b; letter-spacing:0.05em; margin:0 0 8px 0;">4 Core Pillars in Rotation:</h4>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12px; color:#334155;">
+          <div style="background:#fff; border:1px solid #e2e8f0; padding:8px; border-radius:4px;">
+            🎓 <strong>Study Abroad</strong><br>UK 2027, Canada SDS, Germany, Italy DSU, Finland, Georgia MBBS
+          </div>
+          <div style="background:#fff; border:1px solid #e2e8f0; padding:8px; border-radius:4px;">
+            🛂 <strong>Immigration &amp; Visas</strong><br>Canada 10-Yr LOI, UAE Golden/Green Visa, Schengen 4-Pillar
+          </div>
+          <div style="background:#fff; border:1px solid #e2e8f0; padding:8px; border-radius:4px;">
+            🏦 <strong>Statutory Funds</strong><br>UKVI 28-day rule, Sperrkonto €11,904, IRCC $20,635
+          </div>
+          <div style="background:#fff; border:1px solid #e2e8f0; padding:8px; border-radius:4px;">
+            📖 <strong>IELTS &amp; Cambridge</strong><br>Band 6.5 to 7.5 Roadmap, Task 2 Coherence, MOI Exemptions
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="ai-card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-        <h3 style="margin:0;font-size:18px;color:#0b2447;">Generated Media Asset</h3>
-        <a href="/admin/media" class="btn sm">Open Media Library ↗</a>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="margin:0; font-size:18px; color:#0b2447;">Autoblogger Live Execution Log</h3>
+        <a href="/admin/posts" class="btn sm">Manage All Posts ↗</a>
       </div>
-      <div class="result-box" id="imgResultBox">
-        <div id="imgLoading" style="display:none;text-align:center;padding:60px 0;">
+      <div class="result-box" id="autoblogResultBox">
+        <div id="autoblogLoading" style="display:none; text-align:center; padding:60px 0;">
           <div class="loader-spinner"></div>
-          <p style="color:#64748b;font-weight:500;">Synthesizing photorealistic imagery with qwen-image-plus (typically 8–15 seconds)...</p>
+          <p style="color:#0b2447; font-weight:600; margin-bottom:4px;" id="autoblogStepText">Synthesizing EEAT article with live Qwen search...</p>
+          <span style="font-size:12px; color:#64748b;">(Generating EEAT content + 16:9 AI cover + Supabase Storage upload, approx 15–20s)</span>
         </div>
-        <div id="imgPlaceholder" style="text-align:center;padding:60px 20px;color:#94a3b8;">
-          Enter a prompt and click <strong>Generate &amp; Save</strong> to render high-resolution visuals.
+        <div id="autoblogPlaceholder" style="text-align:center; padding:50px 20px; color:#94a3b8;">
+          Click <strong>Run Autoblogger Now</strong> to autonomously generate an EEAT-optimized article, create a photorealistic 16:9 image, upload it to Supabase Storage, and publish it live!
         </div>
-        <div id="imgContent" style="display:none;"></div>
+        <div id="autoblogContent" style="display:none;"></div>
       </div>
+
+      {{#if autoblogger.recentPosts.length}}
+      <div style="margin-top:20px;">
+        <h4 style="font-size:13px; font-weight:700; color:#0b2447; margin-bottom:10px;">Recently Published by Autoblogger</h4>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          {{#each autoblogger.recentPosts}}
+          <div style="display:flex; align-items:center; gap:12px; background:#f8fafc; border:1px solid #e2e8f0; padding:8px 10px; border-radius:4px;">
+            {{#if coverUrl}}
+            <img src="{{coverUrl}}" style="width:70px; height:42px; object-fit:cover; border-radius:3px; border:1px solid #cbd5e1;" alt="Cover">
+            {{else}}
+            <div style="width:70px; height:42px; background:#0b2447; border-radius:3px; display:flex; align-items:center; justify-content:center; color:#c9a227; font-size:10px; font-weight:bold;">GUIDE</div>
+            {{/if}}
+            <div style="flex:1; min-width:0;">
+              <a href="/resources/{{slug}}" target="_blank" rel="noopener" style="font-size:13px; font-weight:600; color:#0b2447; text-decoration:none; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{title}}</a>
+              <span style="font-size:11px; color:#64748b;">/resources/{{slug}} · {{ago publishAt}}</span>
+            </div>
+            <a href="/admin/posts/{{id}}" class="btn sm" style="padding:3px 8px; font-size:11px;">Edit</a>
+          </div>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
     </div>
   </div>
 </div>
@@ -455,50 +492,89 @@ async function runSeoCopilot() {
   }
 }
 
-async function runImageGenerator() {
-  const prompt = document.getElementById('imgPrompt').value;
-  const size = document.getElementById('imgSize').value;
-  const folder = document.getElementById('imgFolder').value;
-  if (!prompt) {
-    alert('Please enter an image description prompt.');
-    return;
-  }
+async function runAutobloggerNow() {
+  const customTopic = document.getElementById('autoblogCustomTopic').value.trim();
+  const loading = document.getElementById('autoblogLoading');
+  const placeholder = document.getElementById('autoblogPlaceholder');
+  const content = document.getElementById('autoblogContent');
+  const stepText = document.getElementById('autoblogStepText');
 
-  document.getElementById('imgPlaceholder').style.display = 'none';
-  document.getElementById('imgContent').style.display = 'none';
-  document.getElementById('imgLoading').style.display = 'block';
+  placeholder.style.display = 'none';
+  content.style.display = 'none';
+  loading.style.display = 'block';
+  stepText.textContent = 'Synthesizing EEAT article with live Qwen search...';
+
+  const stepTimer = setTimeout(() => {
+    if (loading.style.display === 'block') {
+      stepText.textContent = 'Synthesizing 16:9 photorealistic cover with qwen-image-plus & uploading to Supabase Storage...';
+    }
+  }, 6000);
 
   try {
-    const res = await fetch('/admin/api/ai/generate-image', {
+    const res = await fetch('/admin/api/autoblogger/run', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt, size, folder }),
+      body: JSON.stringify({ topic: customTopic || null }),
     });
+    clearTimeout(stepTimer);
     const data = await res.json();
-    document.getElementById('imgLoading').style.display = 'none';
+    loading.style.display = 'none';
 
     if (!data.ok) {
-      document.getElementById('imgContent').innerHTML = `<div class="notice bad">Error: ${data.error}</div>`;
-      document.getElementById('imgContent').style.display = 'block';
+      content.innerHTML = `<div class="notice bad">Autoblogger Error: ${data.error}</div>`;
+      content.style.display = 'block';
       return;
     }
 
     const html = `
-      <div style="text-align:center;">
-        <img src="${data.url}" alt="${prompt}" style="width:100%;max-height:360px;object-fit:cover;border-radius:6px;border:1px solid #cbd5e1;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
-        <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center;">
-          <span style="font-size:12px;color:#64748b;">Saved to: <code>${data.url}</code></span>
-          <a href="${data.url}" download class="btn sm">Download PNG</a>
+      <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
+          <div>
+            <span class="badge-pill badge-high" style="margin-bottom:6px;">🎉 Live &amp; Published to Resources</span>
+            <h4 style="margin:4px 0 6px 0; font-size:16px; color:#0b2447;">${data.title}</h4>
+            <div style="font-size:12px; color:#15803d;">
+              URL: <a href="${data.url}" target="_blank" rel="noopener" style="font-weight:600; text-decoration:underline; color:#15803d;">${data.url} ↗</a> · ${data.readMinutes} min read · Processed in ${(data.durationMs / 1000).toFixed(1)}s
+            </div>
+          </div>
+          <a href="/admin/posts/${data.postId}" class="btn sm gold" style="white-space:nowrap;">Edit Post</a>
+        </div>
+
+        ${data.coverImage ? `
+          <div style="margin-top:14px; position:relative; overflow:hidden; border-radius:6px; border:1px solid #cbd5e1;">
+            <img src="${data.coverImage}" style="width:100%; max-height:220px; object-fit:cover; display:block;" alt="AI Generated Cover">
+            <span style="position:absolute; bottom:8px; right:8px; background:rgba(11,36,71,0.85); color:#fff; font-size:11px; padding:3px 8px; border-radius:3px; backdrop-filter:blur(4px);">
+              Uploaded to Supabase Storage &amp; Thumbnail Set
+            </span>
+          </div>
+        ` : ''}
+
+        <div style="margin-top:12px; font-size:13px; color:#334155; line-height:1.5;">
+          <strong>AEO Answer Summary:</strong> ${data.postData?.answer_summary || 'Generated and indexed.'}
         </div>
       </div>
     `;
 
-    document.getElementById('imgContent').innerHTML = html;
-    document.getElementById('imgContent').style.display = 'block';
+    content.innerHTML = html;
+    content.style.display = 'block';
+
+    // Refresh next topic
+    try {
+      const sRes = await fetch('/admin/api/autoblogger/status');
+      const sData = await sRes.json();
+      if (sData.ok && sData.nextTopic) {
+        const nextElem = document.getElementById('autoblogNextTopic');
+        if (nextElem) nextElem.textContent = sData.nextTopic.topic;
+        const pillElem = document.getElementById('autoblogNextPillar');
+        if (pillElem) pillElem.textContent = sData.nextTopic.pillar;
+        const catElem = document.getElementById('autoblogNextCategory');
+        if (catElem) catElem.textContent = sData.nextTopic.category;
+      }
+    } catch (_) {}
   } catch (err) {
-    document.getElementById('imgLoading').style.display = 'none';
-    document.getElementById('imgContent').innerHTML = `<div class="notice bad">Generation failed: ${err.message}</div>`;
-    document.getElementById('imgContent').style.display = 'block';
+    clearTimeout(stepTimer);
+    loading.style.display = 'none';
+    content.innerHTML = `<div class="notice bad">Execution failed: ${err.message}</div>`;
+    content.style.display = 'block';
   }
 }
 

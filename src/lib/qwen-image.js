@@ -113,7 +113,52 @@ async function generateAndSaveImage(prompt, options = {}) {
   const slug = H.slugify(prompt.slice(0, 40)) || 'ai-image';
   const filename = `${Date.now()}-${slug}.png`;
 
-  // Write to upload directories
+  // 1. Upload to Supabase Storage (public bucket 'media')
+  let publicUrl = null;
+  let sbMediaId = null;
+  try {
+    const supabase = require('./supabase');
+    const sb = supabase.getClient();
+    if (sb) {
+      const storagePath = `${folder}/${filename}`;
+      const { data: uploadData, error: uploadErr } = await sb.storage
+        .from('media')
+        .upload(storagePath, buffer, {
+          contentType: 'image/png',
+          upsert: true,
+        });
+
+      if (uploadErr) {
+        console.warn('⚠️ Supabase Storage upload error:', uploadErr.message);
+      } else {
+        const { data: urlData } = sb.storage.from('media').getPublicUrl(storagePath);
+        publicUrl = urlData?.publicUrl || null;
+        console.log(`☁️ Uploaded to Supabase Storage: ${publicUrl}`);
+      }
+
+      // Register in Supabase cloud media table
+      const { data: sbMedia, error: sbInsertErr } = await sb.from('media').insert({
+        filename,
+        original_name: `${slug}.png`,
+        mime: 'image/png',
+        size: buffer.length,
+        alt: prompt.slice(0, 150),
+        caption: `AI generated image: ${prompt.slice(0, 200)}`,
+        folder,
+        visibility: 'public',
+      }).select().single();
+
+      if (sbInsertErr) {
+        console.warn('⚠️ Supabase media table insert warning:', sbInsertErr.message);
+      } else if (sbMedia?.id) {
+        sbMediaId = sbMedia.id;
+      }
+    }
+  } catch (sbErr) {
+    console.warn('⚠️ Supabase sync exception in qwen-image:', sbErr.message);
+  }
+
+  // 2. Write to local upload directories (fallback & local dev)
   for (const dir of UPLOAD_DIRS) {
     try {
       fs.writeFileSync(path.join(dir, filename), buffer);
@@ -122,7 +167,7 @@ async function generateAndSaveImage(prompt, options = {}) {
     }
   }
 
-  // Register in SQLite media table
+  // 3. Register in SQLite media table
   let mediaId = null;
   try {
     const validUserId = (user && user.id && db.prepare('SELECT id FROM users WHERE id = ?').get(user.id))
@@ -130,8 +175,8 @@ async function generateAndSaveImage(prompt, options = {}) {
       : (db.prepare("SELECT id FROM users WHERE role = 'admin' LIMIT 1").get()?.id || null);
 
     const stmt = db.prepare(`
-      INSERT INTO media (filename, original_name, mime, size, alt, caption, folder, visibility, uploaded_by)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO media (filename, original_name, mime, size, alt, caption, folder, visibility, uploaded_by, public_url)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     const info = stmt.run(
       filename,
@@ -142,11 +187,12 @@ async function generateAndSaveImage(prompt, options = {}) {
       `AI generated image via qwen-image-plus: ${prompt.slice(0, 200)}`,
       folder,
       'public',
-      validUserId
+      validUserId,
+      publicUrl
     );
     mediaId = info.lastInsertRowid;
     if (user && user.id) {
-      try { audit(user, 'media.ai_generate', 'media', mediaId, { filename, prompt: prompt.slice(0, 100) }); } catch (_) {}
+      try { audit(user, 'media.ai_generate', 'media', mediaId, { filename, prompt: prompt.slice(0, 100), publicUrl }); } catch (_) {}
     }
   } catch (err) {
     console.warn('Could not register image in media table:', err.message);
@@ -154,8 +200,11 @@ async function generateAndSaveImage(prompt, options = {}) {
 
   return {
     mediaId,
+    sbMediaId,
     filename,
-    url: `/uploads/${filename}`,
+    publicUrl,
+    localUrl: `/uploads/${filename}`,
+    url: publicUrl || `/uploads/${filename}`,
     prompt,
     size,
   };

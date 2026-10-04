@@ -255,7 +255,7 @@ async function getFaqs(category) {
 async function getPosts() {
   const sb = getClient();
   const { data, error } = await sb.from('posts')
-    .select('*, categories(name)')
+    .select('*, categories(name), media:cover_media_id(id, filename)')
     .eq('status', 'published')
     .order('publish_at', { ascending: false });
   if (error) {
@@ -268,7 +268,7 @@ async function getPosts() {
 async function getPostBySlug(slug) {
   const sb = getClient();
   const { data, error } = await sb.from('posts')
-    .select('*, categories(name)')
+    .select('*, categories(name), media:cover_media_id(id, filename)')
     .eq('slug', slug)
     .limit(1)
     .maybeSingle();
