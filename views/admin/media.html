@@ -8,21 +8,52 @@
 
 {{#if error}}<div class="notice bad">{{error}}</div>{{/if}}
 
+<div class="card" style="margin-bottom:16px; border: 1px solid #c9a227; background: #fffdf5;">
+  <header style="background: #fbf5e6; border-bottom: 1px solid #e9d8a6; display: flex; justify-content: space-between; align-items: center;">
+    <h2 style="font-size: 15px; color: #854d0e;">⚡ AI Image Generator (qwen-image-plus)</h2>
+    <span class="muted tiny">Synthesizes photorealistic 16:9 &amp; 1:1 visuals directly into the Media Library</span>
+  </header>
+  <div class="body">
+    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 12px; align-items: end;">
+      <label class="field" style="margin: 0;">
+        <span class="lab">Prompt</span>
+        <input type="text" id="mediaAiPrompt" placeholder="e.g. Modern students at British university campus in autumn, cinematic 8k photorealistic">
+      </label>
+      <label class="field" style="margin: 0;">
+        <span class="lab">Size</span>
+        <select id="mediaAiSize">
+          <option value="1664*928" selected>16:9 Landscape (1664x928)</option>
+          <option value="1328*1328">1:1 Square (1328x1328)</option>
+          <option value="928*1664">9:16 Portrait (928x1664)</option>
+        </select>
+      </label>
+      <label class="field" style="margin: 0;">
+        <span class="lab">Folder</span>
+        <input type="text" id="mediaAiFolder" value="guides">
+      </label>
+      <button type="button" class="btn primary" style="background:#c9a227; border-color:#b08d1f; height: 38px;" onclick="generateMediaAi()">
+        🎨 Generate
+      </button>
+    </div>
+    <div id="mediaAiStatus" style="display: none; margin-top: 10px; font-size: 13px; color: #854d0e; font-weight: 500;"></div>
+  </div>
+</div>
+
 <div class="card" style="margin-bottom:16px">
-  <header><h2>Upload</h2><div class="spacer"></div><span class="muted tiny">JPEG, PNG, WebP, GIF, SVG, AVIF, PDF · up to 8 MB each · 6 files at once</span></header>
+  <header><h2>Upload Files</h2><div class="spacer"></div><span class="muted tiny">Images (JPEG, PNG, WebP, SVG, AVIF), Videos (MP4, WebM, MOV), PDF · up to 50 MB each</span></header>
   <div class="body">
     <form method="post" action="/admin/media" enctype="multipart/form-data">
       <input type="hidden" name="_csrf" value="{{csrf}}">
       <div class="field-row three">
-        <label class="field"><span class="lab">Files</span><input type="file" name="files" id="mediaFiles" multiple accept="image/*,application/pdf" required></label>
-        <label class="field"><span class="lab">Folder</span><input type="text" name="folder" value="{{default folder 'general'}}" placeholder="general, hero, destinations"></label>
+        <label class="field"><span class="lab">Files (Images &amp; Videos)</span><input type="file" name="files" id="mediaFiles" multiple accept="image/*,video/*,application/pdf" required></label>
+        <label class="field"><span class="lab">Folder</span><input type="text" name="folder" value="{{default folder 'general'}}" placeholder="general, hero, destinations, videos"></label>
         <label class="field">
           <span class="lab">Visibility</span>
           <select name="visibility"><option value="public">Public</option><option value="internal">Internal / draft only</option></select>
         </label>
       </div>
       <div class="field-row">
-        <label class="field"><span class="lab">Alt text (applies to this batch)</span><input type="text" name="alt" placeholder="Describe the image for screen readers"></label>
+        <label class="field"><span class="lab">Alt text (applies to this batch)</span><input type="text" name="alt" placeholder="Describe the media content"></label>
         <label class="field"><span class="lab">Caption</span><input type="text" name="caption"></label>
       </div>
       <p class="tiny muted" id="mediaChosen">No files selected</p>
@@ -49,6 +80,7 @@
         <tr>
           <td style="width:90px">
             {{#if (isImage mime)}}<img src="/uploads/{{filename}}" alt="{{default alt ''}}" style="width:72px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--a-line)">
+            {{else if (isVideo mime)}}<video src="/uploads/{{filename}}" style="width:72px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--a-line)" muted></video>
             {{else}}<span class="badge">file</span>{{/if}}
           </td>
           <td class="tiny"><b>{{filename}}</b><br><span class="mono muted">{{default mime 'unknown'}} · {{bytes size}}</span></td>
@@ -85,3 +117,36 @@
     </table>
   </div>
 </div>
+
+<script>
+async function generateMediaAi() {
+  const prompt = document.getElementById('mediaAiPrompt').value;
+  const size = document.getElementById('mediaAiSize').value;
+  const folder = document.getElementById('mediaAiFolder').value;
+  const status = document.getElementById('mediaAiStatus');
+
+  if (!prompt) { alert('Please enter an image prompt.'); return; }
+
+  status.style.display = 'block';
+  status.textContent = '🎨 Synthesizing photorealistic image with qwen-image-plus (typically 10–15s)...';
+
+  try {
+    const res = await fetch('/admin/api/ai/generate-image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt, size, folder }),
+    });
+    const data = await res.json();
+
+    if (!data.ok) {
+      status.innerHTML = `<span style="color:#b91c1c;">Error: ${data.error}</span>`;
+      return;
+    }
+
+    status.innerHTML = `<span style="color:#166534;">✅ Image created and saved to library! Refreshing...</span>`;
+    setTimeout(() => { window.location.reload(); }, 1200);
+  } catch (err) {
+    status.innerHTML = `<span style="color:#b91c1c;">Failed: ${err.message}</span>`;
+  }
+}
+</script>

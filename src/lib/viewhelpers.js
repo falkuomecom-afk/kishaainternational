@@ -122,6 +122,7 @@ function register(registerHelpers) {
     }),
     yesno: H((v) => (v === true || v === 1 || v === 'true' || v === '1' ? 'On' : 'Off')),
     isImage: H((mime) => /^image\//.test(String(mime || ''))),
+    isVideo: H((mime) => /^video\//.test(String(mime || ''))),
     bytes: H((n) => {
       const v = Number(n || 0);
       if (v < 1024) return v + ' B';

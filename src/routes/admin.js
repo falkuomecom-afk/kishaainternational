@@ -15,6 +15,8 @@ const authLib = require('../lib/auth');
 const { ROLES, PERMISSIONS, can, leadScope, requirePermission } = require('../lib/permissions');
 const supabase = require('../lib/supabase');
 const gsc = require('../lib/google-search-console');
+const qwenSearch = require('../lib/qwen-search');
+const qwenImage = require('../lib/qwen-image');
 
 const router = express.Router();
 const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
@@ -43,10 +45,12 @@ const upload = multer({
       cb(null, `${Date.now()}-${safe}${path.extname(file.originalname).toLowerCase()}`);
     },
   }),
-  limits: { fileSize: 8 * 1024 * 1024, files: 6 },
+  limits: { fileSize: 50 * 1024 * 1024, files: 10 },
   fileFilter: (req, file, cb) => {
-    const ok = /^image\/(jpeg|png|webp|gif|svg\+xml|avif)$/.test(file.mimetype) || file.mimetype === 'application/pdf';
-    cb(ok ? null : new Error('Only images (JPEG, PNG, WebP, GIF, SVG, AVIF) and PDF files are accepted.'), ok);
+    const ok = /^image\/(jpeg|png|webp|gif|svg\+xml|avif)$/.test(file.mimetype)
+      || /^video\/(mp4|webm|quicktime|x-msvideo|ogg)$/.test(file.mimetype)
+      || file.mimetype === 'application/pdf';
+    cb(ok ? null : new Error('Only images, videos (MP4, WebM, MOV), and PDF files are accepted.'), ok);
   },
 });
 
@@ -1373,8 +1377,65 @@ router.get('/preview/pages/:id', requirePermission('content.view'), (req, res) =
     aggregates: integrations.reviewAggregates(), preview: true, path: '/preview', query: {},
     meta: { title: 'DRAFT PREVIEW — ' + page.title, description: page.seo_description || '', canonical: '#',
       robots: 'noindex, nofollow', noindex: true, base: '' },
-    breadcrumb: [{ label: 'Preview', url: '#' }], jsonld: '{}', user: req.user,
   }, (err, html) => { if (err) return res.status(500).send(err.message); res.send(html); });
 });
 
+/* ========================================================== AI AGENT HUB == */
+router.get('/ai-agent', requirePermission('content.view'), (req, res) => {
+  const recentLeads = db.prepare('SELECT id, name, country, interest, email, phone, notes, created_at FROM leads ORDER BY id DESC LIMIT 15').all();
+  const destinations = db.prepare('SELECT id, name, slug FROM countries WHERE published = 1 ORDER BY name').all();
+  view(res, 'ai-agent', {
+    title: 'AI Agent Studio & Profile Examiner',
+    pageTitle: 'AI Agent Studio · Case Examiner & Content Copilot',
+    recentLeads,
+    destinations,
+  });
+});
+
+router.post('/api/ai/examine-profile', express.json(), requirePermission('leads.view'), async (req, res) => {
+  try {
+    const analysis = await qwenSearch.examineCandidateProfile(req.body);
+    res.json({ ok: true, analysis });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+router.post('/api/ai/suggest-seo', express.json(), requirePermission('content.edit'), async (req, res) => {
+  try {
+    const suggestions = await qwenSearch.suggestSeoContent(req.body);
+    res.json({ ok: true, suggestions });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+router.post('/api/ai/generate-image', express.json(), requirePermission('media.manage'), async (req, res) => {
+  try {
+    const prompt = String(req.body.prompt || '').trim();
+    if (!prompt) return res.status(400).json({ ok: false, error: 'Prompt is required' });
+    const result = await qwenImage.generateAndSaveImage(prompt, {
+      size: req.body.size || '1664*928',
+      folder: req.body.folder || 'guides',
+      user: req.user,
+    });
+    res.json({ ok: true, ...result });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+router.post('/api/ai/live-costs', express.json(), requirePermission('content.view'), async (req, res) => {
+  try {
+    const country = String(req.body.country || '').trim();
+    const city = String(req.body.city || '').trim();
+    if (!country) return res.status(400).json({ ok: false, error: 'Country name is required' });
+    const data = await qwenSearch.getLiveDestinationCosts(country, city);
+    res.json({ ok: true, data });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
 module.exports = router;
+

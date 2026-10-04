@@ -34,6 +34,23 @@ export default function DestinationDetail() {
   const active = trpcData || fallbackData;
   useReveal(active);
 
+  const [liveCosts, setLiveCosts] = useState<any>(null);
+
+  useEffect(() => {
+    if (active?.name) {
+      fetch('/api/content/countries/live-costs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ country: active.name }),
+      })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => {
+          if (d?.ok && d?.data) setLiveCosts(d.data);
+        })
+        .catch(() => {});
+    }
+  }, [active?.name]);
+
   if (isLoading || isFetchingFallback) {
     return <div className="mx-auto max-w-7xl px-4 py-24 text-navy/50">Loading destination…</div>;
   }
@@ -145,6 +162,48 @@ export default function DestinationDetail() {
 
           {/* Sidebar: funds + flights + CTA */}
           <aside className="space-y-6">
+            {liveCosts && (
+              <div className="reveal border-2 border-gold/60 bg-[#fffdf5] p-6 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">⚡</span>
+                    <h3 className="text-[12px] font-bold uppercase tracking-[0.16em] text-navy">
+                      Live Web Intelligence
+                    </h3>
+                  </div>
+                  <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-800">
+                    Verified 2026
+                  </span>
+                </div>
+                <div className="mt-4 border-t border-gold/20 pt-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-navy/60">
+                    {liveCosts.proofOfFunds?.authority} Verified Funds:
+                  </p>
+                  <p className="mt-1 font-serif text-3xl font-bold text-navy">
+                    {liveCosts.proofOfFunds?.displayAmount || (liveCosts.proofOfFunds?.amount ? `${liveCosts.currency} ${Number(liveCosts.proofOfFunds.amount).toLocaleString()}` : "—")}
+                  </p>
+                  <p className="mt-2 text-[13px] leading-relaxed text-navy/80">
+                    {liveCosts.proofOfFunds?.summary}
+                  </p>
+                  {liveCosts.proofOfFunds?.sourceUrl && (
+                    <a
+                      href={liveCosts.proofOfFunds.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-2.5 inline-flex items-center gap-1 text-[12px] font-semibold text-gold-dark hover:underline"
+                    >
+                      Official {liveCosts.proofOfFunds?.authority} source <ExternalLink className="h-3 w-3" />
+                    </a>
+                  )}
+                </div>
+                {liveCosts.keyAdvice && (
+                  <p className="mt-3 border-t border-gold/20 pt-3 text-[12px] leading-relaxed text-navy/70">
+                    💡 <strong className="text-navy">Advisory Tip:</strong> {liveCosts.keyAdvice}
+                  </p>
+                )}
+              </div>
+            )}
+
             {funds && (
               <div className="reveal border border-gold/40 bg-paper p-7">
                 <div className="flex items-center gap-2">

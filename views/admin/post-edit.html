@@ -30,12 +30,47 @@
 
   <div class="split">
     <div class="stack">
+      <div class="card" style="border: 1px solid #c9a227; background: #fffdf5;">
+        <header style="background: #fbf5e6; border-bottom: 1px solid #e9d8a6; display: flex; justify-content: space-between; align-items: center;">
+          <h2 style="font-size: 15px; color: #854d0e; display: flex; align-items: center; gap: 8px;">
+            <span>⚡</span> AI Copilot: Title, Description &amp; Cover Image Assistant
+          </h2>
+          <button type="button" class="btn sm" onclick="togglePostAi()" id="toggleAiBtn">Open AI Assistant</button>
+        </header>
+        <div class="body" id="postAiPanel" style="display: none; padding: 16px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div>
+              <label class="field">
+                <span class="lab">Topic / Focus</span>
+                <input type="text" id="aiTopicPrompt" placeholder="e.g. Canada 2026 Student Visa Proof of Funds">
+              </label>
+              <button type="button" class="btn sm gold" style="margin-top: 8px;" onclick="runPostAiSuggest()">
+                ✨ Suggest Titles &amp; Meta Descriptions
+              </button>
+            </div>
+            <div>
+              <label class="field">
+                <span class="lab">AI Cover Image Prompt</span>
+                <input type="text" id="aiImgPrompt" placeholder="e.g. Modern university students in London with passports">
+              </label>
+              <button type="button" class="btn sm" style="margin-top: 8px;" onclick="runPostAiImage()">
+                🎨 Generate 16:9 Cover Image
+              </button>
+            </div>
+          </div>
+          <div id="postAiLoading" style="display: none; margin-top: 12px; font-size: 13px; color: #854d0e; font-weight: 500;">
+            ⏳ Processing with Qwen AI &amp; Web Search...
+          </div>
+          <div id="postAiSuggestions" style="display: none; margin-top: 14px; background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px;"></div>
+        </div>
+      </div>
+
       <div class="card">
         <header><h2>Guide</h2></header>
         <div class="body">
           <label class="field">
             <span class="lab">Title</span>
-            <input type="text" name="title" value="{{post.title}}" required data-slug-source maxlength="200">
+            <input type="text" name="title" id="postTitleInput" value="{{post.title}}" required data-slug-source maxlength="200">
           </label>
           <div class="field-row">
             <label class="field">
@@ -209,3 +244,151 @@
     </div>
   </div>
 </form>
+
+<script>
+function togglePostAi() {
+  const panel = document.getElementById('postAiPanel');
+  const btn = document.getElementById('toggleAiBtn');
+  if (panel.style.display === 'none') {
+    panel.style.display = 'block';
+    btn.textContent = 'Hide AI Assistant';
+    if (!document.getElementById('aiTopicPrompt').value) {
+      document.getElementById('aiTopicPrompt').value = document.getElementById('postTitleInput').value;
+    }
+  } else {
+    panel.style.display = 'none';
+    btn.textContent = 'Open AI Assistant';
+  }
+}
+
+async function runPostAiSuggest() {
+  const topic = document.getElementById('aiTopicPrompt').value || document.getElementById('postTitleInput').value;
+  if (!topic) { alert('Please enter a topic or guide title.'); return; }
+
+  const loader = document.getElementById('postAiLoading');
+  const resultBox = document.getElementById('postAiSuggestions');
+  loader.style.display = 'block';
+  resultBox.style.display = 'none';
+
+  try {
+    const res = await fetch('/admin/api/ai/suggest-seo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topic }),
+    });
+    const data = await res.json();
+    loader.style.display = 'none';
+
+    if (!data.ok) {
+      resultBox.innerHTML = `<span style="color:#b91c1c;">Error: ${data.error}</span>`;
+      resultBox.style.display = 'block';
+      return;
+    }
+
+    const s = data.suggestions;
+    let html = `
+      <div style="font-weight:700;color:#0b2447;margin-bottom:8px;font-size:13px;">Click to apply to this guide:</div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;">
+        ${(s.titles || []).map(t => `
+          <div style="display:flex;justify-content:space-between;align-items:center;background:#f8fafc;padding:6px 10px;border:1px solid #cbd5e1;border-radius:4px;">
+            <span style="font-size:13px;font-weight:600;color:#0b2447;">${t}</span>
+            <button type="button" class="btn sm" onclick="applyTitle('${t.replace(/'/g, "\\'")}', '${s.recommendedSlug || ''}')">Apply</button>
+          </div>
+        `).join('')}
+      </div>
+
+      <div style="font-weight:700;color:#0b2447;margin-bottom:6px;font-size:12px;">Suggested Meta Descriptions:</div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;">
+        ${(s.metaDescriptions || []).map(d => `
+          <div style="display:flex;justify-content:space-between;align-items:center;background:#f8fafc;padding:6px 10px;border:1px solid #cbd5e1;border-radius:4px;">
+            <span style="font-size:12px;color:#475569;">${d}</span>
+            <button type="button" class="btn sm" onclick="applyMeta('${d.replace(/'/g, "\\'")}')">Apply</button>
+          </div>
+        `).join('')}
+      </div>
+
+      <div style="background:#fefce8;padding:8px 10px;border:1px solid #fef08a;border-radius:4px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:12px;color:#854d0e;"><strong>Answer Summary:</strong> ${s.answerSummary.slice(0, 90)}...</span>
+        <button type="button" class="btn sm" onclick="applyAnswer('${s.answerSummary.replace(/'/g, "\\'")}', '${(s.keyTakeaways || []).join('\\n').replace(/'/g, "\\'")}')">Apply</button>
+      </div>
+    `;
+
+    resultBox.innerHTML = html;
+    resultBox.style.display = 'block';
+  } catch (err) {
+    loader.style.display = 'none';
+    resultBox.innerHTML = `<span style="color:#b91c1c;">Request error: ${err.message}</span>`;
+    resultBox.style.display = 'block';
+  }
+}
+
+function applyTitle(t, slug) {
+  document.getElementById('postTitleInput').value = t;
+  const slugInput = document.querySelector('input[name="slug"]');
+  if (slugInput && slug) slugInput.value = slug;
+  const seoTitle = document.querySelector('input[name="seo_title"]');
+  if (seoTitle) seoTitle.value = t;
+  alert('Applied title and slug!');
+}
+
+function applyMeta(m) {
+  const excerpt = document.querySelector('textarea[name="excerpt"]');
+  if (excerpt) excerpt.value = m;
+  const seoDesc = document.querySelector('textarea[name="seo_description"]');
+  if (seoDesc) seoDesc.value = m;
+  alert('Applied meta description & excerpt!');
+}
+
+function applyAnswer(ans, takeaways) {
+  const ansBox = document.querySelector('textarea[name="answer_summary"]');
+  if (ansBox) ansBox.value = ans;
+  const tkBox = document.querySelector('textarea[name="key_takeaways_text"]');
+  if (tkBox) tkBox.value = takeaways;
+  alert('Applied Answer-first summary & key takeaways!');
+}
+
+async function runPostAiImage() {
+  const prompt = document.getElementById('aiImgPrompt').value;
+  if (!prompt) { alert('Please enter an image prompt.'); return; }
+
+  const loader = document.getElementById('postAiLoading');
+  const resultBox = document.getElementById('postAiSuggestions');
+  loader.style.display = 'block';
+  loader.textContent = '🎨 Synthesizing 16:9 photorealistic image with qwen-image-plus (10–15s)...';
+  resultBox.style.display = 'none';
+
+  try {
+    const res = await fetch('/admin/api/ai/generate-image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt, size: '1664*928', folder: 'guides' }),
+    });
+    const data = await res.json();
+    loader.style.display = 'none';
+
+    if (!data.ok) {
+      resultBox.innerHTML = `<span style="color:#b91c1c;">Image generation error: ${data.error}</span>`;
+      resultBox.style.display = 'block';
+      return;
+    }
+
+    // Set media cover input if available
+    const coverInput = document.querySelector('input[name="cover_media_id"]');
+    if (coverInput && data.mediaId) coverInput.value = data.mediaId;
+
+    resultBox.innerHTML = `
+      <div style="text-align:center;">
+        <span style="font-size:12px;color:#166534;font-weight:700;">✅ Generated &amp; Saved to Media Library!</span>
+        <img src="${data.url}" style="width:100%;max-height:220px;object-fit:cover;border-radius:4px;margin-top:6px;">
+        <p style="font-size:12px;color:#64748b;margin:4px 0 0 0;">File: <code>${data.filename}</code></p>
+      </div>
+    `;
+    resultBox.style.display = 'block';
+  } catch (err) {
+    loader.style.display = 'none';
+    resultBox.innerHTML = `<span style="color:#b91c1c;">Request failed: ${err.message}</span>`;
+    resultBox.style.display = 'block';
+  }
+}
+</script>
+

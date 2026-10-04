@@ -1,0 +1,580 @@
+<div class="page-head">
+  <div>
+    <h1>AI Agent Studio &amp; Profile Examiner</h1>
+    <p>Real-time immigration intelligence, candidate case assessment, SEO content co-pilot &amp; photorealistic image synthesis.</p>
+  </div>
+  <div class="spacer"></div>
+  <div class="row">
+    <span class="badge" style="background:#0b2447;color:#c9a227;border:1px solid #c9a227;padding:5px 12px;font-size:12px;font-weight:600;border-radius:4px;">
+      ⚡ Qwen MaaS &amp; Web Search Engine Active
+    </span>
+  </div>
+</div>
+
+<style>
+.ai-tabs { display: flex; gap: 8px; border-bottom: 2px solid #e2e8f0; margin-bottom: 24px; }
+.ai-tab-btn { background: none; border: none; padding: 12px 20px; font-size: 14px; font-weight: 600; color: #64748b; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+.ai-tab-btn:hover { color: #0b2447; }
+.ai-tab-btn.active { color: #0b2447; border-bottom-color: #c9a227; }
+.ai-panel { display: none; }
+.ai-panel.active { display: block; }
+.ai-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 24px; }
+.ai-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+@media (max-width: 900px) { .ai-grid { grid-template-columns: 1fr; } }
+.result-box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 20px; min-height: 280px; position: relative; }
+.result-box pre { white-space: pre-wrap; word-break: break-word; font-family: inherit; font-size: 13px; line-height: 1.6; margin: 0; }
+.loader-spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(201,162,39,0.3); border-radius: 50%; border-top-color: #c9a227; animation: spin 1s ease-in-out infinite; vertical-align: middle; margin-right: 8px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.btn-gold-ai { background: #c9a227; color: #fff; font-weight: 600; padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer; transition: background 0.2s; display: inline-flex; items-center: center; }
+.btn-gold-ai:hover { background: #b08d1f; }
+.badge-pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+.badge-high { background: #dcfce7; color: #166534; }
+.badge-mod { background: #fef9c3; color: #854d0e; }
+</style>
+
+<div class="ai-tabs">
+  <button class="ai-tab-btn active" onclick="switchAiTab('profileTab', this)">👤 Candidate Profile Examiner</button>
+  <button class="ai-tab-btn" onclick="switchAiTab('seoTab', this)">✍️ SEO &amp; Content Copilot</button>
+  <button class="ai-tab-btn" onclick="switchAiTab('imageTab', this)">🎨 AI Image Generator</button>
+  <button class="ai-tab-btn" onclick="switchAiTab('costsTab', this)">🌐 Live Destination Cost Verifier</button>
+</div>
+
+<!-- ============================================== TAB 1: PROFILE EXAMINER -->
+<div id="profileTab" class="ai-panel active">
+  <div class="ai-grid">
+    <div class="ai-card">
+      <h3 style="margin-top:0;font-size:18px;color:#0b2447;">Examine Candidate Case &amp; Profile</h3>
+      <p class="muted" style="font-size:13px;margin-bottom:18px;">
+        Evaluates eligibility, study/career gaps, financial bank statement capacity, and generates an authoritative counseling strategy under Zeb Khan.
+      </p>
+
+      {{#if recentLeads.length}}
+      <label class="field" style="margin-bottom:14px;">
+        <span class="lab">Auto-fill from Recent Lead</span>
+        <select id="leadSelector" onchange="fillFromLead(this)">
+          <option value="">-- Choose a recent lead or enter manually --</option>
+          {{#each recentLeads}}
+          <option value="{{id}}" data-name="{{name}}" data-country="{{country}}" data-interest="{{interest}}" data-notes="{{notes}}">
+            #{{id}} {{name}} ({{country}}) — {{interest}}
+          </option>
+          {{/each}}
+        </select>
+      </label>
+      {{/if}}
+
+      <div class="field-row">
+        <label class="field">
+          <span class="lab">Candidate Full Name</span>
+          <input type="text" id="profName" placeholder="e.g. Muhammad Usman">
+        </label>
+        <label class="field">
+          <span class="lab">Country of Origin / Residence</span>
+          <input type="text" id="profOrigin" value="Pakistan" placeholder="Pakistan / UAE">
+        </label>
+      </div>
+
+      <div class="field-row">
+        <label class="field">
+          <span class="lab">Target Country</span>
+          <select id="profTarget">
+            <option value="UK">United Kingdom (UK 2027 Admissions)</option>
+            <option value="Canada">Canada (10-Yr LOI Visit / Study)</option>
+            <option value="Germany">Germany (Blocked Account €11,904)</option>
+            <option value="Italy">Italy (Funded Tuition / Scholarships)</option>
+            <option value="Finland">Finland (Family PR Pathway)</option>
+            <option value="UAE">UAE (Golden / Freelance Visa)</option>
+            <option value="Georgia">Georgia (MBBS / Tech No IELTS)</option>
+            <option value="Australia">Australia (Subclass 500)</option>
+          </select>
+        </label>
+        <label class="field">
+          <span class="lab">Desired Program / Pathway</span>
+          <input type="text" id="profProgram" placeholder="e.g. Master in Data Science / Visit Visa">
+        </label>
+      </div>
+
+      <div class="field-row">
+        <label class="field">
+          <span class="lab">Educational Background &amp; GPA</span>
+          <input type="text" id="profEdu" value="Bachelor of Computer Science (CGPA 3.1)">
+        </label>
+        <label class="field">
+          <span class="lab">Study / Career Gap</span>
+          <input type="text" id="profGap" value="2 years (supported with employment letters)">
+        </label>
+      </div>
+
+      <div class="field-row">
+        <label class="field">
+          <span class="lab">English Level / IELTS</span>
+          <input type="text" id="profIelts" value="IELTS 6.5 or MOI available">
+        </label>
+        <label class="field">
+          <span class="lab">Financial Capacity / Budget</span>
+          <input type="text" id="profBudget" value="Standard Family Sponsorship available">
+        </label>
+      </div>
+
+      <label class="field" style="margin-top:10px;">
+        <span class="lab">Case Notes &amp; Specific Constraints</span>
+        <textarea id="profNotes" rows="2" placeholder="e.g. Previous refusal in 2022, wants spouse accompanied..."></textarea>
+      </label>
+
+      <button type="button" class="btn-gold-ai" style="margin-top:16px;" onclick="runProfileExaminer()">
+        ⚡ Run AI Case Examination
+      </button>
+    </div>
+
+    <div class="ai-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <h3 style="margin:0;font-size:18px;color:#0b2447;">Counseling Assessment &amp; Strategy</h3>
+        <button class="btn sm" onclick="copyResult('profileResultText')">📋 Copy Draft</button>
+      </div>
+      <div class="result-box" id="profileResultBox">
+        <div id="profileLoading" style="display:none;text-align:center;padding:40px 0;">
+          <div class="loader-spinner"></div>
+          <p style="color:#64748b;font-weight:500;">Examiner Agent analyzing profile against 2026 immigration regulations...</p>
+        </div>
+        <div id="profilePlaceholder" style="text-align:center;padding:60px 20px;color:#94a3b8;">
+          Fill in candidate details or select an existing lead, then click <strong>Run AI Case Examination</strong> to see an instant roadmap, risk analysis, and messaging template.
+        </div>
+        <div id="profileContent" style="display:none;"></div>
+        <textarea id="profileResultText" style="display:none;"></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================== TAB 2: SEO COPILOT -->
+<div id="seoTab" class="ai-panel">
+  <div class="ai-grid">
+    <div class="ai-card">
+      <h3 style="margin-top:0;font-size:18px;color:#0b2447;">AI SEO &amp; Content Strategy Copilot</h3>
+      <p class="muted" style="font-size:13px;margin-bottom:18px;">
+        Searches current searcher intent and competitor snippets to suggest high-ranking Titles, Meta Descriptions, and Answer-First blocks.
+      </p>
+
+      <label class="field">
+        <span class="lab">Topic / Core Focus</span>
+        <input type="text" id="seoTopic" placeholder="e.g. Canada 10-Year Multiple Entry Visit Visa Requirements 2026">
+      </label>
+
+      <label class="field">
+        <span class="lab">Target Search Query (Keyword)</span>
+        <input type="text" id="seoQuery" placeholder="e.g. canada 10 year visit visa bank statement cost timeline">
+      </label>
+
+      <button type="button" class="btn-gold-ai" style="margin-top:16px;" onclick="runSeoCopilot()">
+        ✨ Suggest Titles, Descriptions &amp; Outline
+      </button>
+    </div>
+
+    <div class="ai-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <h3 style="margin:0;font-size:18px;color:#0b2447;">Generated SEO Assets</h3>
+        <a href="/admin/posts/new" class="btn sm" target="_blank">+ Create Post with These</a>
+      </div>
+      <div class="result-box" id="seoResultBox">
+        <div id="seoLoading" style="display:none;text-align:center;padding:40px 0;">
+          <div class="loader-spinner"></div>
+          <p style="color:#64748b;font-weight:500;">Copilot querying live search trends &amp; structuring snippet data...</p>
+        </div>
+        <div id="seoPlaceholder" style="text-align:center;padding:60px 20px;color:#94a3b8;">
+          Enter a topic and target keyword to generate high-CTR titles, snippets, and scannable answer summaries.
+        </div>
+        <div id="seoContent" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================== TAB 3: IMAGE GENERATOR -->
+<div id="imageTab" class="ai-panel">
+  <div class="ai-grid">
+    <div class="ai-card">
+      <h3 style="margin-top:0;font-size:18px;color:#0b2447;">AI Photorealistic Image Generator</h3>
+      <p class="muted" style="font-size:13px;margin-bottom:18px;">
+        Powered by Alibaba Cloud DashScope <strong>qwen-image-plus</strong>. Generates 16:9 ultra-detailed editorial artwork, downloads it locally to <code>/public/uploads/</code>, and registers it directly into your Media Library.
+      </p>
+
+      <label class="field">
+        <span class="lab">Image Prompt</span>
+        <textarea id="imgPrompt" rows="3" placeholder="e.g. Modern executive airport lounge in Dubai with luxury travelers holding passports, floor-to-ceiling windows showing runway and skyline, cinematic lighting, 8K photorealistic"></textarea>
+      </label>
+
+      <div class="field-row">
+        <label class="field">
+          <span class="lab">Aspect Ratio / Size</span>
+          <select id="imgSize">
+            <option value="1664*928" selected>16:9 Widescreen (1664x928 — Recommended for Blog Covers)</option>
+            <option value="1328*1328">1:1 Square (1328x1328 — Social / Instagram)</option>
+            <option value="928*1664">9:16 Portrait (928x1664 — Reels / Stories)</option>
+          </select>
+        </label>
+        <label class="field">
+          <span class="lab">Folder Tag</span>
+          <select id="imgFolder">
+            <option value="guides">Guides &amp; Posts</option>
+            <option value="destinations">Destinations</option>
+            <option value="marketing">Marketing</option>
+            <option value="general">General</option>
+          </select>
+        </label>
+      </div>
+
+      <button type="button" class="btn-gold-ai" style="margin-top:16px;" onclick="runImageGenerator()">
+        🎨 Generate &amp; Save to Media Library
+      </button>
+    </div>
+
+    <div class="ai-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <h3 style="margin:0;font-size:18px;color:#0b2447;">Generated Media Asset</h3>
+        <a href="/admin/media" class="btn sm">Open Media Library ↗</a>
+      </div>
+      <div class="result-box" id="imgResultBox">
+        <div id="imgLoading" style="display:none;text-align:center;padding:60px 0;">
+          <div class="loader-spinner"></div>
+          <p style="color:#64748b;font-weight:500;">Synthesizing photorealistic imagery with qwen-image-plus (typically 8–15 seconds)...</p>
+        </div>
+        <div id="imgPlaceholder" style="text-align:center;padding:60px 20px;color:#94a3b8;">
+          Enter a prompt and click <strong>Generate &amp; Save</strong> to render high-resolution visuals.
+        </div>
+        <div id="imgContent" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================== TAB 4: REAL-TIME COSTS -->
+<div id="costsTab" class="ai-panel">
+  <div class="ai-grid">
+    <div class="ai-card">
+      <h3 style="margin-top:0;font-size:18px;color:#0b2447;">Real-Time Destination Costs &amp; Proof of Funds</h3>
+      <p class="muted" style="font-size:13px;margin-bottom:18px;">
+        Queries live embassy guidelines, official bank statement figures, and living cost statistical matrices via live web search.
+      </p>
+
+      <div class="field-row">
+        <label class="field">
+          <span class="lab">Destination Country</span>
+          <select id="costCountry">
+            <option value="Canada">Canada (IRCC)</option>
+            <option value="United Kingdom">United Kingdom (UKVI)</option>
+            <option value="Germany">Germany (BAföG Sperrkonto)</option>
+            <option value="Italy">Italy (Funded Tuition)</option>
+            <option value="Finland">Finland (Migri)</option>
+            <option value="United Arab Emirates">United Arab Emirates (GDRFA)</option>
+            <option value="Georgia">Georgia (Medical &amp; Tech)</option>
+            <option value="Australia">Australia (Home Affairs)</option>
+          </select>
+        </label>
+        <label class="field">
+          <span class="lab">City (Optional)</span>
+          <input type="text" id="costCity" placeholder="e.g. London, Toronto, Berlin, Milan">
+        </label>
+      </div>
+
+      <button type="button" class="btn-gold-ai" style="margin-top:16px;" onclick="runCostLookup()">
+        🌐 Query Real-Time Government Data
+      </button>
+    </div>
+
+    <div class="ai-card">
+      <h3 style="margin-top:0;font-size:18px;color:#0b2447;margin-bottom:12px;">Live Verified Intelligence</h3>
+      <div class="result-box" id="costResultBox">
+        <div id="costLoading" style="display:none;text-align:center;padding:40px 0;">
+          <div class="loader-spinner"></div>
+          <p style="color:#64748b;font-weight:500;">Searching official government and regulatory sources...</p>
+        </div>
+        <div id="costPlaceholder" style="text-align:center;padding:60px 20px;color:#94a3b8;">
+          Select a destination to pull real-time proof-of-funds rules, living budgets, and official government citations.
+        </div>
+        <div id="costContent" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchAiTab(tabId, btn) {
+  document.querySelectorAll('.ai-tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.ai-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+
+function fillFromLead(sel) {
+  const opt = sel.options[sel.selectedIndex];
+  if (!opt.value) return;
+  document.getElementById('profName').value = opt.getAttribute('data-name') || '';
+  document.getElementById('profNotes').value = opt.getAttribute('data-notes') || '';
+}
+
+async function runProfileExaminer() {
+  const name = document.getElementById('profName').value || 'Candidate';
+  const origin = document.getElementById('profOrigin').value;
+  const target = document.getElementById('profTarget').value;
+  const program = document.getElementById('profProgram').value;
+  const edu = document.getElementById('profEdu').value;
+  const gap = document.getElementById('profGap').value;
+  const ielts = document.getElementById('profIelts').value;
+  const budget = document.getElementById('profBudget').value;
+  const notes = document.getElementById('profNotes').value;
+
+  document.getElementById('profilePlaceholder').style.display = 'none';
+  document.getElementById('profileContent').style.display = 'none';
+  document.getElementById('profileLoading').style.display = 'block';
+
+  try {
+    const res = await fetch('/admin/api/ai/examine-profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, countryOfOrigin: origin, targetCountry: target, desiredProgram: program, education: edu, gapYears: gap, ieltsBand: ielts, budget, notes }),
+    });
+    const data = await res.json();
+    document.getElementById('profileLoading').style.display = 'none';
+
+    if (!data.ok) {
+      document.getElementById('profileContent').innerHTML = `<div class="notice bad">Error: ${data.error}</div>`;
+      document.getElementById('profileContent').style.display = 'block';
+      return;
+    }
+
+    const a = data.analysis;
+    let html = `
+      <div style="border-bottom:1px solid #e2e8f0;padding-bottom:12px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <h4 style="margin:0;font-size:16px;color:#0b2447;">${a.candidateName} — Case Analysis</h4>
+          <span style="font-size:12px;color:#64748b;">Target: ${target} · Assessed by Kishaa Intelligence Desk</span>
+        </div>
+        <span class="badge-pill ${a.eligibilityScore >= 75 ? 'badge-high' : 'badge-mod'}">${a.eligibilityTier} (${a.eligibilityScore}%)</span>
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <strong style="font-size:13px;color:#0b2447;">Recommended Pathways:</strong>
+        <ul style="margin:6px 0 0 16px;padding:0;font-size:13px;color:#334155;">
+          ${(a.recommendedPathways || []).map(p => `<li><strong>${p.pathway}</strong> (${p.destination || target}): ${p.whyFit}</li>`).join('')}
+        </ul>
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <strong style="font-size:13px;color:#b91c1c;">Risk Factors &amp; Watchouts:</strong>
+        <ul style="margin:6px 0 0 16px;padding:0;font-size:13px;color:#991b1b;">
+          ${(a.riskFactors || []).map(r => `<li>${r}</li>`).join('')}
+        </ul>
+      </div>
+
+      <div style="margin-bottom:14px;background:#f1f5f9;padding:12px;border-radius:6px;">
+        <strong style="font-size:13px;color:#0b2447;">Counselor Action Checklist:</strong>
+        <ol style="margin:6px 0 0 16px;padding:0;font-size:12px;color:#475569;">
+          ${(a.checklistForApplicant || []).map(c => `<li>${c}</li>`).join('')}
+        </ol>
+      </div>
+
+      <div style="background:#fff;border:1px solid #cbd5e1;padding:12px;border-radius:6px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+          <strong style="font-size:12px;color:#0b2447;">Client Outreach Draft (WhatsApp / Email):</strong>
+        </div>
+        <p style="font-size:13px;line-height:1.5;color:#334155;margin:0;white-space:pre-wrap;">${a.clientMessageDraft || a.consultantRecommendation}</p>
+      </div>
+    `;
+
+    document.getElementById('profileResultText').value = a.clientMessageDraft || a.consultantRecommendation;
+    document.getElementById('profileContent').innerHTML = html;
+    document.getElementById('profileContent').style.display = 'block';
+  } catch (err) {
+    document.getElementById('profileLoading').style.display = 'none';
+    document.getElementById('profileContent').innerHTML = `<div class="notice bad">Request failed: ${err.message}</div>`;
+    document.getElementById('profileContent').style.display = 'block';
+  }
+}
+
+async function runSeoCopilot() {
+  const topic = document.getElementById('seoTopic').value;
+  const targetQuery = document.getElementById('seoQuery').value;
+  if (!topic && !targetQuery) {
+    alert('Please provide a topic or target keyword.');
+    return;
+  }
+
+  document.getElementById('seoPlaceholder').style.display = 'none';
+  document.getElementById('seoContent').style.display = 'none';
+  document.getElementById('seoLoading').style.display = 'block';
+
+  try {
+    const res = await fetch('/admin/api/ai/suggest-seo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topic, targetQuery }),
+    });
+    const data = await res.json();
+    document.getElementById('seoLoading').style.display = 'none';
+
+    if (!data.ok) {
+      document.getElementById('seoContent').innerHTML = `<div class="notice bad">Error: ${data.error}</div>`;
+      document.getElementById('seoContent').style.display = 'block';
+      return;
+    }
+
+    const s = data.suggestions;
+    let html = `
+      <div style="margin-bottom:16px;">
+        <strong style="font-size:13px;color:#0b2447;">Suggested High-CTR Titles:</strong>
+        <div style="margin-top:6px;display:flex;flex-direction:column;gap:6px;">
+          ${(s.titles || []).map(t => `<div style="background:#fff;border:1px solid #cbd5e1;padding:8px 12px;border-radius:4px;font-size:13px;font-weight:600;color:#0b2447;cursor:pointer;" onclick="navigator.clipboard.writeText('${t.replace(/'/g, "\\'")}');alert('Copied title!');">${t}</div>`).join('')}
+        </div>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <strong style="font-size:13px;color:#0b2447;">Search Meta Descriptions (Click to Copy):</strong>
+        <div style="margin-top:6px;display:flex;flex-direction:column;gap:6px;">
+          ${(s.metaDescriptions || []).map(d => `<div style="background:#fff;border:1px solid #cbd5e1;padding:8px 12px;border-radius:4px;font-size:12px;color:#475569;cursor:pointer;" onclick="navigator.clipboard.writeText('${d.replace(/'/g, "\\'")}');alert('Copied description!');">${d}</div>`).join('')}
+        </div>
+      </div>
+
+      <div style="background:#f1f5f9;border:1px solid #cbd5e1;padding:12px;border-radius:6px;margin-bottom:14px;">
+        <strong style="font-size:12px;color:#0b2447;">Answer-First Summary (AEO / Voice Search):</strong>
+        <p style="font-size:13px;line-height:1.5;color:#334155;margin:4px 0 0 0;">${s.answerSummary}</p>
+      </div>
+
+      <div>
+        <strong style="font-size:12px;color:#0b2447;">Key Takeaways:</strong>
+        <ul style="margin:4px 0 0 16px;padding:0;font-size:12px;color:#475569;">
+          ${(s.keyTakeaways || []).map(k => `<li>${k}</li>`).join('')}
+        </ul>
+      </div>
+    `;
+
+    document.getElementById('seoContent').innerHTML = html;
+    document.getElementById('seoContent').style.display = 'block';
+  } catch (err) {
+    document.getElementById('seoLoading').style.display = 'none';
+    document.getElementById('seoContent').innerHTML = `<div class="notice bad">Request failed: ${err.message}</div>`;
+    document.getElementById('seoContent').style.display = 'block';
+  }
+}
+
+async function runImageGenerator() {
+  const prompt = document.getElementById('imgPrompt').value;
+  const size = document.getElementById('imgSize').value;
+  const folder = document.getElementById('imgFolder').value;
+  if (!prompt) {
+    alert('Please enter an image description prompt.');
+    return;
+  }
+
+  document.getElementById('imgPlaceholder').style.display = 'none';
+  document.getElementById('imgContent').style.display = 'none';
+  document.getElementById('imgLoading').style.display = 'block';
+
+  try {
+    const res = await fetch('/admin/api/ai/generate-image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt, size, folder }),
+    });
+    const data = await res.json();
+    document.getElementById('imgLoading').style.display = 'none';
+
+    if (!data.ok) {
+      document.getElementById('imgContent').innerHTML = `<div class="notice bad">Error: ${data.error}</div>`;
+      document.getElementById('imgContent').style.display = 'block';
+      return;
+    }
+
+    const html = `
+      <div style="text-align:center;">
+        <img src="${data.url}" alt="${prompt}" style="width:100%;max-height:360px;object-fit:cover;border-radius:6px;border:1px solid #cbd5e1;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+        <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:12px;color:#64748b;">Saved to: <code>${data.url}</code></span>
+          <a href="${data.url}" download class="btn sm">Download PNG</a>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('imgContent').innerHTML = html;
+    document.getElementById('imgContent').style.display = 'block';
+  } catch (err) {
+    document.getElementById('imgLoading').style.display = 'none';
+    document.getElementById('imgContent').innerHTML = `<div class="notice bad">Generation failed: ${err.message}</div>`;
+    document.getElementById('imgContent').style.display = 'block';
+  }
+}
+
+async function runCostLookup() {
+  const country = document.getElementById('costCountry').value;
+  const city = document.getElementById('costCity').value;
+
+  document.getElementById('costPlaceholder').style.display = 'none';
+  document.getElementById('costContent').style.display = 'none';
+  document.getElementById('costLoading').style.display = 'block';
+
+  try {
+    const res = await fetch('/admin/api/ai/live-costs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ country, city }),
+    });
+    const data = await res.json();
+    document.getElementById('costLoading').style.display = 'none';
+
+    if (!data.ok) {
+      document.getElementById('costContent').innerHTML = `<div class="notice bad">Error: ${data.error}</div>`;
+      document.getElementById('costContent').style.display = 'block';
+      return;
+    }
+
+    const c = data.data;
+    const html = `
+      <div style="display:flex;justify-content:space-between;border-bottom:1px solid #e2e8f0;padding-bottom:10px;margin-bottom:12px;">
+        <strong style="font-size:16px;color:#0b2447;">${c.country} ${c.city ? `(${c.city})` : ''}</strong>
+        <span class="badge-pill badge-high">Live Verified</span>
+      </div>
+
+      <div style="margin-bottom:14px;background:#fef9c3;border:1px solid #fde047;padding:12px;border-radius:6px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#854d0e;">Official Statutory Funds Rule:</div>
+        <div style="font-size:24px;font-weight:700;color:#0b2447;margin:4px 0;">${c.proofOfFunds.displayAmount || c.proofOfFunds.amount}</div>
+        <div style="font-size:12px;color:#713f12;">${c.proofOfFunds.summary}</div>
+        ${c.proofOfFunds.sourceUrl ? `<a href="${c.proofOfFunds.sourceUrl}" target="_blank" rel="noopener" style="font-size:12px;font-weight:600;color:#854d0e;text-decoration:underline;margin-top:6px;display:inline-block;">Source: ${c.proofOfFunds.authority} ↗</a>` : ''}
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <strong style="font-size:13px;color:#0b2447;">Monthly Living Costs Breakdown:</strong>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:6px;text-align:center;">
+          <div style="background:#f1f5f9;padding:8px;border-radius:4px;">
+            <div style="font-size:11px;color:#64748b;">BUDGET</div>
+            <div style="font-size:16px;font-weight:700;color:#0b2447;">${c.currency} ${c.livingCosts.budget}</div>
+          </div>
+          <div style="background:#f1f5f9;padding:8px;border-radius:4px;">
+            <div style="font-size:11px;color:#64748b;">STANDARD</div>
+            <div style="font-size:16px;font-weight:700;color:#0b2447;">${c.currency} ${c.livingCosts.standard}</div>
+          </div>
+          <div style="background:#f1f5f9;padding:8px;border-radius:4px;">
+            <div style="font-size:11px;color:#64748b;">COMFORTABLE</div>
+            <div style="font-size:16px;font-weight:700;color:#0b2447;">${c.currency} ${c.livingCosts.comfortable}</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="font-size:12px;color:#64748b;margin-top:12px;">
+        <em>Verified at: ${new Date(c.verifiedAt).toLocaleString()}</em>
+      </div>
+    `;
+
+    document.getElementById('costContent').innerHTML = html;
+    document.getElementById('costContent').style.display = 'block';
+  } catch (err) {
+    document.getElementById('costLoading').style.display = 'none';
+    document.getElementById('costContent').innerHTML = `<div class="notice bad">Request failed: ${err.message}</div>`;
+    document.getElementById('costContent').style.display = 'block';
+  }
+}
+
+function copyResult(textareaId) {
+  const text = document.getElementById(textareaId).value;
+  if (!text) { alert('No result to copy yet.'); return; }
+  navigator.clipboard.writeText(text);
+  alert('Copied counseling draft to clipboard!');
+}
+</script>

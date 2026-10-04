@@ -50,6 +50,23 @@ export function EnquiryForm({
   const [clientError, setClientError] = useState<string | null>(null);
 
   const submit = trpc.leads.submit.useMutation({
+    onSuccess: (data) => {
+      if (form.email && form.email.trim() && typeof window !== "undefined") {
+        try {
+          if (typeof (window as any).tp === "function") {
+            (window as any).tp("createInvitation", {
+              recipientEmail: form.email.trim(),
+              recipientName: form.name.trim(),
+              referenceId: data?.ref || `Enquiry_${Date.now()}`,
+              source: "InvitationScript",
+              tags: [form.interest, country || "General"].filter(Boolean),
+            });
+          }
+        } catch (err) {
+          console.warn("Trustpilot invitation trigger error:", err);
+        }
+      }
+    },
     onError: (e) => {
       setClientError(e.message);
       setTimeout(() => errorRef.current?.focus(), 50);

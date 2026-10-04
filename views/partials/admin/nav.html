@@ -19,7 +19,8 @@
 {{#if can 'menus.manage'}}<a class="item {{#if eq path '/admin/menus'}}on{{/if}}" href="/admin/menus"><span class="ico">≡</span> Menus</a>{{/if}}
 
 {{#if can 'seo.manage'}}
-<div class="group">Growth</div>
+<div class="group">Growth &amp; AI</div>
+<a class="item {{#if eq path '/admin/ai-agent'}}on{{/if}}" href="/admin/ai-agent"><span class="ico">⚡</span> AI Agent Studio</a>
 <a class="item {{#if eq path '/admin/seo'}}on{{/if}}" href="/admin/seo"><span class="ico">⌕</span> SEO · AEO · GEO</a>
 {{/if}}
 {{#if can 'integrations.manage'}}<a class="item {{#if eq path '/admin/integrations'}}on{{/if}}" href="/admin/integrations"><span class="ico">⇄</span> Integrations</a>{{/if}}

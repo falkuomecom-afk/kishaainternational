@@ -11,6 +11,7 @@ const planner = require('../lib/planner');
 const integrations = require('../lib/integrations');
 const { queueLeadNotifications } = require('../lib/mailer');
 const { rateLimit: rl } = require('../lib/auth');
+const qwenSearch = require('../lib/qwen-search');
 
 const router = express.Router();
 const clientDistIndex = path.join(__dirname, '..', '..', 'client', 'dist', 'index.html');
@@ -673,6 +674,17 @@ router.get('/api/content/countries/:slug', async (req, res) => {
     const country = await getCountryBySlug(req.params.slug);
     if (!country) return res.status(404).json({ ok: false, error: 'not_found' });
     res.json({ ok: true, country });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+router.post('/api/content/countries/live-costs', express.json(), async (req, res) => {
+  try {
+    const country = String(req.body.country || '').trim();
+    const city = String(req.body.city || '').trim();
+    if (!country) return res.status(400).json({ ok: false, error: 'country_required' });
+    const data = await qwenSearch.getLiveDestinationCosts(country, city);
+    res.json({ ok: true, data });
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message });
   }

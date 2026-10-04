@@ -11,6 +11,7 @@ const H = require('./helpers');
 const mailer = require('./mailer');
 const integrations = require('./integrations');
 const supabase = require('./supabase');
+const qwenSearch = require('./qwen-search');
 
 let superjson = null;
 const superjsonReady = import('superjson').then((m) => {
@@ -305,6 +306,16 @@ const appRouter = router({
         .input(z.object({ slug: z.string() }))
         .query(async ({ input }) => {
           return await getCountryBySlug(input.slug);
+        }),
+      liveCosts: publicProcedure
+        .input(z.object({ country: z.string(), city: z.string().optional() }))
+        .query(async ({ input }) => {
+          try {
+            return await qwenSearch.getLiveDestinationCosts(input.country, input.city || '');
+          } catch (e) {
+            console.warn('[trpc:liveCosts] Error querying live costs:', e.message);
+            return null;
+          }
         }),
     }),
 
