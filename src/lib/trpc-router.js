@@ -561,7 +561,21 @@ const appRouter = router({
           try {
             let rows;
             if (input?.category) {
-              rows = db.prepare(`SELECT * FROM faqs WHERE published = 1 AND category = ? ORDER BY sort_order, id`).all(input.category);
+              const cat = String(input.category).toLowerCase().trim();
+              const catMap = {
+                admissions: 'admissions',
+                admission: 'admissions',
+                career: 'admissions',
+                visa: 'visa',
+                visas: 'visa',
+                immigration: 'visa',
+                training: 'training',
+                cambridge: 'training',
+                ielts: 'training',
+                general: 'general',
+              };
+              const normalized = catMap[cat] || cat;
+              rows = db.prepare(`SELECT * FROM faqs WHERE published = 1 AND (LOWER(category) = LOWER(?) OR LOWER(category) = LOWER(?)) ORDER BY sort_order, id`).all(normalized, cat);
             } else {
               rows = db.prepare(`SELECT * FROM faqs WHERE published = 1 ORDER BY sort_order, id`).all();
             }

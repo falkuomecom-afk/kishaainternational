@@ -15,7 +15,7 @@ export function useReveal(dep: unknown = null) {
     const vh = window.innerHeight || 800;
     els.forEach((el) => {
       const rect = el.getBoundingClientRect();
-      if (rect.top <= vh + 100) {
+      if (rect.top <= vh + 400) {
         el.classList.add("is-visible");
       }
     });
@@ -29,7 +29,7 @@ export function useReveal(dep: unknown = null) {
           }
         });
       },
-      { threshold: 0.01, rootMargin: "100px 0px 100px 0px" },
+      { threshold: 0.01, rootMargin: "200px 0px 200px 0px" },
     );
 
     els.forEach((el) => {
@@ -43,7 +43,7 @@ export function useReveal(dep: unknown = null) {
       document.querySelectorAll(".reveal:not(.is-visible)").forEach((el) => {
         el.classList.add("is-visible");
       });
-    }, 600);
+    }, 120);
 
     return () => {
       clearTimeout(timer);

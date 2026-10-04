@@ -10,7 +10,7 @@ export default function Immigration() {
       seoTitle="Immigration Consultancy — Canada 10-Yr LOI Visa, UAE Golden Visa, Turkey, Schengen"
       seoDescription="Immigration consultancy in Dubai & Pakistan: Canada 10-year multiple entry visit visa with business LOI (AED 7,500 in milestones), UAE Golden/Freelance visas (PRO & GDRFA approved), Turkey visa on Emirates ID, Serbia, Romania, Schengen."
       path="/immigration-consultancy"
-      faqCategory="Immigration"
+      faqCategory="visa"
       formTitle="Start my visa assessment"
       steps={[
         { title: "Eligibility check", text: "We verify your profile against current official criteria before any payment." },

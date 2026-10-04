@@ -242,7 +242,21 @@ async function getFaqs(category) {
   const sb = getClient();
   let query = sb.from('faqs').select('*').eq('published', 1).order('sort_order', { ascending: true }).order('id', { ascending: true });
   if (category) {
-    query = query.eq('category', category);
+    const cat = String(category).toLowerCase().trim();
+    const catMap = {
+      admissions: 'admissions',
+      admission: 'admissions',
+      career: 'admissions',
+      visa: 'visa',
+      visas: 'visa',
+      immigration: 'visa',
+      training: 'training',
+      cambridge: 'training',
+      ielts: 'training',
+      general: 'general',
+    };
+    const normalized = catMap[cat] || cat;
+    query = query.ilike('category', normalized);
   }
   const { data, error } = await query;
   if (error) {

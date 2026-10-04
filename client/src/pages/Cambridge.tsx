@@ -10,7 +10,7 @@ export default function Cambridge() {
       seoTitle="Cambridge Courses & IELTS Preparation with British Council Certified Trainer"
       seoDescription="IELTS Academic & General Training, Spoken English, Cambridge English courses and corporate training with Zeb Khan (MA English, MEd, PGD TEFL, British Council Certified Trainer). Dubai, Pakistan & online."
       path="/cambridge-courses"
-      faqCategory="Training"
+      faqCategory="training"
       formTitle="Book my training assessment"
       steps={[
         { title: "Diagnostic test", text: "A full assessment establishes your current level and target band." },

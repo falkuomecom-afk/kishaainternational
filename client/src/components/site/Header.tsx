@@ -195,6 +195,10 @@ export function Header() {
                     key={item.to}
                     to={item.to}
                     end={item.to === "/"}
+                    onClick={() => {
+                      setOpen(false);
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }}
                     className={({ isActive }) =>
                       `flex items-center justify-between rounded-lg px-3 py-2.5 text-base font-medium transition-colors ${
                         isActive
@@ -215,6 +219,7 @@ export function Header() {
               <div className="space-y-2 pt-4 text-[13px] text-white">
                 <a
                   href="tel:+971588828099"
+                  onClick={() => setOpen(false)}
                   className="flex items-center gap-2.5 rounded-lg bg-white/5 px-3 py-2 text-white hover:bg-white/10 transition-colors"
                 >
                   <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#E5A922] text-[#06162D]">
@@ -226,6 +231,7 @@ export function Header() {
                   href="https://wa.me/923125526099"
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => setOpen(false)}
                   className="flex items-center gap-2.5 rounded-lg bg-white/5 px-3 py-2 text-white hover:bg-white/10 transition-colors"
                 >
                   <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#25D366] text-white">
@@ -236,6 +242,10 @@ export function Header() {
 
                 <Link
                   to="/contact"
+                  onClick={() => {
+                    setOpen(false);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
                   className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#F5C344] to-[#E5A720] py-3 text-[13px] font-bold text-[#06162D] shadow-md"
                 >
                   <Calendar className="h-4 w-4" />

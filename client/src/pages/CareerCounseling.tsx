@@ -10,7 +10,7 @@ export default function CareerCounseling() {
       seoTitle="Career Counseling & University Admissions — UK, Italy, Finland, Georgia"
       seoDescription="Career counseling and university admissions: UK 2027 MOI intake (no IELTS at partner universities), Italy free tuition scholarships, Finland family & PR pathway, Georgia MBBS. Dubai & Pakistan."
       path="/career-counseling"
-      faqCategory="Admissions"
+      faqCategory="admissions"
       formTitle="Plan my admission"
       steps={[
         { title: "Profile review", text: "We assess your academics, budget and timeline against current admission cycles." },

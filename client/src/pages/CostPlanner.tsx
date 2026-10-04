@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSearchParams, Link } from "react-router";
 import {
   Calculator,
@@ -8,6 +8,8 @@ import {
   ArrowRight,
   AlertTriangle,
   Info,
+  ArrowDown,
+  ChevronDown,
 } from "lucide-react";
 import { trpc } from "@/providers/trpc";
 import { Seo, breadcrumbJsonLd } from "@/lib/seo";
@@ -21,6 +23,7 @@ function buildEmpty() {
 export default function CostPlanner() {
   const [params] = useSearchParams();
   const { data: countries } = trpc.content.countries.list.useQuery();
+  const resultRef = useRef<HTMLDivElement>(null);
   const [inputs, setInputs] = useState({
     countrySlug: params.get("country") ?? "united-kingdom",
     purpose: "study" as "study" | "visit" | "work" | "business",
@@ -35,7 +38,14 @@ export default function CostPlanner() {
   const [result, setResult] = useState<Estimate>(null);
 
   const estimate = trpc.planner.estimate.useMutation({
-    onSuccess: (data) => setResult(data),
+    onSuccess: (data) => {
+      setResult(data);
+      setTimeout(() => {
+        if (window.innerWidth < 1024) {
+          resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 150);
+    },
   });
 
   useEffect(() => {
@@ -45,7 +55,7 @@ export default function CostPlanner() {
 
   const set = (k: string, v: unknown) => setInputs((s) => ({ ...s, [k]: v }));
   const sel =
-    "w-full border border-navy/20 bg-white px-4 py-3 text-[15px] text-navy outline-none focus:border-gold";
+    "w-full border border-navy/20 bg-white px-3 sm:px-4 py-2.5 sm:py-3 text-[14px] sm:text-[15px] text-navy outline-none focus:border-gold rounded-md";
   const lbl = "mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.14em] text-navy/60";
 
   return (
@@ -81,7 +91,7 @@ export default function CostPlanner() {
         <div className="grid gap-12 lg:grid-cols-12">
           {/* Inputs */}
           <div className="lg:col-span-5">
-            <div className="space-y-5 border border-navy/10 bg-paper p-8">
+            <div className="space-y-5 border border-navy/10 bg-paper p-5 sm:p-8 rounded-xl shadow-sm">
               <div>
                 <label className={lbl} htmlFor="cp-country">1 · Destination country</label>
                 <select
@@ -111,12 +121,12 @@ export default function CostPlanner() {
                   <option value="business">Business</option>
                 </select>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <label className={lbl} htmlFor="cp-origin">Departure airport</label>
                   <select
                     id="cp-origin"
-                    className={sel}
+                    className={`${sel} truncate`}
                     value={inputs.origin}
                     onChange={(e) => set("origin", e.target.value)}
                   >
@@ -140,7 +150,7 @@ export default function CostPlanner() {
                   </select>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <label className={lbl} htmlFor="cp-months">Stay (months)</label>
                   <input
@@ -168,16 +178,16 @@ export default function CostPlanner() {
               </div>
               <div>
                 <span className={lbl}>3 · Travel style</span>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
                   {(["budget", "standard", "comfortable"] as const).map((s) => (
                     <button
                       key={s}
                       type="button"
                       onClick={() => set("scenario", s)}
-                      className={`border px-3 py-2.5 text-[12px] font-semibold uppercase tracking-[0.08em] transition-colors ${
+                      className={`border px-1.5 sm:px-3 py-2 sm:py-2.5 text-[11px] sm:text-[12px] font-semibold uppercase tracking-[0.05em] transition-colors rounded truncate ${
                         inputs.scenario === s
                           ? "border-gold bg-gold text-navy"
-                          : "border-navy/20 text-navy/60 hover:border-gold"
+                          : "border-navy/20 bg-white text-navy/70 hover:border-gold"
                       }`}
                     >
                       {s}
@@ -185,7 +195,7 @@ export default function CostPlanner() {
                   ))}
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <label className={lbl} htmlFor="cp-dep">Dependants</label>
                   <input
@@ -214,13 +224,43 @@ export default function CostPlanner() {
                 </div>
               </div>
               <button
+                type="button"
                 onClick={() => estimate.mutate(inputs)}
                 disabled={estimate.isPending}
-                className="btn-fill w-full disabled:opacity-60"
+                className="btn-fill w-full py-3.5 text-sm font-bold uppercase tracking-wider shadow-md disabled:opacity-60 cursor-pointer"
               >
                 <Calculator className="h-4 w-4" />
                 {estimate.isPending ? "Calculating…" : "Calculate estimate"}
               </button>
+
+              {/* 🌟 ARROW PROJECTION FOR SCROLLING DOWN TO RESULTS */}
+              {result && !estimate.isPending && (
+                <div className="pt-2 animate-in fade-in slide-in-from-top-3 duration-300">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }}
+                    className="w-full flex items-center justify-between gap-3 p-3.5 sm:p-4 rounded-xl bg-gradient-to-r from-[#03152c] via-[#072449] to-[#03152c] text-white border-2 border-gold shadow-[0_6px_25px_rgba(201,162,39,0.35)] hover:brightness-110 active:scale-[0.99] transition-all cursor-pointer text-left group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gold text-[#06162D] font-bold shadow-md shrink-0 animate-bounce">
+                        <ArrowDown className="h-5 w-5 stroke-[2.5]" />
+                      </span>
+                      <div>
+                        <span className="block font-serif text-sm sm:text-base font-semibold text-gold">
+                          Calculation Complete!
+                        </span>
+                        <span className="block text-[11.5px] sm:text-[12.5px] text-white/90">
+                          Scroll down or tap to see all answers ↓
+                        </span>
+                      </div>
+                    </div>
+                    <ChevronDown className="h-5 w-5 sm:h-6 sm:w-6 text-gold shrink-0 animate-pulse group-hover:translate-y-1 transition-transform" />
+                  </button>
+                </div>
+              )}
+
               <p className="text-[12px] leading-relaxed text-navy/45">
                 We never ask for bank account numbers or documents here. Figures are indicative
                 until confirmed live with our counselors.
@@ -229,7 +269,7 @@ export default function CostPlanner() {
           </div>
 
           {/* Results */}
-          <div className="lg:col-span-7">
+          <div ref={resultRef} id="cost-estimate-results" className="lg:col-span-7 scroll-mt-24">
             {!result && !estimate.isPending && (
               <div className="flex h-full min-h-64 flex-col items-center justify-center border border-dashed border-navy/20 p-10 text-center">
                 <Calculator className="h-10 w-10 text-gold" strokeWidth={1.25} />
