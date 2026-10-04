@@ -103,6 +103,9 @@ app.use((req, res, next) => {
   res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
   res.setHeader('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
   res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+  if (req.path.startsWith('/admin') || req.path.startsWith('/api') || req.path.startsWith('/preview')) {
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet, noimageindex');
+  }
   if (!req.path.startsWith('/admin')) {
     res.setHeader('Content-Security-Policy',
       "default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self' 'unsafe-inline' https://invitejs.trustpilot.com https://*.trustpilot.com; " +
