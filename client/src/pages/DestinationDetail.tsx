@@ -15,11 +15,15 @@ import {
   Calendar,
   Building,
   Sparkles,
+  FileText,
+  CheckCircle2,
+  Phone,
+  MessageCircle,
 } from "lucide-react";
 import { trpc } from "@/providers/trpc";
 import { Seo, breadcrumbJsonLd } from "@/lib/seo";
 import { useReveal } from "@/lib/reveal";
-import { waLink } from "@/lib/site";
+import { waLink, SITE } from "@/lib/site";
 import NotFound from "./NotFound";
 
 export default function DestinationDetail() {
@@ -453,6 +457,132 @@ export default function DestinationDetail() {
               <Link to={`/cost-planner?country=${c.slug}`} className="btn-gold mt-5 w-full text-center block font-semibold text-sm">
                 Plan my budget <ArrowRight className="h-4 w-4 inline ml-1" />
               </Link>
+            </div>
+
+            {/* 4. Statutory Document Checklist for this country */}
+            <div className="reveal border border-navy/10 bg-white p-6 sm:p-7 rounded-2xl shadow-xs">
+              <div className="flex items-center justify-between gap-2 border-b border-navy/10 pb-3.5">
+                <div className="flex items-center gap-2 text-gold-dark">
+                  <FileText className="h-5 w-5" />
+                  <h3 className="text-[12px] font-semibold uppercase tracking-[0.16em] text-navy">
+                    {c.name} File Checklist
+                  </h3>
+                </div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                  2026/27 Active
+                </span>
+              </div>
+              <ul className="mt-4 space-y-2.5">
+                {[
+                  "Valid Passport & National Identity (CNIC / Resident ID)",
+                  "Attested Academic Transcripts & Graduation Degree",
+                  "Statutory Proof of Funds / Bank Statement",
+                  "English Language Proficiency (IELTS / MOI Acceptance)",
+                  "Statement of Purpose (SOP) & Tailored Academic CV",
+                  "IOM Panel Medical & Tuberculosis (TB) Clearance",
+                ].map((doc) => (
+                  <li key={doc} className="flex items-start gap-2.5 text-[13px] text-navy/80">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+                    <span>{doc}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-4 pt-3.5 border-t border-navy/10">
+                <a
+                  href={waLink(`Hello Kishaa — I want a free document pre-screening audit for my ${c.name} application.`)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl border border-gold/40 bg-gold/10 py-2.5 text-[12px] font-bold uppercase tracking-wider text-gold-dark hover:bg-gold hover:text-navy transition-all"
+                >
+                  <MessageCircle className="h-3.5 w-3.5" /> Request Document Audit
+                </a>
+              </div>
+            </div>
+
+            {/* 5. Key Admissions Windows & Intakes */}
+            <div className="reveal border border-navy/10 bg-white p-6 sm:p-7 rounded-2xl shadow-xs">
+              <div className="flex items-center gap-2 text-gold-dark border-b border-navy/10 pb-3.5">
+                <Calendar className="h-5 w-5" />
+                <h3 className="text-[12px] font-semibold uppercase tracking-[0.16em] text-navy">
+                  Admissions Windows & Deadlines
+                </h3>
+              </div>
+              <div className="mt-4 space-y-3">
+                <div className="rounded-xl bg-[#FAF9F5] p-3.5 border border-gold/20">
+                  <div className="flex items-center justify-between">
+                    <span className="font-serif text-[14px] font-semibold text-navy">Autumn (Sep/Oct 2026/27)</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full">
+                      Primary
+                    </span>
+                  </div>
+                  <p className="mt-1 text-[12px] text-navy/65">
+                    Main recruitment window with maximum university scholarships & course options.
+                  </p>
+                </div>
+
+                <div className="rounded-xl bg-[#FAF9F5] p-3.5 border border-gold/20">
+                  <div className="flex items-center justify-between">
+                    <span className="font-serif text-[14px] font-semibold text-navy">Winter (Jan/Feb 2027)</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-gold-dark bg-gold/15 px-2 py-0.5 rounded-full">
+                      Fast-Track
+                    </span>
+                  </div>
+                  <p className="mt-1 text-[12px] text-navy/65">
+                    Direct entry for postgraduate & top bachelor programs with streamlined CAS / visa turnaround.
+                  </p>
+                </div>
+
+                <div className="rounded-xl bg-[#FAF9F5] p-3.5 border border-gold/20">
+                  <div className="flex items-center justify-between">
+                    <span className="font-serif text-[14px] font-semibold text-navy">Spring (Apr/May 2027)</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-800 bg-cyan-50 px-2 py-0.5 rounded-full">
+                      Pathway
+                    </span>
+                  </div>
+                  <p className="mt-1 text-[12px] text-navy/65">
+                    Pre-master tracks, foundation years, and intensive English preparation modules.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* 6. Meet Consultant & Direct Desk */}
+            <div className="reveal border border-gold/40 bg-gradient-to-br from-[#0c284d] to-[#041021] p-6 sm:p-7 rounded-2xl text-white shadow-md">
+              <div className="flex items-center gap-3">
+                <img
+                  src="/img/zeb-khan.webp"
+                  alt="Zeb Khan"
+                  width={56}
+                  height={56}
+                  className="h-14 w-14 rounded-full border-2 border-gold/60 object-cover object-top shrink-0 shadow-sm"
+                />
+                <div>
+                  <h4 className="font-serif text-base font-semibold text-white">Zeb Khan</h4>
+                  <p className="text-[11px] font-semibold uppercase tracking-wider text-gold">
+                    British Council Certified Trainer
+                  </p>
+                  <p className="text-[11px] text-white/60">Dubai HQ & Pakistan Specialist Desks</p>
+                </div>
+              </div>
+              <p className="mt-3.5 border-t border-white/10 pt-3.5 text-[12.5px] leading-relaxed text-white/75">
+                Direct portfolio assessment and 1-on-1 visa strategy session with verified document audit.
+              </p>
+              <div className="mt-4 flex flex-col gap-2">
+                <a
+                  href={waLink(`Hello Zeb Khan — I want to consult regarding ${c.name} student visa and admissions.`)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-gold text-center block text-[12px] font-bold py-2.5"
+                >
+                  <MessageCircle className="h-4 w-4 inline mr-1.5" /> Book Consultation with Zeb Khan
+                </a>
+                <a
+                  href={`tel:${SITE.phoneUAE.replace(/\s+/g, '')}`}
+                  className="text-center block rounded-xl border border-white/15 bg-white/5 py-2 text-[11.5px] font-semibold text-white/80 hover:border-gold hover:text-gold transition-colors"
+                >
+                  <Phone className="h-3.5 w-3.5 inline mr-1.5" /> Call Dubai Desk: {SITE.phoneUAE}
+                </a>
+              </div>
             </div>
           </aside>
         </div>
