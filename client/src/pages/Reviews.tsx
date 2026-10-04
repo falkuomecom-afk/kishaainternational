@@ -13,6 +13,63 @@ const PLATFORM_LABEL: Record<string, string> = {
   instagram: "Instagram",
 };
 
+function GoogleIcon({ className = "h-5 w-5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        fill="#4285F4"
+        d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"
+      />
+      <path
+        fill="#34A853"
+        d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"
+      />
+      <path
+        fill="#EA4335"
+        d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"
+      />
+    </svg>
+  );
+}
+
+function GoogleStars({ rating = 5, size = "md" }: { rating?: number; size?: "sm" | "md" | "lg" }) {
+  const starCls = size === "lg" ? "h-5 w-5" : size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4";
+  return (
+    <div className="flex items-center gap-0.5" role="img" aria-label={`${rating} out of 5 stars`}>
+      {Array.from({ length: 5 }).map((_, i) => (
+        <svg
+          key={i}
+          className={`${starCls} ${i < rating ? "text-[#FBBC05] fill-[#FBBC05]" : "text-gray-200 fill-gray-200"}`}
+          viewBox="0 0 20 20"
+          aria-hidden="true"
+        >
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+        </svg>
+      ))}
+    </div>
+  );
+}
+
+const GOOGLE_AVATAR_COLORS = [
+  "bg-[#EA4335]",
+  "bg-[#4285F4]",
+  "bg-[#34A853]",
+  "bg-[#9C27B0]",
+  "bg-[#009688]",
+  "bg-[#FF5722]",
+  "bg-[#3F51B5]",
+];
+
+function getGoogleAvatarColor(name: string) {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return GOOGLE_AVATAR_COLORS[Math.abs(hash) % GOOGLE_AVATAR_COLORS.length];
+}
+
 function TrustpilotStars({ rating = 5, size = "md" }: { rating?: number; size?: "sm" | "md" | "lg" }) {
   const boxCls = size === "lg" ? "h-7 w-7 p-1" : size === "sm" ? "h-4 w-4 p-0.5" : "h-5 w-5 p-0.5";
   const starCls = size === "lg" ? "h-4 w-4" : size === "sm" ? "h-2.5 w-2.5" : "h-3.5 w-3.5";
@@ -109,22 +166,31 @@ export default function Reviews() {
             const agg = aggregates?.find((a) => a.platform === p);
             const isTrustpilot = p === "trustpilot";
             const isFacebook = p === "facebook";
-            const avgScore = agg ? Number(agg.avg).toFixed(1) : (isTrustpilot ? "4.9" : "4.8");
+            const isGoogle = p === "google";
+            const avgScore = agg ? Number(agg.avg).toFixed(1) : (isGoogle ? "4.9" : isTrustpilot ? "4.9" : "4.8");
             const reviewCount = agg?.count || (isTrustpilot ? 64 : isFacebook ? 98 : 214);
 
             return (
               <div
                 key={p}
                 className={`reveal border p-7 text-center transition-all hover:shadow-md ${
-                  isTrustpilot
-                    ? "border-[#00b67a]/40 bg-gradient-to-b from-white to-[#00b67a]/5"
+                  isGoogle
+                    ? "border-[#4285F4]/30 bg-gradient-to-b from-white to-[#4285F4]/5 shadow-[0_2px_12px_rgba(66,133,244,0.06)]"
+                    : isTrustpilot
+                    ? "border-[#00b67a]/40 bg-gradient-to-b from-white to-[#00b67a]/5 shadow-[0_2px_12px_rgba(0,182,122,0.06)]"
                     : "border-navy/10 bg-white"
                 }`}
               >
                 <div className="flex items-center justify-center gap-2">
+                  {isGoogle && <GoogleIcon className="h-4 w-4" />}
                   <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-navy/70">
                     {PLATFORM_LABEL[p]}
                   </p>
+                  {isGoogle && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-[#1a73e8]">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#1a73e8] animate-pulse" /> Verified
+                    </span>
+                  )}
                   {isTrustpilot && (
                     <span className="inline-flex items-center gap-1 rounded-full bg-[#00b67a]/10 px-2 py-0.5 text-[10px] font-bold text-[#008f5d]">
                       <span className="h-1.5 w-1.5 rounded-full bg-[#00b67a] animate-pulse" /> Verified
@@ -138,7 +204,9 @@ export default function Reviews() {
                 </div>
 
                 <div className="mt-3 flex items-center justify-center">
-                  {isTrustpilot ? (
+                  {isGoogle ? (
+                    <GoogleStars rating={5} size="md" />
+                  ) : isTrustpilot ? (
                     <TrustpilotStars rating={5} size="md" />
                   ) : (
                     <div className="flex items-center justify-center gap-1 text-gold">
@@ -160,13 +228,23 @@ export default function Reviews() {
                 </p>
 
                 <p className="text-[12px] font-medium text-navy/60 mt-1">
-                  {isTrustpilot
+                  {isGoogle
+                    ? `Verified Business Profile · ${reviewCount}+ reviews`
+                    : isTrustpilot
                     ? `Excellent · Based on ${reviewCount}+ reviews`
-                    : isFacebook
-                    ? `Live connected · ${reviewCount} reviews`
-                    : `Verified Business · ${reviewCount} reviews`}
+                    : `Live connected · ${reviewCount} reviews`}
                 </p>
 
+                {isGoogle && (
+                  <a
+                    href="https://maps.google.com/maps?cid=553505313895731803"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-[#1a73e8] hover:underline"
+                  >
+                    View Google Profile <ExternalLink className="h-3 w-3" />
+                  </a>
+                )}
                 {isTrustpilot && (
                   <a
                     href="https://www.trustpilot.com/review/kishaainternational.com"
@@ -183,8 +261,51 @@ export default function Reviews() {
         </div>
       </section>
 
+      {/* 🌟 GOOGLE BUSINESS PROFILE OFFICIAL VERIFIED BANNER */}
+      <section className="bg-gradient-to-r from-blue-50/70 via-white to-emerald-50/50 border-y border-[#dadce0]">
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 flex flex-col lg:flex-row items-center justify-between gap-6">
+          <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-md border border-[#dadce0] shrink-0 p-2.5">
+              <GoogleIcon className="h-8 w-8" />
+            </div>
+            <div>
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                <span className="font-semibold text-lg text-[#202124]">Google Business Profile</span>
+                <span className="rounded-full bg-[#1a73e8] px-2.5 py-0.5 text-[11px] font-bold text-white shadow-sm flex items-center gap-1">
+                  <CheckCircle2 className="h-3 w-3" /> Official Verified Profile
+                </span>
+                <span className="rounded-full bg-[#FBBC05]/20 border border-[#FBBC05]/40 px-2.5 py-0.5 text-[11px] font-bold text-[#b06000]">
+                  ★ 4.9 Rating (214+ Reviews)
+                </span>
+              </div>
+              <p className="text-xs text-[#5f6368] mt-1">
+                Kishaa International · Office 206, 2nd Floor, Malakabad Plaza, 6th Road, Rawalpindi · Tel: +92 312 5526099
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            <a
+              href="https://search.google.com/local/writereview?placeid=ChIJu964KyKV3zgRW9ILgCZyrgc"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full bg-[#1a73e8] px-4 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-[#1557b0] transition-all"
+            >
+              Write a Review on Google <ExternalLink className="h-3.5 w-3.5" />
+            </a>
+            <a
+              href="https://maps.google.com/maps?cid=553505313895731803"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full bg-white border border-[#dadce0] px-4 py-2.5 text-xs font-semibold text-[#3c4043] shadow-sm hover:bg-gray-50 transition-all"
+            >
+              <GoogleIcon className="h-3.5 w-3.5" /> View on Google Maps
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* 🌟 TRUSTPILOT VERIFIED BANNER */}
-      <section className="bg-[#001c10] text-white border-y border-[#00b67a]/30">
+      <section className="bg-[#001c10] text-white border-b border-[#00b67a]/30">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#00b67a] text-white shadow-lg shrink-0">
@@ -633,8 +754,8 @@ export default function Reviews() {
               {(
                 [
                   { id: "all", label: "All Reviews", count: (reviews ?? []).length },
-                  { id: "trustpilot", label: "Trustpilot", count: (reviews ?? []).filter((r) => r.platform === "trustpilot").length },
                   { id: "google", label: "Google", count: (reviews ?? []).filter((r) => r.platform === "google").length },
+                  { id: "trustpilot", label: "Trustpilot", count: (reviews ?? []).filter((r) => r.platform === "trustpilot").length },
                   { id: "facebook", label: "Facebook", count: (reviews ?? []).filter((r) => r.platform === "facebook").length },
                 ] as const
               ).map((filter) => (
@@ -644,7 +765,9 @@ export default function Reviews() {
                   onClick={() => setReviewFilter(filter.id)}
                   className={`px-3 py-1.5 text-xs font-semibold rounded-md border transition-all ${
                     reviewFilter === filter.id
-                      ? filter.id === "trustpilot"
+                      ? filter.id === "google"
+                        ? "bg-[#1a73e8] text-white border-[#1a73e8] shadow-sm"
+                        : filter.id === "trustpilot"
                         ? "bg-[#00b67a] text-white border-[#00b67a] shadow-sm"
                         : "bg-navy text-gold border-navy shadow-sm"
                       : "bg-white text-navy/70 border-navy/15 hover:border-navy/40"
@@ -659,6 +782,71 @@ export default function Reviews() {
           <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredReviews.map((r) => {
               const isTrustpilot = r.platform === "trustpilot";
+              const isGoogle = r.platform === "google";
+
+              if (isGoogle) {
+                return (
+                  <figure
+                    key={r.id}
+                    className="flex flex-col justify-between rounded-xl border border-[#dadce0] bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-md hover:border-[#4285F4]/40"
+                  >
+                    <div>
+                      {/* Header with Google Logo, Avatar, Name, Local Guide / Verified badge */}
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white font-semibold text-sm shadow-sm ${getGoogleAvatarColor(r.author)}`}>
+                            {r.author.charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-medium text-[15px] text-[#202124] leading-tight">{r.author}</span>
+                              <span className="inline-flex items-center gap-0.5 rounded-full bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-[#1a73e8]">
+                                <CheckCircle2 className="h-2.5 w-2.5" /> Verified
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1 text-[11px] text-[#5f6368] mt-0.5">
+                              <span>Local Guide</span>
+                              <span>·</span>
+                              <span>{r.reviewDate ? r.reviewDate.slice(0, 10) : "Verified review"}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-center rounded-full bg-gray-50 p-1.5 border border-gray-100 shrink-0" title="Google Review">
+                          <GoogleIcon className="h-4 w-4" />
+                        </div>
+                      </div>
+
+                      {/* Google Star Rating */}
+                      <div className="mt-3.5 flex items-center gap-2">
+                        <GoogleStars rating={r.rating} size="md" />
+                        <span className="text-xs font-semibold text-[#5f6368]">5.0</span>
+                      </div>
+
+                      {/* Review Text */}
+                      <blockquote className="mt-3 text-[14px] leading-relaxed text-[#3c4043]">
+                        “{r.text}”
+                      </blockquote>
+                    </div>
+
+                    {/* Footer with Google Maps Link */}
+                    <div className="mt-6 border-t border-[#f1f3f4] pt-3.5 flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 text-[11px] font-medium text-[#5f6368]">
+                        <GoogleIcon className="h-3.5 w-3.5" />
+                        <span>Posted on Google Maps</span>
+                      </div>
+                      <a
+                        href={r.permalink || "https://maps.google.com/maps?cid=553505313895731803"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[12px] font-medium text-[#1a73e8] hover:text-[#174ea6] hover:underline"
+                      >
+                        View on Google <ExternalLink className="h-3 w-3" />
+                      </a>
+                    </div>
+                  </figure>
+                );
+              }
+
               return (
                 <figure
                   key={r.id}

@@ -14,7 +14,7 @@ const crypto = require('crypto');
 const { db, setting } = require('./db');
 
 const PROVIDERS = {
-  google:      { kind: 'reviews', label: 'Google Business Profile', env: ['GOOGLE_BUSINESS_TOKEN'], docs: 'business.google.com' },
+  google:      { kind: 'reviews', label: 'Google Business Profile', env: ['GOOGLE_SERVICE_ACCOUNT_EMAIL', 'GOOGLE_PRIVATE_KEY', 'GOOGLE_API_KEY', 'GOOGLE_BUSINESS_TOKEN'], docs: 'business.google.com' },
   facebook:    { kind: 'reviews', label: 'Facebook Business Page',  env: ['META_PAGE_TOKEN', 'COMPOSIO_API_KEY'], docs: 'developers.facebook.com' },
   trustpilot:  { kind: 'reviews', label: 'Trustpilot Profile',      env: ['TRUSTPILOT_API_KEY'], docs: 'developers.trustpilot.com' },
   instagram:   { kind: 'feeds',   label: 'Instagram Reels & Posts', env: ['META_PAGE_TOKEN', 'COMPOSIO_API_KEY'], docs: 'developers.facebook.com' },
@@ -55,6 +55,15 @@ function refreshProvider(key) {
 
   db.prepare('INSERT INTO audit_log (actor, action, entity, meta) VALUES (?,?,?,?)')
     .run('system', 'integration.refresh', key, JSON.stringify({ configured: result.configured }));
+
+  if (result.configured && key === 'google') {
+    try {
+      const googleReviews = require('./google-reviews');
+      googleReviews.syncGoogleReviews().catch(err => console.error('Google reviews sync error:', err.message));
+    } catch (e) {
+      console.error('Error invoking Google reviews sync:', e.message);
+    }
+  }
 
   if (result.configured && (key === 'composio' || key === 'facebook' || key === 'instagram') && process.env.COMPOSIO_API_KEY) {
     try {

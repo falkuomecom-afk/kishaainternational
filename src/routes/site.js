@@ -568,6 +568,31 @@ router.post('/contact', (req, res) => {
 
   const queued = queueLeadNotifications(lead, { type: dup ? 'repeat_contact' : 'new_lead' });
   integrations.notifyHighIntent(lead).catch(() => {});
+  if (supabase.isAvailable()) {
+    supabase.insertLead({
+      reference: ref,
+      full_name: name,
+      phone: phone,
+      whatsapp: prefer === 'whatsapp' ? phone : null,
+      email: email,
+      contact_preference: prefer,
+      interest: interest,
+      service_context: program ? program.name : (b.service_context || null),
+      program_id: programId,
+      country_id: countryId,
+      requested_trainer: b.requested_trainer || null,
+      message: message,
+      source_page: String(b.source_page || '/contact').slice(0, 200),
+      source_type: b.source_type || 'form',
+      stage: 'new',
+      consent_notice_version: setting('ops.privacy_notice_version', 'v1'),
+      marketing_consent: marketing ? 1 : 0,
+      ip_hash: H.hashIp(ip),
+      idempotency_key: idem || null,
+      spam_score: score,
+      region: region,
+    }).catch(e => console.warn('[site:lead] Supabase sync error:', e.message));
+  }
   track(req, 'lead_submitted', { interest: lead.interest, source: lead.source_type, spam_score: score });
   audit(null, 'lead.created', 'leads', lead.id, { reference: ref, source: lead.source_type }, ip);
 

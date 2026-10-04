@@ -1,3 +1,33 @@
+{{#if eq platform 'google'}}
+<article class="review review-google">
+  <div class="who">
+    <span class="avatar avatar-google">{{initials author}}</span>
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <strong style="display:block;font-size:.95rem;color:#202124">{{author}}</strong>
+        <span class="badge-google-verified" title="Google Verified Review">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="#1a73e8"/></svg>
+          Verified
+        </span>
+      </div>
+      <span class="tiny muted" style="color:#5f6368">Local Guide · {{#if published_at}}{{date published_at}}{{else}}Verified review{{/if}}</span>
+    </div>
+    <div class="google-g-badge" title="Google Business Profile Review">
+      <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>
+    </div>
+  </div>
+  <div class="stars stars-google" role="img" aria-label="5 out of 5 stars">★★★★★ <span class="stars-val">5.0</span></div>
+  <blockquote style="color:#3c4043">“{{truncate text 240}}”</blockquote>
+  <div class="src">
+    <span style="display:inline-flex;align-items:center;gap:5px;color:#5f6368">
+      <svg width="12" height="12" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>
+      Posted on Google Maps
+    </span>
+    <a href="https://maps.google.com/maps?cid=553505313895731803" rel="noopener nofollow" target="_blank" style="color:#1a73e8;font-weight:600">View on Google ↗</a>
+  </div>
+  <a class="link-arrow tiny" href="/contact?source=review&platform=google">Enquire about this pathway</a>
+</article>
+{{else}}
 <article class="review">
   <div class="who">
     <span class="avatar">{{initials author}}</span>
@@ -14,3 +44,4 @@
   </div>
   <a class="link-arrow tiny" href="/contact?source=review&platform={{platform}}">Enquire about this pathway</a>
 </article>
+{{/if}}

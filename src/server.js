@@ -56,6 +56,7 @@ app.use((req, res, next) => {
   res.cookie = (name, value, opts = {}) => {
     const parts = [`${name}=${encodeURIComponent(value)}`];
     parts.push(`Path=${opts.path || '/'}`);
+    if (opts.domain) parts.push(`Domain=${opts.domain}`);
     if (opts.maxAge) parts.push(`Max-Age=${Math.floor(opts.maxAge / 1000)}`);
     if (opts.httpOnly) parts.push('HttpOnly');
     if (opts.secure) parts.push('Secure');

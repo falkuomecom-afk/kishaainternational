@@ -308,6 +308,26 @@ textarea{min-height:110px;resize:vertical}
 .trust-pill span{font-size:.82rem;color:var(--ink-400)}
 .sample-note{font-size:.78rem;color:var(--ink-400);background:var(--sand);border-radius:2px;padding:8px 12px;display:inline-block}
 
+/* Google Review Card Styles */
+.review.review-google{border-color:#dadce0;box-shadow:0 1px 3px rgba(60,64,67,.08);transition:box-shadow .2s ease,border-color .2s ease}
+.review.review-google:hover{border-color:#4285F4;box-shadow:0 4px 14px rgba(66,133,244,.15)}
+.avatar-google{background:#1a73e8;color:#fff;border-radius:50%;border:none;font-weight:700}
+.stars.stars-google{color:#FBBC05;letter-spacing:1px}
+.stars-val{font-size:.8rem;color:#5f6368;font-weight:600;margin-left:4px}
+.badge-google-verified{display:inline-flex;align-items:center;gap:3px;background:#e8f0fe;color:#1a73e8;padding:2px 7px;border-radius:12px;font-size:.7rem;font-weight:600}
+.google-g-badge{width:32px;height:32px;border-radius:50%;background:#f8f9fa;border:1px solid #dadce0;display:grid;place-items:center;flex-shrink:0}
+
+/* Google Business Profile Verified Banner (SSR) */
+.google-verified-banner{background:linear-gradient(90deg,rgba(66,133,244,.07),#fff,rgba(52,168,83,.07));border-top:1px solid #dadce0;border-bottom:1px solid #dadce0;padding:24px 0}
+.google-banner-inner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px}
+.google-banner-brand{display:flex;align-items:center;gap:16px}
+.google-banner-logo{width:54px;height:54px;background:#fff;border:1px solid #dadce0;border-radius:12px;display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.06);flex-shrink:0}
+.google-banner-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.btn-google-primary{background:#1a73e8;color:#fff!important;padding:10px 20px;border-radius:24px;font-weight:600;font-size:.85rem;text-decoration:none;display:inline-flex;align-items:center;gap:6px;box-shadow:0 1px 3px rgba(26,115,232,.3);transition:background .2s}
+.btn-google-primary:hover{background:#1557b0;color:#fff!important}
+.btn-google-secondary{background:#fff;color:#3c4043!important;border:1px solid #dadce0;padding:10px 18px;border-radius:24px;font-weight:600;font-size:.85rem;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:background .2s}
+.btn-google-secondary:hover{background:#f8f9fa;color:#202124!important}
+
 /* ------------------------------------------------------------- forms/cta */
 .form-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius-lg);padding:clamp(20px,3vw,34px);box-shadow:var(--shadow-md)}
 .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}

@@ -115,7 +115,10 @@ router.post('/login', async (req, res) => {
   }
   db.prepare(`UPDATE users SET failed_logins = 0, locked_until = NULL, last_login_at = datetime('now') WHERE id = ?`).run(user.id);
   const session = await authLib.createSession(user.id, req);
-  authLib.setAuthCookies(res, session.token, session.csrf, req.secure);
+  const host = String(req.headers['x-forwarded-host'] || req.headers.host || '');
+  const cookieDomain = host.includes('kishaainternational.com') ? '.kishaainternational.com' : undefined;
+  const isSecure = Boolean(req.secure || req.headers['x-forwarded-proto'] === 'https' || process.env.NODE_ENV === 'production');
+  authLib.setAuthCookies(res, session.token, session.csrf, isSecure, cookieDomain);
   audit(user, 'auth.login', 'users', user.id, { role: user.role }, ip);
   const next = String(req.body.next || '').startsWith('/admin') ? req.body.next : '/admin';
   res.redirect(next);
@@ -125,7 +128,9 @@ router.post('/logout', async (req, res) => {
   const token = (req.cookies || {})[authLib.SESSION_COOKIE];
   audit(req.user, 'auth.logout', 'users', req.user?.id || null, {}, req.ip);
   await authLib.destroySession(token);
-  authLib.clearAuthCookies(res);
+  const host = String(req.headers['x-forwarded-host'] || req.headers.host || '');
+  const cookieDomain = host.includes('kishaainternational.com') ? '.kishaainternational.com' : undefined;
+  authLib.clearAuthCookies(res, cookieDomain);
   res.redirect('/admin/login');
 });
 

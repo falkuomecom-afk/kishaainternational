@@ -40,14 +40,26 @@ async function createSession(userId, req) {
 
   if (supabase.isAvailable()) {
     try {
-      await supabase.getClient().from('sessions').insert({
+      let sbUserId = userId;
+      try {
+        const localUser = db.prepare('SELECT email FROM users WHERE id = ?').get(userId);
+        if (localUser?.email) {
+          const { data: sbUser } = await supabase.getClient().from('users').select('id').eq('email', localUser.email).maybeSingle();
+          if (sbUser?.id) sbUserId = sbUser.id;
+        }
+      } catch {}
+
+      const { error: insErr } = await supabase.getClient().from('sessions').insert({
         id: sid,
-        user_id: userId,
+        user_id: sbUserId,
         csrf,
         ip,
         user_agent: ua,
         expires_at: expires,
       });
+      if (insErr) {
+        console.warn('[auth:createSession] Supabase session error:', insErr.message);
+      }
     } catch (e) {
       console.warn('[auth:createSession] Supabase session error:', e.message);
     }
@@ -111,12 +123,20 @@ async function sessionUserSupabase(token) {
     if (uErr || !u || u.status !== 'active') return null;
 
     try {
-      db.prepare(`INSERT OR IGNORE INTO users (id, name, email, password_hash, role, status, phone, team)
-                  VALUES (?, ?, ?, ?, ?, ?, ?, ?)`)
-        .run(u.id, u.name, u.email, '', u.role, u.status, u.phone || null, u.team || null);
-      db.prepare(`INSERT OR REPLACE INTO sessions (id, user_id, csrf, expires_at, revoked_at)
-                  VALUES (?, ?, ?, ?, ?)`)
-        .run(sess.id, sess.user_id, sess.csrf, sess.expires_at, sess.revoked_at || null);
+      let localUser = db.prepare('SELECT id FROM users WHERE email = ? OR id = ?').get(u.email, u.id);
+      if (!localUser) {
+        try {
+          db.prepare(`INSERT OR REPLACE INTO users (id, name, email, password_hash, role, status, phone, team)
+                      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`)
+            .run(u.id, u.name, u.email, '', u.role, u.status, u.phone || null, u.team || null);
+          localUser = { id: u.id };
+        } catch {}
+      }
+      if (localUser) {
+        db.prepare(`INSERT OR REPLACE INTO sessions (id, user_id, csrf, expires_at, revoked_at)
+                    VALUES (?, ?, ?, ?, ?)`)
+          .run(sess.id, localUser.id, sess.csrf, sess.expires_at, sess.revoked_at || null);
+      }
     } catch (e) {}
 
     return {
@@ -182,37 +202,55 @@ function middleware() {
 
 function parseCookie(req) {
   const out = {};
-  const raw = req.headers.cookie;
+  const raw = req?.headers?.cookie || (typeof req === 'string' ? req : '');
   if (!raw) return out;
   for (const part of raw.split(';')) {
     const i = part.indexOf('=');
-    if (i > -1) out[part.slice(0, i).trim()] = decodeURIComponent(part.slice(i + 1).trim());
+    if (i > -1) {
+      const key = part.slice(0, i).trim();
+      let val = part.slice(i + 1).trim();
+      if (val.startsWith('"') && val.endsWith('"')) val = val.slice(1, -1);
+      try {
+        out[key] = decodeURIComponent(val);
+      } catch {
+        out[key] = val;
+      }
+    }
   }
   return out;
 }
 
-function setAuthCookies(res, token, csrf, secure) {
-  const opts = { httpOnly: true, sameSite: 'lax', path: '/', secure: !!secure };
+function setAuthCookies(res, token, csrf, secure, domain) {
+  const isSecure = Boolean(secure || process.env.NODE_ENV === 'production');
+  const opts = { httpOnly: true, sameSite: 'lax', path: '/', secure: isSecure };
+  if (domain) opts.domain = domain;
   res.cookie(SESSION_COOKIE, token, { ...opts, maxAge: SESSION_HOURS * 3600e3 });
   res.cookie(CSRF_COOKIE, csrf, { ...opts, httpOnly: false, maxAge: SESSION_HOURS * 3600e3 });
 }
-function clearAuthCookies(res) {
-  res.clearCookie(SESSION_COOKIE, { path: '/' });
-  res.clearCookie(CSRF_COOKIE, { path: '/' });
+function clearAuthCookies(res, domain) {
+  const opts = { path: '/' };
+  if (domain) opts.domain = domain;
+  res.clearCookie(SESSION_COOKIE, opts);
+  res.clearCookie(CSRF_COOKIE, opts);
 }
 
 function csrfMiddleware() {
   return (req, res, next) => {
     const cookies = req.cookies || parseCookie(req);
     let cookieCsrf = cookies[CSRF_COOKIE];
+    const host = String(req.headers?.['x-forwarded-host'] || req.headers?.host || '');
+    const cookieDomain = host.includes('kishaainternational.com') ? '.kishaainternational.com' : undefined;
+    const isSecure = Boolean(req.secure || req.headers?.['x-forwarded-proto'] === 'https' || process.env.NODE_ENV === 'production');
 
     // Anonymous visitors get a double-submit token cookie so public forms are
     // protected against cross-site posting without requiring an account.
     if (!cookieCsrf) {
       cookieCsrf = crypto.randomBytes(24).toString('hex');
-      res.cookie(CSRF_COOKIE, cookieCsrf, {
-        httpOnly: false, sameSite: 'lax', path: '/', secure: !!req.secure, maxAge: 12 * 3600e3,
-      });
+      const opts = {
+        httpOnly: false, sameSite: 'lax', path: '/', secure: isSecure, maxAge: 12 * 3600e3,
+      };
+      if (cookieDomain) opts.domain = cookieDomain;
+      res.cookie(CSRF_COOKIE, cookieCsrf, opts);
     }
 
     req.csrfToken = () => req.user?.csrf || cookieCsrf;

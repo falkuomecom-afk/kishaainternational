@@ -49,17 +49,17 @@ function wipe() {
 
 function createUsers() {
   const users = [
-    { name: 'Zeb Khan', email: 'zeb@kishaainternational.com', password: 'Trainer#2026', role: 'trainer', team: 'Dubai HQ', phone: '+971 58 682 6099' },
-    { name: 'Operations Administrator', email: 'admin@kishaainternational.com', password: 'Admin#2026', role: 'administrator', team: 'Dubai HQ', phone: '+971 58 682 6099' },
-    { name: 'Lead Manager (Dubai)', email: 'leads@kishaainternational.com', password: 'Leads#2026', role: 'lead_manager', team: 'Dubai HQ', phone: '+971 58 682 6099' },
-    { name: 'Lead Manager (Pakistan)', email: 'leads.pk@kishaainternational.com', password: 'LeadsPK#2026', role: 'lead_manager', team: 'Pakistan', phone: '+92 312 552 6099' },
-    { name: 'Content Editor', email: 'editor@kishaainternational.com', password: 'Editor#2026', role: 'content_editor', team: 'Shared' },
-    { name: 'Contributor Desk', email: 'contributor@kishaainternational.com', password: 'Write#2026', role: 'contributor', team: 'Shared' },
-    { name: 'Rule Reviewer', email: 'rules@kishaainternational.com', password: 'Rules#2026', role: 'rule_reviewer', team: 'Shared' },
+    { id: 43, name: 'Zeb Khan', email: 'zeb@kishaainternational.com', password: 'Trainer#2026', role: 'trainer', team: 'Dubai HQ', phone: '+971 58 682 6099' },
+    { id: 44, name: 'Operations Administrator', email: 'admin@kishaainternational.com', password: 'Admin#2026', role: 'administrator', team: 'Dubai HQ', phone: '+971 58 682 6099' },
+    { id: 45, name: 'Lead Manager (Dubai)', email: 'leads@kishaainternational.com', password: 'Leads#2026', role: 'lead_manager', team: 'Dubai HQ', phone: '+971 58 682 6099' },
+    { id: 46, name: 'Lead Manager (Pakistan)', email: 'leads.pk@kishaainternational.com', password: 'LeadsPK#2026', role: 'lead_manager', team: 'Pakistan', phone: '+92 312 552 6099' },
+    { id: 47, name: 'Content Editor', email: 'editor@kishaainternational.com', password: 'Editor#2026', role: 'content_editor', team: 'Shared' },
+    { id: 48, name: 'Contributor Desk', email: 'contributor@kishaainternational.com', password: 'Write#2026', role: 'contributor', team: 'Shared' },
+    { id: 49, name: 'Rule Reviewer', email: 'rules@kishaainternational.com', password: 'Rules#2026', role: 'rule_reviewer', team: 'Shared' },
   ];
-  const ins = db.prepare(`INSERT OR IGNORE INTO users (name, email, password_hash, role, team, phone, mfa_enabled)
-                          VALUES (?,?,?,?,?,?,?)`);
-  for (const u of users) ins.run(u.name, u.email, hashPassword(u.password), u.role, u.team, u.phone || null, 0);
+  const ins = db.prepare(`INSERT OR IGNORE INTO users (id, name, email, password_hash, role, team, phone, mfa_enabled)
+                          VALUES (?,?,?,?,?,?,?,?)`);
+  for (const u of users) ins.run(u.id, u.name, u.email, hashPassword(u.password), u.role, u.team, u.phone || null, 0);
   console.log(`• ${users.length} named staff accounts ready (one per role — no shared passwords).`);
   return users;
 }
@@ -104,8 +104,9 @@ function ensurePostsSeed() {
   seedPosts(db, { ins, ownerId, cats });
 }
 
-/** A realistic lead pipeline so the dashboard, follow-up queue and reporting are meaningful. */
+/** A realistic lead pipeline so the dashboard, follow-up queue and reporting are meaningful. Only seeded if explicitly enabled. */
 function seedSampleLeads(ctx) {
+  if (process.env.SEED_SAMPLE_LEADS !== 'true') return;
   const existing = db.prepare('SELECT COUNT(*) AS n FROM leads').get().n;
   if (existing) return;
   const owners = db.prepare("SELECT id, name, team FROM users WHERE role IN ('lead_manager','trainer')").all();
