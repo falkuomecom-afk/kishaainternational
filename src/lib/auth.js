@@ -24,7 +24,7 @@ function verifyPassword(password, stored) {
 
 const sha256 = (v) => crypto.createHash('sha256').update(String(v)).digest('hex');
 
-function createSession(userId, req) {
+async function createSession(userId, req) {
   const raw = crypto.randomBytes(32).toString('hex');
   const csrf = crypto.randomBytes(24).toString('hex');
   const expires = new Date(Date.now() + SESSION_HOURS * 3600e3).toISOString();
@@ -40,21 +40,23 @@ function createSession(userId, req) {
 
   if (supabase.isAvailable()) {
     try {
-      supabase.getClient().from('sessions').insert({
+      await supabase.getClient().from('sessions').insert({
         id: sid,
         user_id: userId,
         csrf,
         ip,
         user_agent: ua,
         expires_at: expires,
-      }).then(() => {}).catch(() => {});
-    } catch (e) {}
+      });
+    } catch (e) {
+      console.warn('[auth:createSession] Supabase session error:', e.message);
+    }
   }
 
   return { token: raw, csrf, expires };
 }
 
-function destroySession(token) {
+async function destroySession(token) {
   if (!token) return;
   const sid = sha256(token);
   try {
@@ -62,8 +64,7 @@ function destroySession(token) {
   } catch (e) {}
   if (supabase.isAvailable()) {
     try {
-      supabase.getClient().from('sessions').update({ revoked_at: new Date().toISOString() }).eq('id', sid)
-        .then(() => {}).catch(() => {});
+      await supabase.getClient().from('sessions').update({ revoked_at: new Date().toISOString() }).eq('id', sid);
     } catch (e) {}
   }
 }

@@ -111,17 +111,17 @@ router.post('/login', async (req, res) => {
     return fail('Those credentials did not match an active account.');
   }
   db.prepare(`UPDATE users SET failed_logins = 0, locked_until = NULL, last_login_at = datetime('now') WHERE id = ?`).run(user.id);
-  const session = authLib.createSession(user.id, req);
+  const session = await authLib.createSession(user.id, req);
   authLib.setAuthCookies(res, session.token, session.csrf, req.secure);
   audit(user, 'auth.login', 'users', user.id, { role: user.role }, ip);
   const next = String(req.body.next || '').startsWith('/admin') ? req.body.next : '/admin';
   res.redirect(next);
 });
 
-router.post('/logout', (req, res) => {
+router.post('/logout', async (req, res) => {
   const token = (req.cookies || {})[authLib.SESSION_COOKIE];
   audit(req.user, 'auth.logout', 'users', req.user?.id || null, {}, req.ip);
-  authLib.destroySession(token);
+  await authLib.destroySession(token);
   authLib.clearAuthCookies(res);
   res.redirect('/admin/login');
 });
