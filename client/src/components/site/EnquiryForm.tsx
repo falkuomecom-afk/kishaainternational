@@ -119,7 +119,7 @@ export function EnquiryForm({
       : "border-navy/20 bg-white text-navy placeholder:text-navy/35"
   }`;
   const labelCls = `mb-1.5 block text-[12px] font-semibold uppercase tracking-[0.14em] ${
-    dark ? "text-white/60" : "text-navy/60"
+    dark ? "text-white/80" : "text-navy/80"
   }`;
 
   if (submit.isSuccess) {
@@ -250,8 +250,8 @@ export function EnquiryForm({
                 form.contactPref === m
                   ? "border-gold bg-gold text-navy"
                   : dark
-                    ? "border-white/20 text-white/70 hover:border-gold"
-                    : "border-navy/20 text-navy/70 hover:border-gold"
+                    ? "border-white/20 text-white/85 hover:border-gold"
+                    : "border-navy/20 text-navy/80 hover:border-gold"
               }`}
             >
               <input
@@ -289,9 +289,14 @@ export function EnquiryForm({
             checked={form.consentNotice}
             onChange={(e) => set("consentNotice", e.target.checked)}
           />
-          <span className={dark ? "text-white/70" : "text-navy/70"}>
+          <span className={dark ? "text-white/85" : "text-navy/80"}>
             I have read the{" "}
-            <Link to="/privacy" className="text-gold-dark underline underline-offset-2">
+            <Link
+              to="/privacy"
+              className={`${
+                dark ? "text-[#ECC248] hover:text-white" : "text-gold-dark hover:text-navy"
+              } underline underline-offset-2 font-medium transition-colors`}
+            >
               privacy notice
             </Link>{" "}
             and agree to be contacted about my enquiry. *
@@ -304,7 +309,7 @@ export function EnquiryForm({
             checked={form.marketingConsent}
             onChange={(e) => set("marketingConsent", e.target.checked)}
           />
-          <span className={dark ? "text-white/50" : "text-navy/50"}>
+          <span className={dark ? "text-white/75" : "text-navy/70"}>
             I would also like to receive occasional program updates (optional).
           </span>
         </label>

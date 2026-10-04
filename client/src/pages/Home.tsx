@@ -19,6 +19,8 @@ import {
   Sparkles,
   ExternalLink,
   ShieldCheck,
+  Clock,
+  Award,
 } from "lucide-react";
 import { trpc } from "@/providers/trpc";
 import { Seo, orgJsonLd, zebJsonLd, faqJsonLd } from "@/lib/seo";
@@ -26,24 +28,37 @@ import { useReveal } from "@/lib/reveal";
 import { SITE, waLink } from "@/lib/site";
 import { ProgramCard, TestimonialCard, FaqAccordion } from "@/components/site/blocks";
 import { EnquiryForm } from "@/components/site/EnquiryForm";
+import { AnimatedCounter } from "@/components/site/AnimatedCounter";
 import type { Program, Testimonial, Faq } from "@/types";
 
 const TRIAD = [
   {
     icon: GraduationCap,
     title: "Career Counseling & Admissions",
+    badge: "2027 Intakes Open",
+    pulseColor: "bg-emerald-400",
+    statusText: "Active Intakes",
+    highlights: ["UK (MOI Accepted)", "Italy Full Scholarships", "Finland Family Route"],
     text: "Educational pathway planning, university admissions across the UK, Italy, Finland, Georgia, Canada and beyond — with CV and interview preparation.",
     to: "/career-counseling",
   },
   {
     icon: Globe2,
     title: "Immigration Consultancy",
+    badge: "Official PRO & GDRFA",
+    pulseColor: "bg-[#ECC248]",
+    statusText: "Verified Channels",
+    highlights: ["Canada 10-Yr LOI", "UAE Golden & Green", "Schengen 4-Pillar"],
     text: "Transparent visa consultancy: Canada 10-Yr LOI visit visas, UAE Golden & Freelance visas (PRO & GDRFA approved), Turkey, Serbia, Romania and Schengen.",
     to: "/immigration-consultancy",
   },
   {
     icon: BookOpenCheck,
     title: "Cambridge Courses Training",
+    badge: "British Council Certified",
+    pulseColor: "bg-cyan-400",
+    statusText: "Zeb Khan Masterclass",
+    highlights: ["Band 6.5 to 7.5 Plan", "Spoken English Track", "Executive Coaching"],
     text: "Spoken English, IELTS Academic & General, and Cambridge English tracks — led by British Council Certified Trainer Zeb Khan.",
     to: "/cambridge-courses",
   },
@@ -206,21 +221,25 @@ const PROCESS_STEPS = [
   {
     step: "01",
     title: "Discover",
+    badge: "Intake & Profile",
     detail: "Share your goal — study abroad, visa pathway, or English training — and your preferred destinations.",
   },
   {
     step: "02",
     title: "Calculate",
+    badge: "Statutory Modeling",
     detail: "We model tuition, flight estimates, city living costs and the statutory bank statement rule with real dates.",
   },
   {
     step: "03",
     title: "Verify",
+    badge: "Official Gazettes",
     detail: "Inspect credentialed authorities, official embassy requirements, and transparent milestone fee structures.",
   },
   {
     step: "04",
     title: "Convert",
+    badge: "Direct Execution",
     detail: "Choose phone, WhatsApp or email — a named senior consultant responds within one business day.",
   },
 ];
@@ -293,86 +312,278 @@ export default function Home() {
       />
 
       {/* 01 — Triad Hero */}
-      <section className="relative overflow-hidden bg-navy text-white">
+      <section className="relative overflow-hidden bg-[#00142e] text-white flex flex-col justify-center min-h-[540px] lg:min-h-[580px]">
+        {/* Background photo - Mobile portrait (.webp) */}
         <div
-          className="pointer-events-none absolute inset-0 opacity-[0.07]"
+          className="absolute inset-0 bg-cover bg-no-repeat bg-[position:center_top] sm:hidden pointer-events-none"
           style={{
-            backgroundImage:
-              "radial-gradient(circle at 20% 30%, #c9a227 0, transparent 40%), radial-gradient(circle at 85% 75%, #c9a227 0, transparent 35%)",
+            backgroundImage: "url('/img/hero-global-career-mobile.webp')",
           }}
+          role="img"
+          aria-label="Global traveler overlooking international destination skyline"
         />
-        <div className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 md:py-32">
-          <div className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-4 py-1.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-gold">
-            <Sparkles className="h-3.5 w-3.5" /> Gateway to Global Careers · One Company, Global Solutions
-          </div>
-          <h1 className="mt-6 max-w-4xl font-serif text-5xl font-medium leading-[1.05] md:text-7xl">
-            Your global career,
-            <br />
-            <span className="text-gold">engineered with precision.</span>
-          </h1>
-          <p className="mt-8 max-w-2xl text-lg leading-relaxed text-white/70">
-            Explore expert career counseling, immigration consultancy, and Cambridge courses
-            training with Kishaa International — from 10-year Canada visit visas with business LOI
-            letters to UK, Italy, Finland and Georgia admissions, and English mastery under British
-            Council Certified Trainer Zeb Khan.
-          </p>
+        {/* Soft mobile overlay: keeps image vibrant while guaranteeing text contrast */}
+        <div
+          className="absolute inset-0 bg-gradient-to-b from-[#00142e]/85 via-[#00142e]/45 to-[#00142e]/90 sm:hidden pointer-events-none"
+        />
 
-          <div className="mt-10 flex flex-wrap gap-4">
-            <Link to="/contact" className="btn-gold">
-              Request a Visa & Admissions Consultation
-            </Link>
-            <Link to="/cambridge-courses" className="btn-frame-light">
-              Explore Cambridge & IELTS Courses
-            </Link>
-          </div>
+        {/* Background photo - Desktop landscape (.webp) */}
+        <div
+          className="absolute inset-0 bg-cover bg-no-repeat bg-right hidden sm:block pointer-events-none"
+          style={{
+            backgroundImage: "url('/img/hero-global-career.webp')",
+          }}
+          role="img"
+          aria-label="Global traveler overlooking international destination skyline"
+        />
+        {/* Subtle desktop left-edge gradient to ensure seamless dark navy behind text across all screen widths */}
+        <div
+          className="absolute inset-0 bg-gradient-to-r from-[#00142e] via-[#00142e]/60 to-transparent w-full md:w-[55%] hidden sm:block pointer-events-none"
+        />
 
-          {/* Trust badges */}
-          <div className="mt-12 flex flex-wrap items-center gap-3 text-[13px] text-white/80">
-            <span className="inline-flex items-center gap-1.5 rounded-md border border-white/15 bg-white/5 px-3 py-1.5">
-              <BadgeCheck className="h-4 w-4 text-gold" /> British Council Certified Trainer
+        <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 md:py-20 lg:py-24 w-full">
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-navy/80 backdrop-blur-sm px-4 py-1.5 text-[11px] sm:text-[12px] font-semibold uppercase tracking-[0.16em] text-gold">
+              <Sparkles className="h-3.5 w-3.5 text-gold shrink-0" /> GATEWAY TO GLOBAL CAREERS · ONE COMPANY, GLOBAL SOLUTIONS
+            </div>
+            <h1 className="mt-6 font-serif text-3xl sm:text-5xl md:text-6xl font-medium leading-[1.08] tracking-tight">
+              Your global career,
+              <br />
+              <span className="text-[#ECC248] drop-shadow-[0_2px_12px_rgba(201,162,39,0.3)]">engineered with precision.</span>
+            </h1>
+            <p className="mt-5 text-sm sm:text-base md:text-lg leading-relaxed text-white/80">
+              Explore expert career counseling, immigration consultancy, and Cambridge courses
+              training with Kishaa International — from 10-year Canada visit visas with business LOI
+              letters to UK, Italy, Finland and Georgia admissions, and English mastery under British
+              Council Certified Trainer Zeb Khan.
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-4">
+              <Link to="/contact" className="btn-gold uppercase tracking-wider text-xs sm:text-sm font-semibold">
+                Request a Visa & Admissions Consultation →
+              </Link>
+              <Link to="/cambridge-courses" className="btn-frame-light uppercase tracking-wider text-xs sm:text-sm font-semibold">
+                Explore Cambridge & IELTS Courses
+              </Link>
+            </div>
+
+            {/* Trust badges */}
+            <div className="mt-8 flex flex-wrap items-center gap-3 text-[12px] sm:text-[13px] text-white/90">
+              <span className="inline-flex items-center gap-2 rounded-md border border-white/20 bg-navy/70 backdrop-blur-sm px-3.5 py-2">
+                <BadgeCheck className="h-4 w-4 text-gold shrink-0" /> British Council Certified Trainer
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-md border border-white/20 bg-navy/70 backdrop-blur-sm px-3.5 py-2">
+                <ShieldCheck className="h-4 w-4 text-gold shrink-0" /> PRO & GDRFA Approved Channels
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-md border border-white/20 bg-navy/70 backdrop-blur-sm px-3.5 py-2">
+                <FileCheck2 className="h-4 w-4 text-gold shrink-0" /> Statutory Sources Dated & Versioned
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 01b — Stats Bar & Service Pillars */}
+      <section className="relative bg-gradient-to-b from-[#00142e] via-[#021327] to-[#041021] text-white border-y border-white/10 overflow-hidden z-10 py-12 sm:py-16">
+        {/* Subtle ambient gradient mesh in background */}
+        <div className="absolute -top-40 -left-40 h-96 w-96 rounded-full bg-gradient-to-br from-[#ECC248]/15 via-gold/5 to-transparent blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-gradient-to-tl from-[#1e4a7a]/20 via-transparent to-transparent blur-3xl pointer-events-none" />
+
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 w-full">
+          {/* Top Live Verification Strip */}
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 text-[12px] text-white/70">
+            <div className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-white/5 backdrop-blur-md px-3.5 py-1 text-gold">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ECC248] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#ECC248]"></span>
+              </span>
+              <span className="font-semibold uppercase tracking-[0.16em] text-[11px]">Real-Time Statutory Registry · 2026/2027 Active</span>
+            </div>
+            <span className="text-[11.5px] text-white/60 hidden sm:inline-block">
+              Verified against official embassy gazettes (IRCC, UKVI, BAföG, GDRFA)
             </span>
-            <span className="inline-flex items-center gap-1.5 rounded-md border border-white/15 bg-white/5 px-3 py-1.5">
-              <ShieldCheck className="h-4 w-4 text-gold" /> PRO & GDRFA Approved Channels
-            </span>
-            <span className="inline-flex items-center gap-1.5 rounded-md border border-white/15 bg-white/5 px-3 py-1.5">
-              <FileCheck2 className="h-4 w-4 text-gold" /> Statutory Sources Dated & Versioned
-            </span>
           </div>
 
-          {/* Stats Bar */}
-          <div className="mt-16 grid grid-cols-2 gap-4 border-t border-white/10 pt-10 sm:grid-cols-4">
-            <div>
-              <p className="font-serif text-3xl font-medium text-gold md:text-4xl">26</p>
-              <p className="mt-1 text-[13px] text-white/60">Countries with sourced cost data</p>
+          {/* 4 Separate luxury Cards with animated numbers, hover glow, and blinking live badges */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 sm:gap-6">
+            {/* Card 1: Countries */}
+            <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/15 bg-gradient-to-br from-[#0c284d]/90 via-[#071d38]/85 to-[#030e1d]/95 p-6 backdrop-blur-md transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#ECC248] hover:shadow-[0_16px_40px_rgba(201,162,39,0.25)]">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#ECC248]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#ECC248]/40 to-transparent group-hover:via-[#ECC248] transition-all duration-500" />
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 text-[10.5px] font-semibold uppercase tracking-wider text-emerald-400">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+                    </span>
+                    Live Calculators
+                  </span>
+                  <Globe2 className="h-4 w-4 text-white/30 group-hover:text-gold transition-colors duration-300" />
+                </div>
+                <div className="mt-4 font-serif text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-[#ECC248] via-[#FFF3C4] to-[#C9A227] bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300 origin-left inline-block">
+                  <AnimatedCounter end={countryList.length || 18} duration={1200} />
+                </div>
+                <p className="mt-2 text-[13.5px] sm:text-[14px] font-medium text-white/85 group-hover:text-white transition-colors">
+                  Countries with sourced cost data
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
+                <span className="text-[11px] text-gold/80 font-mono">
+                  Live statutory calculators
+                </span>
+                <span className="text-[10px] uppercase tracking-wider text-emerald-400/80 font-semibold">Active</span>
+              </div>
             </div>
-            <div>
-              <p className="font-serif text-3xl font-medium text-gold md:text-4xl">60–70</p>
-              <p className="mt-1 text-[13px] text-white/60">Days typical Canada visit processing</p>
+
+            {/* Card 2: Processing Days */}
+            <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/15 bg-gradient-to-br from-[#0c284d]/90 via-[#071d38]/85 to-[#030e1d]/95 p-6 backdrop-blur-md transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#ECC248] hover:shadow-[0_16px_40px_rgba(201,162,39,0.25)]">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#ECC248]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#ECC248]/40 to-transparent group-hover:via-[#ECC248] transition-all duration-500" />
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 px-2.5 py-0.5 text-[10.5px] font-semibold uppercase tracking-wider text-[#ECC248]">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ECC248] opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-[#ECC248]"></span>
+                    </span>
+                    IRCC Portal Sync
+                  </span>
+                  <Clock className="h-4 w-4 text-white/30 group-hover:text-gold transition-colors duration-300" />
+                </div>
+                <div className="mt-4 font-serif text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-[#ECC248] via-[#FFF3C4] to-[#C9A227] bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300 origin-left inline-block">
+                  <AnimatedCounter range={[60, 70]} duration={1400} />
+                </div>
+                <p className="mt-2 text-[13.5px] sm:text-[14px] font-medium text-white/85 group-hover:text-white transition-colors">
+                  Days typical Canada visit processing
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
+                <span className="text-[11px] text-gold/80 font-mono">
+                  Business LOI &amp; IRCC portal
+                </span>
+                <span className="text-[10px] uppercase tracking-wider text-amber-300/80 font-semibold">Fast-track</span>
+              </div>
             </div>
-            <div>
-              <p className="font-serif text-3xl font-medium text-gold md:text-4xl">2</p>
-              <p className="mt-1 text-[13px] text-white/60">Offices — Dubai HQ & Pakistan</p>
+
+            {/* Card 3: Dual Offices */}
+            <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/15 bg-gradient-to-br from-[#0c284d]/90 via-[#071d38]/85 to-[#030e1d]/95 p-6 backdrop-blur-md transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#ECC248] hover:shadow-[0_16px_40px_rgba(201,162,39,0.25)]">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#ECC248]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#ECC248]/40 to-transparent group-hover:via-[#ECC248] transition-all duration-500" />
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 px-2.5 py-0.5 text-[10.5px] font-semibold uppercase tracking-wider text-cyan-400">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-400"></span>
+                    </span>
+                    Dual Hub HQ
+                  </span>
+                  <Building2 className="h-4 w-4 text-white/30 group-hover:text-gold transition-colors duration-300" />
+                </div>
+                <div className="mt-4 font-serif text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-[#ECC248] via-[#FFF3C4] to-[#C9A227] bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300 origin-left inline-block">
+                  <AnimatedCounter end={2} duration={1000} />
+                </div>
+                <p className="mt-2 text-[13.5px] sm:text-[14px] font-medium text-white/85 group-hover:text-white transition-colors">
+                  Offices — Dubai HQ &amp; Pakistan
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
+                <span className="text-[11px] text-gold/80 font-mono">
+                  PRO &amp; British Council registered
+                </span>
+                <span className="text-[10px] uppercase tracking-wider text-cyan-300/80 font-semibold">Registered</span>
+              </div>
             </div>
-            <div>
-              <p className="font-serif text-3xl font-medium text-gold md:text-4xl">4.9 ★</p>
-              <p className="mt-1 text-[13px] text-white/60">Average rating across 200+ reviews</p>
+
+            {/* Card 4: Reviews Rating */}
+            <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/15 bg-gradient-to-br from-[#0c284d]/90 via-[#071d38]/85 to-[#030e1d]/95 p-6 backdrop-blur-md transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#ECC248] hover:shadow-[0_16px_40px_rgba(201,162,39,0.25)]">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#ECC248]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#ECC248]/40 to-transparent group-hover:via-[#ECC248] transition-all duration-500" />
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/15 border border-gold/30 px-2.5 py-0.5 text-[10.5px] font-semibold uppercase tracking-wider text-gold">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ECC248] opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-[#ECC248]"></span>
+                    </span>
+                    200+ Verified
+                  </span>
+                  <Star className="h-4 w-4 text-gold fill-gold/30 group-hover:fill-gold transition-colors duration-300" />
+                </div>
+                <div className="mt-4 font-serif text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-[#ECC248] via-[#FFF3C4] to-[#C9A227] bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300 origin-left inline-block">
+                  <AnimatedCounter end={4.9} decimals={1} suffix=" ★" duration={1400} />
+                </div>
+                <p className="mt-2 text-[13.5px] sm:text-[14px] font-medium text-white/85 group-hover:text-white transition-colors">
+                  Average rating across 200+ reviews
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
+                <span className="text-[11px] text-gold/80 font-mono">
+                  Google &amp; Trustpilot verified
+                </span>
+                <span className="text-[10px] uppercase tracking-wider text-gold font-semibold">100% Legit</span>
+              </div>
             </div>
           </div>
 
-          {/* Triad cards */}
-          <div className="mt-16 grid gap-px bg-white/10 md:grid-cols-3">
+          {/* Triad cards with deep sapphire gradients, glowing hover, and animated arrow */}
+          <div className="mt-8 sm:mt-10 grid gap-6 md:grid-cols-3">
             {TRIAD.map((t) => (
               <Link
                 key={t.title}
                 to={t.to}
-                className="group bg-navy p-8 transition-colors hover:bg-navy-light"
+                className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gold/30 bg-gradient-to-br from-[#0c284d] via-[#071d38] to-[#030e1d] p-7 sm:p-8 transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#ECC248] hover:shadow-[0_20px_50px_rgba(201,162,39,0.25)]"
               >
-                <t.icon className="h-8 w-8 text-gold" strokeWidth={1.5} />
-                <h2 className="mt-5 font-serif text-2xl font-medium">{t.title}</h2>
-                <p className="mt-3 text-[14px] leading-relaxed text-white/60">{t.text}</p>
-                <span className="mt-5 inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.16em] text-gold">
-                  Explore <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-                </span>
+                {/* Decorative radial card glow */}
+                <div className="absolute top-0 right-0 h-40 w-40 bg-gradient-to-bl from-gold/15 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#ECC248]/40 to-transparent group-hover:via-[#ECC248] transition-all duration-500" />
+
+                <div>
+                  <div className="flex items-center justify-between">
+                    <div className="inline-flex h-13 w-13 items-center justify-center rounded-xl bg-gradient-to-br from-gold/25 via-gold/10 to-transparent border border-gold/40 text-[#ECC248] shadow-[0_4px_20px_rgba(201,162,39,0.2)] group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                      <t.icon className="h-6 w-6" strokeWidth={1.75} />
+                    </div>
+                    {t.badge && (
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/15 px-3 py-1 text-[10.5px] font-bold uppercase tracking-wider text-gold border border-gold/30">
+                        <span className="relative flex h-1.5 w-1.5">
+                          <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${t.pulseColor || 'bg-gold'} opacity-75`}></span>
+                          <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${t.pulseColor || 'bg-gold'}`}></span>
+                        </span>
+                        {t.badge}
+                      </span>
+                    )}
+                  </div>
+
+                  <h2 className="mt-6 font-serif text-2xl font-medium text-white group-hover:text-[#ECC248] transition-colors leading-snug">
+                    {t.title}
+                  </h2>
+
+                  <p className="mt-3 text-[14px] leading-relaxed text-white/70">
+                    {t.text}
+                  </p>
+
+                  {/* Highlights list */}
+                  {t.highlights && (
+                    <div className="mt-4 flex flex-wrap gap-1.5">
+                      {t.highlights.map((h: string) => (
+                        <span key={h} className="rounded-md bg-white/5 px-2.5 py-1 text-[11px] font-medium text-white/80 border border-white/10 group-hover:border-gold/30 group-hover:text-gold transition-colors">
+                          {h}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-8 pt-5 border-t border-white/10 flex items-center justify-between">
+                  <span className="inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#ECC248]">
+                    Explore Route <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-2 text-gold" />
+                  </span>
+                  <span className="text-[10.5px] font-semibold uppercase tracking-wider text-white/40 flex items-center gap-1.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+                    Official advisory
+                  </span>
+                </div>
               </Link>
             ))}
           </div>
@@ -380,47 +591,139 @@ export default function Home() {
       </section>
 
       {/* 02 — Answer-First Section (AEO / GEO Authority Card) */}
-      <section className="border-b border-navy/10 bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-          <div className="rounded-2xl border border-gold/30 bg-[#FAF9F5] p-8 md:p-12 shadow-sm">
-            <div className="flex items-center gap-2 text-gold-dark">
-              <HelpCircle className="h-5 w-5" />
-              <span className="eyebrow !text-gold-dark !mb-0">Direct Answer</span>
-            </div>
-            <h2 className="mt-3 font-serif text-2xl font-medium text-navy md:text-3xl">
-              What does Kishaa International actually do?
-            </h2>
-            <p className="mt-4 text-[16px] leading-relaxed text-navy/80 md:text-[17px]">
-              Kishaa International is a Dubai-headquartered consultancy with a Pakistan office that
-              delivers three integrated services: <strong>career counseling & university admissions</strong>,{" "}
-              <strong>immigration & visa consultancy</strong>, and <strong>Cambridge & IELTS training</strong>.
-              You can compare destinations, calculate flight, city living and statutory proof-of-funds costs on
-              this site for free, then book a consultation with a named advisor — with transparent fees,
-              no guaranteed-outcome promises, and no payment until scope is confirmed in writing.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-4 text-[13px] font-semibold uppercase tracking-[0.1em]">
-              <Link to="/about" className="inline-flex items-center gap-1.5 text-navy hover:text-gold-dark">
-                About our firm <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-              <span className="text-navy/20">·</span>
-              <Link to="/cost-planner" className="inline-flex items-center gap-1.5 text-navy hover:text-gold-dark">
-                Free Cost Intelligence <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-              <span className="text-navy/20">·</span>
-              <Link to="/team/zeb-khan" className="inline-flex items-center gap-1.5 text-navy hover:text-gold-dark">
-                Senior Consultant Profile <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
+      <section className="border-b border-navy/10 bg-gradient-to-b from-white to-[#FDFBF7] py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="relative overflow-hidden rounded-3xl border-2 border-[#C9A227]/40 bg-gradient-to-br from-[#FFFDF9] via-[#FAF5EA] to-[#F1E6CE] p-8 md:p-12 shadow-[0_16px_50px_rgba(201,162,39,0.14)] transition-all duration-300 hover:shadow-[0_24px_60px_rgba(201,162,39,0.22)]">
+            {/* Ambient decorative gradient meshes */}
+            <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-gradient-to-br from-[#ECC248]/25 via-gold/10 to-transparent blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-gradient-to-tr from-navy/10 via-transparent to-transparent blur-3xl pointer-events-none" />
+
+            <div className="relative z-10">
+              <div className="inline-flex items-center gap-2 rounded-full bg-gold/20 backdrop-blur-sm px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-gold-dark border border-gold/40">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold-dark opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-gold-dark"></span>
+                </span>
+                DIRECT ANSWER · 2026/2027 EXECUTIVE REGULATORY ADVISORY
+              </div>
+
+              <h2 className="mt-4 font-serif text-2xl font-medium text-navy sm:text-3xl md:text-4xl leading-tight">
+                What does Kishaa International <span className="bg-gradient-to-r from-navy via-navy to-gold-dark bg-clip-text">actually do?</span>
+              </h2>
+
+              <p className="mt-4 text-[16px] leading-relaxed text-navy/85 md:text-[17.5px]">
+                Kishaa International is a Dubai-headquartered consultancy with a Pakistan office that
+                delivers three integrated services:
+              </p>
+
+              {/* Dynamic 3-Pillar Highlight Chips */}
+              <div className="mt-6 grid gap-4 sm:grid-cols-3">
+                <Link
+                  to="/career-counseling"
+                  className="group rounded-xl border border-gold/30 bg-white/80 backdrop-blur-xs p-4 shadow-xs transition-all duration-300 hover:-translate-y-1.5 hover:border-gold hover:shadow-md hover:bg-white"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="text-gold-dark font-serif text-lg font-semibold flex items-center gap-2">
+                      <GraduationCap className="h-5 w-5 text-gold-dark group-hover:scale-110 transition-transform" />
+                      01 · Admissions
+                    </div>
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                  </div>
+                  <div className="text-[13px] font-medium text-navy/80 mt-2 group-hover:text-navy transition-colors">
+                    Career counseling &amp; university admissions across UK, Italy, Finland &amp; Georgia
+                  </div>
+                  <div className="mt-3 flex items-center gap-1 text-[11px] font-semibold text-gold-dark uppercase tracking-wider group-hover:translate-x-1 transition-transform">
+                    Explore Admissions <ArrowRight className="h-3 w-3" />
+                  </div>
+                </Link>
+
+                <Link
+                  to="/immigration-consultancy"
+                  className="group rounded-xl border border-gold/30 bg-white/80 backdrop-blur-xs p-4 shadow-xs transition-all duration-300 hover:-translate-y-1.5 hover:border-gold hover:shadow-md hover:bg-white"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="text-gold-dark font-serif text-lg font-semibold flex items-center gap-2">
+                      <Globe2 className="h-5 w-5 text-gold-dark group-hover:scale-110 transition-transform" />
+                      02 · Immigration
+                    </div>
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C9A227] opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-[#C9A227]"></span>
+                    </span>
+                  </div>
+                  <div className="text-[13px] font-medium text-navy/80 mt-2 group-hover:text-navy transition-colors">
+                    Canada 10-Yr LOI visit visas, UAE Golden/Green visas &amp; Schengen routes
+                  </div>
+                  <div className="mt-3 flex items-center gap-1 text-[11px] font-semibold text-gold-dark uppercase tracking-wider group-hover:translate-x-1 transition-transform">
+                    Explore Visas <ArrowRight className="h-3 w-3" />
+                  </div>
+                </Link>
+
+                <Link
+                  to="/cambridge-courses"
+                  className="group rounded-xl border border-gold/30 bg-white/80 backdrop-blur-xs p-4 shadow-xs transition-all duration-300 hover:-translate-y-1.5 hover:border-gold hover:shadow-md hover:bg-white"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="text-gold-dark font-serif text-lg font-semibold flex items-center gap-2">
+                      <BookOpenCheck className="h-5 w-5 text-gold-dark group-hover:scale-110 transition-transform" />
+                      03 · Cambridge
+                    </div>
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-500 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+                    </span>
+                  </div>
+                  <div className="text-[13px] font-medium text-navy/80 mt-2 group-hover:text-navy transition-colors">
+                    IELTS Academic/General band 7.5 prep &amp; Cambridge training with Zeb Khan
+                  </div>
+                  <div className="mt-3 flex items-center gap-1 text-[11px] font-semibold text-gold-dark uppercase tracking-wider group-hover:translate-x-1 transition-transform">
+                    Explore Courses <ArrowRight className="h-3 w-3" />
+                  </div>
+                </Link>
+              </div>
+
+              <p className="mt-5 text-[15px] leading-relaxed text-navy/80">
+                You can compare destinations, calculate flight, city living and statutory proof-of-funds costs on
+                this site for free, then book a consultation with a named advisor — with transparent fees,
+                no guaranteed-outcome promises, and no payment until scope is confirmed in writing.
+              </p>
+
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Link
+                  to="/about"
+                  className="group inline-flex items-center gap-2 rounded-xl border border-navy/15 bg-white/90 backdrop-blur-sm px-5 py-2.5 text-[12.5px] font-bold uppercase tracking-wider text-navy shadow-xs transition-all duration-200 hover:border-gold hover:text-gold-dark hover:bg-white hover:shadow-md hover:-translate-y-0.5"
+                >
+                  About our firm <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1.5 text-gold-dark" />
+                </Link>
+                <Link
+                  to="/cost-planner"
+                  className="group inline-flex items-center gap-2 rounded-xl border border-navy/15 bg-white/90 backdrop-blur-sm px-5 py-2.5 text-[12.5px] font-bold uppercase tracking-wider text-navy shadow-xs transition-all duration-200 hover:border-gold hover:text-gold-dark hover:bg-white hover:shadow-md hover:-translate-y-0.5"
+                >
+                  Free Cost Intelligence <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1.5 text-gold-dark" />
+                </Link>
+                <Link
+                  to="/team/zeb-khan"
+                  className="group inline-flex items-center gap-2 rounded-xl border border-navy/15 bg-white/90 backdrop-blur-sm px-5 py-2.5 text-[12.5px] font-bold uppercase tracking-wider text-navy shadow-xs transition-all duration-200 hover:border-gold hover:text-gold-dark hover:bg-white hover:shadow-md hover:-translate-y-0.5"
+                >
+                  Senior Consultant Profile <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1.5 text-gold-dark" />
+                </Link>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* 03 — Cost planner teaser */}
-      <section className="border-b border-navy/10 bg-paper">
-        <div className="mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:items-center">
+      <section className="border-b border-navy/10 bg-paper py-16 sm:py-20">
+        <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:items-center">
           <div className="reveal">
-            <p className="eyebrow">Live ticket & cost calculator</p>
-            <h2 className="mt-4 font-serif text-4xl font-medium text-navy md:text-5xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-gold/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-gold-dark">
+              <Sparkles className="h-3 w-3 text-gold-dark" /> Live ticket &amp; cost calculator
+            </div>
+            <h2 className="mt-4 font-serif text-3xl sm:text-4xl font-medium text-navy md:text-5xl">
               Know your budget before you commit.
             </h2>
             <p className="mt-5 text-[16px] leading-relaxed text-navy/70">
@@ -429,21 +732,29 @@ export default function Home() {
             </p>
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
               {[
-                { icon: Plane, label: "Flight tickets" },
-                { icon: Wallet, label: "Living costs" },
-                { icon: Landmark, label: "Bank statements" },
+                { icon: Plane, label: "Flight tickets", desc: "Live IATA route estimates" },
+                { icon: Wallet, label: "Living costs", desc: "City rent & utility indexes" },
+                { icon: Landmark, label: "Bank statements", desc: "Statutory embassy rules" },
               ].map((x) => (
-                <div key={x.label} className="border border-navy/10 bg-white p-4 text-center">
-                  <x.icon className="mx-auto h-6 w-6 text-gold-dark" strokeWidth={1.5} />
-                  <p className="mt-2 text-[12px] font-semibold uppercase tracking-[0.1em] text-navy/70">
+                <div
+                  key={x.label}
+                  className="group relative overflow-hidden rounded-xl border border-navy/10 bg-white p-5 text-center transition-all duration-300 hover:-translate-y-1.5 hover:border-gold hover:shadow-lg"
+                >
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-gold/10 border border-gold/30 text-gold-dark group-hover:scale-110 group-hover:bg-gold/20 transition-all duration-300">
+                    <x.icon className="h-5 w-5" strokeWidth={1.75} />
+                  </div>
+                  <p className="mt-3 text-[13px] font-semibold uppercase tracking-[0.1em] text-navy group-hover:text-gold-dark transition-colors">
                     {x.label}
+                  </p>
+                  <p className="mt-1 text-[11px] text-navy/60">
+                    {x.desc}
                   </p>
                 </div>
               ))}
             </div>
             <div className="mt-8 flex flex-wrap gap-4">
-              <Link to="/cost-planner" className="btn-fill">
-                <Calculator className="h-4 w-4" /> Open the Cost Planner
+              <Link to="/cost-planner" className="btn-fill group">
+                <Calculator className="h-4 w-4 text-gold group-hover:scale-110 transition-transform" /> Open the Cost Planner
               </Link>
               <Link to="/bank-statements" className="btn-frame">
                 Bank Statement Guide
@@ -451,15 +762,22 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="reveal border border-navy/10 bg-white p-8 rounded-xl shadow-sm">
-            <label htmlFor="teaser-country" className="eyebrow">
-              Quick preview — choose a destination
-            </label>
+          <div className="reveal border border-navy/10 bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between mb-3">
+              <label htmlFor="teaser-country" className="eyebrow flex items-center gap-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                Quick preview — choose destination
+              </label>
+              <span className="text-[11px] font-mono uppercase text-gold-dark font-semibold">2026/27 Live</span>
+            </div>
             <select
               id="teaser-country"
               value={teaserCountry}
               onChange={(e) => setTeaserCountry(e.target.value)}
-              className="mt-3 w-full border border-navy/20 px-4 py-3 text-[15px] text-navy outline-none focus:border-gold bg-white rounded"
+              className="w-full border border-navy/20 px-4 py-3 text-[15px] text-navy outline-none focus:border-gold bg-white rounded-xl transition-colors cursor-pointer"
             >
               {countryList.map((c) => (
                 <option key={c.slug} value={c.slug}>
@@ -490,9 +808,9 @@ export default function Home() {
                 </p>
                 <Link
                   to={`/cost-planner?country=${selected.slug}`}
-                  className="btn-frame w-full text-center block"
+                  className="btn-frame w-full text-center block rounded-xl hover:border-gold"
                 >
-                  Calculate my full estimate
+                  Calculate my full estimate →
                 </Link>
               </div>
             )}
@@ -501,11 +819,17 @@ export default function Home() {
       </section>
 
       {/* 04 — How a Kishaa Consultation Works (Process) */}
-      <section className="border-b border-navy/10 bg-white py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+      <section className="border-b border-navy/10 bg-gradient-to-b from-white via-[#FCFBF8] to-[#F7F4EC] py-20 relative overflow-hidden">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 relative">
           <div className="reveal text-center">
-            <p className="eyebrow">How we work</p>
-            <h2 className="mt-3 font-serif text-4xl font-medium text-navy md:text-5xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-gold/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-gold-dark">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold-dark opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-gold-dark"></span>
+              </span>
+              Standard Operating Procedure
+            </div>
+            <h2 className="mt-3 font-serif text-3xl sm:text-4xl font-medium text-navy md:text-5xl">
               Transparent consultation, from intake to outcome.
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-[16px] leading-relaxed text-navy/70">
@@ -514,15 +838,33 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {PROCESS_STEPS.map((p) => (
+          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4 relative">
+            {/* Desktop connector line */}
+            <div className="hidden lg:block absolute top-1/2 left-8 right-8 h-0.5 bg-gradient-to-r from-gold/30 via-gold/60 to-gold/30 -translate-y-8 z-0 pointer-events-none" />
+
+            {PROCESS_STEPS.map((p, idx) => (
               <div
                 key={p.step}
-                className="reveal flex flex-col rounded-xl border border-navy/10 bg-[#FAF9F5] p-7 transition-all hover:border-gold hover:shadow-md"
+                className="reveal group relative z-10 flex flex-col justify-between rounded-2xl border border-navy/10 bg-white/95 p-7 shadow-xs backdrop-blur-xs transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#C9A227] hover:shadow-[0_16px_40px_rgba(201,162,39,0.18)]"
               >
-                <span className="font-serif text-4xl font-semibold text-gold-dark">{p.step}</span>
-                <h3 className="mt-4 font-serif text-xl font-medium text-navy">{p.title}</h3>
-                <p className="mt-3 text-[14px] leading-relaxed text-navy/65">{p.detail}</p>
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#C9A227]/30 to-transparent group-hover:via-[#C9A227] transition-all duration-300" />
+                <div>
+                  <div className="flex items-center justify-between">
+                    <span className="font-serif text-4xl font-bold bg-gradient-to-br from-gold-dark via-gold to-[#ECC248] bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300 origin-left inline-block">
+                      {p.step}
+                    </span>
+                    <span className="inline-flex items-center gap-1 rounded-full bg-gold/15 border border-gold/30 px-2.5 py-0.5 text-[10.5px] font-semibold uppercase tracking-wider text-gold-dark">
+                      <span className="h-1.5 w-1.5 rounded-full bg-gold-dark"></span>
+                      {p.badge}
+                    </span>
+                  </div>
+                  <h3 className="mt-4 font-serif text-xl font-medium text-navy group-hover:text-gold-dark transition-colors">{p.title}</h3>
+                  <p className="mt-3 text-[14px] leading-relaxed text-navy/70">{p.detail}</p>
+                </div>
+                <div className="mt-6 pt-4 border-t border-navy/5 flex items-center justify-between text-[11px] font-mono text-navy/50">
+                  <span>STAGE 0{idx + 1}</span>
+                  <span className="group-hover:text-gold-dark transition-colors font-sans font-semibold">Verified Step →</span>
+                </div>
               </div>
             ))}
           </div>
@@ -552,18 +894,31 @@ export default function Home() {
       </section>
 
       {/* 06 — Meet Zeb Khan */}
-      <section className="bg-ink text-white">
-        <div className="mx-auto grid max-w-7xl gap-14 px-4 py-24 sm:px-6 lg:grid-cols-12 lg:items-center">
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#00142e] via-[#021327] to-[#041021] text-white py-24 border-y border-white/10">
+        <div className="absolute -top-32 -left-32 h-80 w-80 rounded-full bg-gold/10 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-32 -right-32 h-80 w-80 rounded-full bg-[#1e4a7a]/20 blur-3xl pointer-events-none" />
+
+        <div className="relative mx-auto grid max-w-7xl gap-14 px-4 sm:px-6 lg:grid-cols-12 lg:items-center">
           <div className="reveal lg:col-span-5">
-            <div className="relative overflow-hidden rounded-2xl border border-gold/30 bg-[#021226]/80 p-6 sm:p-8 text-center shadow-2xl">
+            <div className="group relative overflow-hidden rounded-3xl border border-gold/40 bg-gradient-to-br from-[#0c284d]/90 via-[#071d38]/90 to-[#030e1d]/95 p-7 sm:p-9 text-center shadow-2xl backdrop-blur-md transition-all duration-300 hover:border-[#ECC248] hover:shadow-[0_20px_60px_rgba(201,162,39,0.25)] hover:-translate-y-1.5">
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#ECC248]/50 to-transparent group-hover:via-[#ECC248] transition-all duration-500" />
+              
+              <div className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-gold/15 px-3.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-gold mb-5">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ECC248] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#ECC248]"></span>
+                </span>
+                Active 2026/2027 Admissions &amp; LOI Advisory
+              </div>
+
               <div className="relative mx-auto mb-6 h-64 w-52 sm:h-72 sm:w-60 overflow-hidden rounded-2xl border-2 border-gold/40 shadow-[0_4px_30px_rgba(201,162,39,0.3)]">
                 <img
                   src="/img/zeb-khan.png"
                   alt="Zeb Khan - Senior Consultant & Executive Trainer"
-                  className="h-full w-full object-cover object-top"
+                  className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
-              <h3 className="font-serif text-3xl font-medium text-white">Zeb Khan</h3>
+              <h3 className="font-serif text-3xl font-medium text-white group-hover:text-[#ECC248] transition-colors">Zeb Khan</h3>
               <p className="mt-2 text-[13px] uppercase tracking-[0.18em] text-[#ECC248] font-semibold">
                 Senior Consultant & Executive Trainer
               </p>
@@ -572,7 +927,7 @@ export default function Home() {
                   (c) => (
                     <span
                       key={c}
-                      className="rounded-md border border-gold/40 bg-gold/10 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.08em] text-gold"
+                      className="rounded-md border border-gold/40 bg-gold/10 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.08em] text-gold transition-colors hover:bg-gold/25"
                     >
                       {c}
                     </span>
@@ -582,8 +937,10 @@ export default function Home() {
             </div>
           </div>
           <div className="reveal lg:col-span-7">
-            <p className="eyebrow-light">Meet your trainer & consultant</p>
-            <h2 className="mt-4 font-serif text-4xl font-medium md:text-5xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-gold/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-gold mb-4">
+              <Sparkles className="h-3 w-3 text-gold" /> Meet your trainer &amp; consultant
+            </div>
+            <h2 className="mt-2 font-serif text-3xl sm:text-4xl font-medium md:text-5xl leading-tight">
               Trained by a British Council Certified Trainer.
             </h2>
             <p className="mt-6 max-w-xl text-[16px] leading-relaxed text-white/70">
@@ -594,21 +951,21 @@ export default function Home() {
               {(zeb?.expertise?.split("\n") ??
                 ["Career Counseling", "Canada 10-Yr LOI visas", "IELTS & Cambridge", "UAE PRO visas"]).map(
                 (e) => (
-                  <li key={e} className="flex items-start gap-2 text-[14px] text-white/75">
+                  <li key={e} className="flex items-start gap-2 text-[14px] text-white/80">
                     <Check className="mt-0.5 h-4 w-4 shrink-0 text-gold" /> {e}
                   </li>
                 ),
               )}
             </ul>
             <div className="mt-8 flex flex-wrap gap-4">
-              <Link to="/team/zeb-khan" className="btn-gold">
+              <Link to="/team/zeb-khan" className="btn-gold uppercase tracking-wider text-xs sm:text-sm font-semibold">
                 Meet Zeb Khan
               </Link>
               <a
                 href={waLink("Hello — I'd like to enquire about counseling & training with Zeb Khan.")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-frame-light"
+                className="btn-frame-light uppercase tracking-wider text-xs sm:text-sm font-semibold"
               >
                 Consult with Zeb Khan
               </a>
@@ -623,15 +980,15 @@ export default function Home() {
           <div className="reveal flex flex-wrap items-end justify-between gap-6">
             <div>
               <p className="eyebrow">Destination Intelligence Hub</p>
-              <h2 className="mt-3 font-serif text-4xl font-medium text-navy md:text-5xl">
+              <h2 className="mt-3 font-serif text-3xl sm:text-4xl font-medium text-navy md:text-5xl">
                 Global destinations with verified costs.
               </h2>
               <p className="mt-3 max-w-xl text-[15px] text-navy/65">
                 Accurate statutory embassy maintenance funds and city living expenses for 18+ study and migration destinations.
               </p>
             </div>
-            <Link to="/destinations" className="btn-frame">
-              All 18 destinations <ArrowRight className="h-4 w-4" />
+            <Link to="/destinations" className="btn-frame group">
+              All 18 destinations <ArrowRight className="h-4 w-4 group-hover:translate-x-1.5 transition-transform" />
             </Link>
           </div>
 
@@ -645,12 +1002,13 @@ export default function Home() {
                 <Link
                   key={c.slug}
                   to={`/destinations/${c.slug}`}
-                  className="reveal group flex flex-col justify-between rounded-xl border border-navy/10 bg-white p-6 transition-all duration-300 hover:border-gold hover:shadow-lg"
+                  className="reveal group relative flex flex-col justify-between rounded-2xl border border-navy/10 bg-white p-6 transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#C9A227] hover:shadow-[0_16px_36px_rgba(201,162,39,0.18)]"
                 >
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#C9A227]/30 to-transparent group-hover:via-[#C9A227] transition-all duration-300" />
                   <div>
                     <div className="flex items-center justify-between">
-                      <span className="text-3xl">{c.flag}</span>
-                      <span className="text-[11px] font-semibold uppercase tracking-wider text-navy/70">
+                      <span className="text-3xl group-hover:scale-110 transition-transform duration-300 origin-left inline-block">{c.flag}</span>
+                      <span className="text-[11px] font-semibold uppercase tracking-wider text-navy/60 bg-paper px-2.5 py-0.5 rounded-full border border-navy/10">
                         {c.region || "Destination"}
                       </span>
                     </div>
@@ -662,10 +1020,10 @@ export default function Home() {
                     </p>
                   </div>
                   <div className="mt-6 border-t border-navy/10 pt-4 flex items-center justify-between text-[13px]">
-                    <span className="font-semibold text-navy">
+                    <span className="font-semibold text-navy bg-gold/10 px-2 py-0.5 rounded text-[12px] text-gold-dark border border-gold/20">
                       {living?.standard ? `${living.currency || ""} ${Number(living.standard).toLocaleString()}/mo` : "Cost data inside"}
                     </span>
-                    <span className="text-gold-dark font-medium inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                    <span className="text-gold-dark font-medium inline-flex items-center gap-1 group-hover:translate-x-1.5 transition-transform text-[12.5px]">
                       View Guide <ArrowRight className="h-3.5 w-3.5" />
                     </span>
                   </div>

@@ -1,0 +1,194 @@
+{{#if error}}<div class="notice bad">{{error}}</div>{{/if}}
+
+<div class="page-head">
+  <div>
+    <h1>AI &amp; Bot Visibility Dashboard</h1>
+    <p>Live crawler activity, AI search engine readiness, and public surface inspection.</p>
+  </div>
+  <div class="spacer"></div>
+  <div class="row">
+    <a class="btn" href="/admin/ai-visibility">Refresh logs</a>
+  </div>
+</div>
+
+<!-- Tab Navigation -->
+<div class="tabs-nav" role="tablist">
+  <a class="tab-link" href="/admin">
+    <span>◈</span> Overview &amp; Pipeline
+  </a>
+  <a class="tab-link active" href="/admin/ai-visibility">
+    <span>🤖</span> AI &amp; Bot Visibility
+  </a>
+  <a class="tab-link" href="/admin/analytics">
+    <span>📊</span> Traffic &amp; SEO Analytics
+  </a>
+</div>
+
+<!-- =================================================== AI VISIBILITY =================================================== -->
+<div class="grid g4" style="margin-bottom:16px">
+  <div class="stat good">
+    <div class="k">Total Bot Crawls</div>
+    <div class="v">{{botStats.totals.total}}</div>
+    <div class="d">{{botStats.totals.last24h}} recorded in last 24 hours</div>
+  </div>
+  <div class="stat">
+    <div class="k">AI Intelligence Bots</div>
+    <div class="v" style="color:#6d28d9">{{botStats.totals.ai}}</div>
+    <div class="d">GPTBot · ClaudeBot · Perplexity · Gemini</div>
+  </div>
+  <div class="stat">
+    <div class="k">Search Engine Crawlers</div>
+    <div class="v" style="color:#1d4ed8">{{botStats.totals.search}}</div>
+    <div class="d">Googlebot · Bingbot · Yandex · Baidu</div>
+  </div>
+  <div class="stat">
+    <div class="k">Social Media Scrapers</div>
+    <div class="v" style="color:#b45309">{{botStats.totals.social}}</div>
+    <div class="d">Facebook · LinkedIn · Twitter/X · WhatsApp</div>
+  </div>
+</div>
+
+<!-- AI Engine Readiness Surfaces -->
+<div class="card" style="margin-bottom:18px;background:linear-gradient(to right, #ffffff, #fafbff);">
+  <header>
+    <h2>🤖 AI Agent &amp; Engine Readiness Surfaces</h2>
+    <div class="spacer"></div>
+    <span class="badge ok">AI Crawling Permitted</span>
+  </header>
+  <div class="body" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:14px">
+    <div style="border:1px solid var(--a-line-soft);padding:12px;border-radius:6px;background:#fff">
+      <div style="font-weight:700;font-size:.85rem;color:var(--a-ink);margin-bottom:4px">📄 llms.txt Surface</div>
+      <div class="tiny muted" style="margin-bottom:8px">Structured content directory for OpenAI, Claude &amp; Perplexity</div>
+      <a href="/llms.txt" target="_blank" class="btn sm ghost" style="padding:2px 6px">View /llms.txt ↗</a>
+    </div>
+    <div style="border:1px solid var(--a-line-soft);padding:12px;border-radius:6px;background:#fff">
+      <div style="font-weight:700;font-size:.85rem;color:var(--a-ink);margin-bottom:4px">🛡️ robots.txt Rules</div>
+      <div class="tiny muted" style="margin-bottom:8px">AI user-agents allowed with explicit sitemap citation</div>
+      <a href="/robots.txt" target="_blank" class="btn sm ghost" style="padding:2px 6px">Inspect /robots.txt ↗</a>
+    </div>
+    <div style="border:1px solid var(--a-line-soft);padding:12px;border-radius:6px;background:#fff">
+      <div style="font-weight:700;font-size:.85rem;color:var(--a-ink);margin-bottom:4px">🗺️ XML Sitemap Index</div>
+      <div class="tiny muted" style="margin-bottom:8px">Real-time synced URLs for destinations, visas &amp; courses</div>
+      <a href="/sitemap.xml" target="_blank" class="btn sm ghost" style="padding:2px 6px">View /sitemap.xml ↗</a>
+    </div>
+    <div style="border:1px solid var(--a-line-soft);padding:12px;border-radius:6px;background:#fff">
+      <div style="font-weight:700;font-size:.85rem;color:var(--a-ink);margin-bottom:4px">🏷️ JSON-LD Entity Graph</div>
+      <div class="tiny muted" style="margin-bottom:8px">EducationalOrganization, Dataset, Reviews &amp; FAQs</div>
+      <span class="badge info">7 Schemas Active</span>
+    </div>
+  </div>
+</div>
+
+<div class="split">
+  <div class="stack">
+    <!-- Bot Crawling Logs Table -->
+    <div class="card">
+      <header>
+        <h2>Real-Time Bot Crawling Activity Logs</h2>
+        <div class="spacer"></div>
+        <div class="row">
+          <a class="btn sm {{#if eq selectedCategory 'all'}}primary{{/if}}" href="/admin/ai-visibility?category=all">All ({{botStats.totals.total}})</a>
+          <a class="btn sm {{#if eq selectedCategory 'ai'}}primary{{/if}}" href="/admin/ai-visibility?category=ai">AI Bots ({{botStats.totals.ai}})</a>
+          <a class="btn sm {{#if eq selectedCategory 'search'}}primary{{/if}}" href="/admin/ai-visibility?category=search">Search Bots ({{botStats.totals.search}})</a>
+          <a class="btn sm {{#if eq selectedCategory 'social'}}primary{{/if}}" href="/admin/ai-visibility?category=social">Social Bots ({{botStats.totals.social}})</a>
+        </div>
+      </header>
+
+      <!-- Filter bar -->
+      <div style="padding:10px 16px;border-bottom:1px solid var(--a-line-soft);background:#fafcfc">
+        <form method="get" action="/admin/ai-visibility" style="display:flex;gap:8px;align-items:center">
+          <input type="hidden" name="category" value="{{selectedCategory}}">
+          <input type="text" name="q" value="{{q}}" placeholder="Filter by crawler name, family, or URL path..." style="flex:1;max-width:380px" class="input sm">
+          <button type="submit" class="btn sm">Filter</button>
+          {{#if q}}<a href="/admin/ai-visibility?category={{selectedCategory}}" class="btn sm ghost">Clear</a>{{/if}}
+        </form>
+      </div>
+
+      <div class="table-wrap">
+        <table class="table table-nowrap">
+          <thead>
+            <tr>
+              <th style="width:140px">Crawler</th>
+              <th style="width:80px">Type</th>
+              <th style="min-width:240px">Requested Path</th>
+              <th style="width:70px">Status</th>
+              <th style="width:110px">Detected</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each botStats.crawls}}
+            <tr>
+              <td>
+                <b style="color:var(--a-ink)">{{bot_name}}</b>
+                <div class="tiny muted">{{bot_family}}</div>
+              </td>
+              <td>
+                <span class="badge {{badgeClass category}}">{{category}}</span>
+              </td>
+              <td>
+                <a href="{{path}}" target="_blank" class="truncate-cell" title="{{path}}" style="font-family:monospace;font-size:.82rem;color:var(--a-teal-800)">{{path}}</a>
+                <div class="tiny muted mono">{{ip}}</div>
+              </td>
+              <td>
+                <span class="badge ok">{{status_code}}</span>
+              </td>
+              <td class="tiny muted">{{ago created_at}}</td>
+            </tr>
+            {{else}}
+            <tr>
+              <td colspan="5" class="empty" style="padding:28px 16px;text-align:center">
+                <b>No crawler visits recorded yet</b>
+                <div class="muted tiny" style="margin-top:6px">The live bot middleware is active. As AI bots (GPTBot, ClaudeBot), Googlebot, and social media crawlers visit the site, real-time logs will display here.</div>
+              </td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="stack">
+    <!-- Top Crawled Pages -->
+    <div class="card">
+      <header>
+        <h3>Top Crawled Paths</h3>
+      </header>
+      <div class="body" style="padding:8px 16px">
+        {{#each botStats.topPaths}}
+        <div style="padding:8px 0;border-bottom:1px solid var(--a-line-soft);display:flex;justify-content:space-between;align-items:flex-start">
+          <div style="min-width:0;flex:1;padding-right:8px">
+            <span class="truncate-cell" title="{{path}}" style="font-family:monospace;font-size:.82rem;font-weight:600;color:var(--a-ink)">{{path}}</span>
+            <div class="tiny muted" style="margin-top:2px">
+              <span style="color:#6d28d9">AI: {{ai_count}}</span> · 
+              <span style="color:#1d4ed8">Search: {{search_count}}</span> · 
+              <span style="color:#b45309">Social: {{social_count}}</span>
+            </div>
+          </div>
+          <span class="badge" style="font-weight:700">{{count}} crawls</span>
+        </div>
+        {{else}}
+        <p class="muted tiny" style="margin:12px 0">No paths crawled yet.</p>
+        {{/each}}
+      </div>
+    </div>
+
+    <!-- Active Bot Breakdown -->
+    <div class="card">
+      <header>
+        <h3>Crawlers by Frequency</h3>
+      </header>
+      <div class="body">
+        {{#each botStats.botBreakdown}}
+        <div class="barrow" style="margin-bottom:10px">
+          <span class="tiny" style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="{{bot_name}}">{{bot_name}}</span>
+          <span class="bar"><span style="width:{{pctWidth (pct count @root.botStats.totals.total)}}"></span></span>
+          <b class="right tiny">{{count}}</b>
+        </div>
+        {{else}}
+        <p class="muted tiny" style="margin:12px 0">Awaiting crawler requests.</p>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+</div>

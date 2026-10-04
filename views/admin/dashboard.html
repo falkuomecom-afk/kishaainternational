@@ -1,8 +1,9 @@
 {{#if error}}<div class="notice bad">{{error}}</div>{{/if}}
+
 <div class="page-head">
   <div>
     <h1>Dashboard</h1>
-    <p>Welcome back, {{user.name}}. Here is the state of the pipeline, content and connections.</p>
+    <p>Welcome back, {{user.name}}. Live pipeline, bot visibility logs, and SEO traffic analytics.</p>
   </div>
   <div class="spacer"></div>
   <div class="row">
@@ -11,6 +12,20 @@
   </div>
 </div>
 
+<!-- Tab Navigation -->
+<div class="tabs-nav" role="tablist">
+  <a class="tab-link active" href="/admin">
+    <span>◈</span> Overview &amp; Pipeline
+  </a>
+  <a class="tab-link" href="/admin/ai-visibility">
+    <span>🤖</span> AI &amp; Bot Visibility
+  </a>
+  <a class="tab-link" href="/admin/analytics">
+    <span>📊</span> Traffic &amp; SEO Analytics
+  </a>
+</div>
+
+<!-- =================================================== OVERVIEW & PIPELINE =================================================== -->
 <div class="grid g4" style="margin-bottom:16px">
   {{#if can 'leads.view'}}
   <div class="stat"><div class="k">Leads in scope</div><div class="v">{{stats.leadsTotal}}</div><div class="d">{{stats.leadsNew}} new · {{stats.leadsWeek}} in last 7 days</div></div>
@@ -74,14 +89,14 @@
     <div class="card">
       <header><h2>Recent enquiries</h2><div class="spacer"></div><a class="tiny" href="/admin/leads">All leads →</a></header>
       <div class="table-wrap">
-        <table class="table">
+        <table class="table table-nowrap">
           <thead><tr><th>Reference</th><th>Client</th><th>Interest</th><th>Stage</th><th>Owner</th><th>Received</th></tr></thead>
           <tbody>
           {{#each recentLeads}}
             <tr>
               <td class="mono"><a href="/admin/leads/{{id}}">{{reference}}</a></td>
-              <td>{{full_name}}<br><span class="tiny muted">{{#if country_name}}{{country_name}}{{else}}{{service_context}}{{/if}}</span></td>
-              <td>{{interestLabel interest}}</td>
+              <td><b>{{full_name}}</b><br><span class="tiny muted">{{#if country_name}}{{country_name}}{{else}}{{service_context}}{{/if}}</span></td>
+              <td><span class="badge sm line">{{interestLabel interest}}</span></td>
               <td><span class="badge {{#if eq stage 'new'}}info{{/if}}{{#if eq stage 'enrolled'}}ok{{/if}}{{#if eq stage 'closed'}}line{{/if}}">{{stageLabel stage}}</span></td>
               <td class="tiny">{{default owner_name 'Unassigned'}}</td>
               <td class="tiny muted">{{ago created_at}}</td>

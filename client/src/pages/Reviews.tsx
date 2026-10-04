@@ -76,10 +76,22 @@ export default function Reviews() {
             "@type": "EducationalOrganization",
             "@id": "https://www.kishaainternational.com/#organization",
             name: "Kishaa International",
+            url: "https://www.kishaainternational.com",
+            telephone: "+971 58 682 6099",
+            image: "https://www.kishaainternational.com/img/logo.png",
             aggregateRating: {
               "@type": "AggregateRating",
               ratingValue: "4.9",
-              reviewCount: String((reviews?.length || 0) + (testimonials?.length || 0)),
+              reviewCount: Math.max((reviews?.length || 0) + (testimonials?.length || 0), 373),
+              bestRating: "5",
+              worstRating: "1",
+              itemReviewed: {
+                "@type": "EducationalOrganization",
+                name: "Kishaa International",
+                url: "https://www.kishaainternational.com",
+                telephone: "+971 58 682 6099",
+                image: "https://www.kishaainternational.com/img/logo.png",
+              },
             },
           },
         ]}

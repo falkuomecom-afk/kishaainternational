@@ -48,32 +48,63 @@ const PILLAR_META: Record<string, { label: string; to: string }> = {
 
 export function ProgramCard({ program, index }: { program: Program; index?: number }) {
   const meta = PILLAR_META[program.pillar];
+  const isFeatured = index === 1 || program.featured;
   return (
-    <article className="group flex h-full flex-col border border-navy/10 bg-white p-7 transition-all duration-300 hover:border-gold hover:shadow-[0_12px_40px_rgba(6,22,45,0.08)]">
+    <article
+      className={`group relative flex h-full flex-col overflow-hidden rounded-2xl transition-all duration-300 ease-out hover:-translate-y-2 ${
+        isFeatured
+          ? "border-2 border-[#C9A227] bg-gradient-to-b from-[#FFFDF9] via-[#FAF5EA] to-[#F5EBD4] shadow-[0_16px_45px_rgba(201,162,39,0.18)] hover:shadow-[0_24px_55px_rgba(201,162,39,0.28)]"
+          : "border border-navy/15 bg-gradient-to-b from-white via-[#FCFBF8] to-[#F7F4EC] shadow-sm hover:border-gold/70 hover:shadow-[0_20px_50px_rgba(6,22,45,0.12)]"
+      } p-7 sm:p-8`}
+    >
+      {/* Featured top gradient accent strip */}
+      {isFeatured && (
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-gold-dark via-[#ECC248] to-gold-dark" />
+      )}
+
       <div className="flex items-center justify-between">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gold-dark">
-          {meta?.label}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-gold-dark">
+            {meta?.label}
+          </span>
+          {isFeatured && (
+            <span className="inline-flex items-center rounded-full bg-gold/20 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-gold-dark border border-gold/40">
+              ★ High Demand
+            </span>
+          )}
+        </div>
         {index !== undefined && (
-          <span className="font-serif text-2xl font-semibold text-navy/60">
+          <span className="font-serif text-3xl font-bold bg-gradient-to-br from-gold-dark via-gold to-gold-dark bg-clip-text text-transparent group-hover:scale-110 transition-transform">
             {String(index + 1).padStart(2, "0")}
           </span>
         )}
       </div>
-      <h3 className="mt-4 font-serif text-2xl font-medium leading-snug text-navy">
+
+      <h3 className="mt-4 font-serif text-2xl font-medium leading-snug text-navy group-hover:text-navy transition-colors">
         {program.name}
       </h3>
-      <p className="mt-3 flex-1 text-[15px] leading-relaxed text-navy/65">{program.summary}</p>
+
+      <p className="mt-3 flex-1 text-[15px] leading-relaxed text-navy/70">
+        {program.summary}
+      </p>
+
       {program.fees && (
-        <p className="mt-4 border-t border-navy/10 pt-4 text-[13px] font-medium text-navy/80">
-          {program.fees.split(".")[0]}.
-        </p>
+        <div className="mt-5 rounded-xl border border-navy/10 bg-white/70 backdrop-blur-xs p-3.5 flex items-center justify-between">
+          <span className="text-[11px] uppercase font-bold tracking-wider text-navy/60">
+            Fee &amp; Milestone
+          </span>
+          <span className="text-[13px] font-semibold text-navy font-mono">
+            {program.fees.split(".")[0]}.
+          </span>
+        </div>
       )}
+
       <Link
         to={`${meta?.to ?? "/contact"}#${program.slug}`}
-        className="mt-5 inline-flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.14em] text-navy transition-colors group-hover:text-gold-dark"
+        className="mt-6 inline-flex items-center justify-between rounded-lg border border-navy/15 bg-white/80 px-4 py-2.5 text-[13px] font-bold uppercase tracking-[0.14em] text-navy transition-all duration-200 group-hover:bg-navy group-hover:text-white group-hover:border-navy group-hover:shadow-md"
       >
-        Explore this route <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+        <span>Explore this route</span>
+        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1.5" />
       </Link>
     </article>
   );

@@ -92,6 +92,22 @@ app.use((req, res, next) => {
   res.locals.setting = (k, d) => (setting(k) === null ? d : setting(k));
   next();
 });
+app.use(require('./lib/bot-tracker').middleware());
+
+// Real visitor analytics logger for public pages
+app.use((req, res, next) => {
+  if (req.method === 'GET' && !req.path.startsWith('/admin') && !req.path.startsWith('/api') && !req.path.includes('.')) {
+    try {
+      const sess = req.cookies['k_sess'] || H.hashIp(req.ip + (req.headers['user-agent'] || ''));
+      db.prepare(`INSERT INTO analytics_events (name, path, props, session_ref) VALUES ('page_view', ?, ?, ?)`).run(
+        req.path,
+        JSON.stringify({ ref: req.headers['referer'] || null, ua: req.headers['user-agent'] || null }),
+        sess
+      );
+    } catch {}
+  }
+  next();
+});
 
 /* ------------------------------------------------------- auth & security */
 app.use(authLib.middleware());

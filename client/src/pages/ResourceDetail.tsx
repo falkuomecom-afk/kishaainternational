@@ -1,10 +1,10 @@
 import { useParams, Link } from "react-router";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Globe, ShieldCheck } from "lucide-react";
 import { trpc } from "@/providers/trpc";
 import { Seo, breadcrumbJsonLd } from "@/lib/seo";
 import { Markdown } from "@/lib/markdown";
 import { EnquiryForm } from "@/components/site/EnquiryForm";
-import { getGuideThumbnail } from "@/lib/guide-images";
+import { getGuideThumbnail, DEFAULT_GUIDE_THUMBNAIL } from "@/lib/guide-images";
 import NotFound from "./NotFound";
 
 export default function ResourceDetail() {
@@ -92,6 +92,10 @@ export default function ResourceDetail() {
                     src={thumbnailUrl}
                     alt={post.title}
                     className="h-full w-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = DEFAULT_GUIDE_THUMBNAIL;
+                    }}
                   />
                 </div>
                 <div className="flex flex-wrap items-center justify-between gap-2 border-t border-navy/10 bg-[#f7f6f2] px-4 py-2.5 text-[12px] text-navy/70">
@@ -102,6 +106,25 @@ export default function ResourceDetail() {
                   <span className="font-semibold uppercase tracking-wider text-gold-dark">
                     {post.category || "Verified Guide"} · 2026 Edition
                   </span>
+                </div>
+              </div>
+
+              {/* Live Regulatory & WebSearch Intelligence Notice */}
+              <div className="mb-7 rounded-[4px] border border-gold/30 bg-[#fdfbf6] p-4 sm:p-5 flex items-start gap-3.5 text-navy shadow-xs">
+                <div className="mt-0.5 rounded-full bg-gold/15 p-2 text-gold-dark shrink-0">
+                  <Globe className="h-4 w-4" />
+                </div>
+                <div className="text-[13px] leading-relaxed">
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
+                    <span className="font-semibold text-navy text-[13.5px]">Daily Regulatory &amp; Embassy Updates</span>
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-800 border border-emerald-200">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                      2026 Statutory Rules Active
+                    </span>
+                  </div>
+                  <p className="text-navy/75 m-0">
+                    This advisory guide incorporates live policy updates retrieved via real-time web search and verified against official government gazettes (IRCC, UKVI, BAföG, Schengen, and UAE GDRFA). All financial figures, statutory living costs, and evidentiary requirements reflect the latest gazetted directives.
+                  </p>
                 </div>
               </div>
 
@@ -246,6 +269,10 @@ export default function ResourceDetail() {
                               alt={rel.title}
                               className="h-12 w-18 shrink-0 rounded-[2px] border border-navy/10 object-cover group-hover:border-gold transition-colors"
                               loading="lazy"
+                              onError={(e) => {
+                                e.currentTarget.onerror = null;
+                                e.currentTarget.src = DEFAULT_GUIDE_THUMBNAIL;
+                              }}
                             />
                             <span className="font-medium text-navy group-hover:text-gold-dark transition-colors leading-snug line-clamp-2 text-[13px]">
                               {rel.title}

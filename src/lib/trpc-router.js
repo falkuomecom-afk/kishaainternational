@@ -135,7 +135,7 @@ const appRouter = router({
     posts: router({
       list: publicProcedure.query(async () => {
         const resolvePostCover = (r) => {
-          if (r.cover_image && r.cover_image.trim()) return r.cover_image;
+          if (r.cover_image && r.cover_image.trim() && !r.cover_image.startsWith('/uploads/')) return r.cover_image;
           let filename = r.media?.filename;
           if (!filename && r.cover_media_id) {
             try {
@@ -144,9 +144,8 @@ const appRouter = router({
               if (m?.filename) filename = m.filename;
             } catch {}
           }
-          if (filename) {
-            if (filename.startsWith('http')) return filename;
-            return `https://jpwgnepvudbqgmrtfxjs.supabase.co/storage/v1/object/public/media/guides/${filename}`;
+          if (filename && filename.startsWith('http')) {
+            return filename;
           }
           return `/img/guides/${r.slug}.svg`;
         };
@@ -213,7 +212,7 @@ const appRouter = router({
           }
 
           const resolvePostCover = (item) => {
-            if (item.cover_image && item.cover_image.trim()) return item.cover_image;
+            if (item.cover_image && item.cover_image.trim() && !item.cover_image.startsWith('/uploads/')) return item.cover_image;
             let filename = item.media?.filename;
             if (!filename && item.cover_media_id) {
               try {
@@ -222,9 +221,8 @@ const appRouter = router({
                 if (m?.filename) filename = m.filename;
               } catch {}
             }
-            if (filename) {
-              if (filename.startsWith('http')) return filename;
-              return `https://jpwgnepvudbqgmrtfxjs.supabase.co/storage/v1/object/public/media/guides/${filename}`;
+            if (filename && filename.startsWith('http')) {
+              return filename;
             }
             return `/img/guides/${item.slug}.svg`;
           };
@@ -738,54 +736,32 @@ const appRouter = router({
           }
         }
 
-        // Save to Supabase (cloud first)
+        // Save to Supabase (cloud backup / sync)
         if (supabase.isAvailable()) {
-          try {
-            const inserted = await supabase.insertLead({
-              reference: ref,
-              full_name: input.name,
-              phone: phone,
-              whatsapp: phone,
-              email: email,
-              contact_preference: input.contactPref,
-              interest: interestCat,
-              source_type: input.source || 'Website',
-              source_page: input.page || '/',
-              marketing_consent: input.marketingConsent ? 1 : 0,
-              consent_notice_version: 'v1',
-              idempotency_key: input.idempotencyKey,
-              stage: 'new',
-              country_id: countryId,
-              message: input.message || null,
-              ip_hash: H.hashIp(ctx.ip || '127.0.0.1'),
-            });
-
-            if (inserted?.duplicate) {
-              return { ok: true, ref: inserted.reference, duplicate: true };
+          supabase.insertLead({
+            reference: ref,
+            full_name: input.name,
+            phone: phone,
+            whatsapp: phone,
+            email: email,
+            contact_preference: input.contactPref,
+            interest: interestCat,
+            source_type: input.source || 'Website',
+            source_page: input.page || '/',
+            marketing_consent: input.marketingConsent ? 1 : 0,
+            consent_notice_version: 'v1',
+            idempotency_key: input.idempotencyKey,
+            stage: 'new',
+            country_id: countryId,
+            message: input.message || null,
+            ip_hash: H.hashIp(ctx.ip || '127.0.0.1'),
+          }).then(inserted => {
+            if (inserted?.id) {
+              supabase.insertAudit(null, 'lead.created', 'leads', inserted.id, { reference: ref, source: 'react_frontend' }, ctx.ip || '127.0.0.1').catch(() => {});
             }
-
-            // Notifications
-            try {
-              mailer.queueLeadNotifications({
-                reference: ref,
-                full_name: input.name,
-                phone,
-                email,
-                interest: interestCat,
-                interest_label: input.interest,
-                source_page: input.page || '/',
-              }, { type: 'new_lead' });
-              integrations.notifyHighIntent({ reference: ref, full_name: input.name, phone, email }).catch(() => {});
-            } catch (mailErr) {
-              console.warn('[lead mailer]', mailErr.message);
-            }
-
-            await supabase.insertAudit(null, 'lead.created', 'leads', inserted?.id, { reference: ref, source: 'react_frontend' }, ctx.ip || '127.0.0.1');
-
-            return { ok: true, ref, duplicate: false };
-          } catch (sbErr) {
-            console.error('[supabase:insertLead error, falling back to sqlite]', sbErr.message);
-          }
+          }).catch(sbErr => {
+            console.warn('[supabase:insertLead sync error]', sbErr.message);
+          });
         }
 
         // Local SQLite Fallback

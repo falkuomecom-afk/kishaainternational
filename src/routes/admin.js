@@ -18,6 +18,8 @@ const gsc = require('../lib/google-search-console');
 const qwenSearch = require('../lib/qwen-search');
 const qwenImage = require('../lib/qwen-image');
 const autoblogger = require('../lib/autoblogger');
+const botTracker = require('../lib/bot-tracker');
+const siteAnalytics = require('../lib/site-analytics');
 
 const router = express.Router();
 const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
@@ -148,7 +150,43 @@ router.use((req, res, next) => {
 });
 
 /* ========================================================= DASHBOARD ==== */
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
+  const tab = String(req.query.tab || 'overview');
+  if (tab === 'ai-visibility') return res.redirect('/admin/ai-visibility');
+  if (tab === 'analytics') return res.redirect('/admin/analytics');
+
+  // Sync latest leads from Supabase so local DB is always fresh
+  if (supabase.isAvailable()) {
+    try {
+      const { data: sbLeads } = await supabase.getClient().from('leads').select('*').order('created_at', { ascending: false }).limit(50);
+      if (sbLeads && sbLeads.length > 0) {
+        const insLead = db.prepare(`INSERT OR REPLACE INTO leads (
+          id, reference, full_name, phone, whatsapp, email, contact_preference, interest,
+          service_context, program_id, country_id, requested_trainer, message, qualification,
+          estimated_budget, source_page, source_type, utm, owner_id, stage, stage_reason,
+          priority, consent_notice_version, marketing_consent, ip_hash, user_agent,
+          idempotency_key, spam_score, duplicate_of, first_response_at, next_follow_up_at,
+          created_at, updated_at, closed_at, region
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
+        for (const l of sbLeads) {
+          insLead.run(
+            l.id, l.reference, l.full_name, l.phone, l.whatsapp, l.email, l.contact_preference, l.interest,
+            l.service_context, l.program_id, l.country_id, l.requested_trainer, l.message,
+            typeof l.qualification === 'object' ? JSON.stringify(l.qualification) : l.qualification,
+            l.estimated_budget, l.source_page, l.source_type,
+            typeof l.utm === 'object' ? JSON.stringify(l.utm) : l.utm,
+            l.owner_id, l.stage, l.stage_reason, l.priority, l.consent_notice_version,
+            l.marketing_consent ? 1 : 0, l.ip_hash, l.user_agent, l.idempotency_key,
+            l.spam_score || 0, l.duplicate_of, l.first_response_at, l.next_follow_up_at,
+            l.created_at, l.updated_at, l.closed_at, l.region
+          );
+        }
+      }
+    } catch (e) {
+      console.warn('[admin:dashboard] Supabase sync notice:', e.message);
+    }
+  }
+
   const u = req.user;
   const scope = leadScope(u);
   const stats = {
@@ -193,12 +231,51 @@ router.get('/', (req, res) => {
       WHERE n.status = 'failed' ORDER BY n.id DESC LIMIT 5`).all();
 
   view(res, 'dashboard', {
-    title: 'Dashboard', stats, stats_more, recentLeads, dueFollowUps, contentDrafts, activity, funnel,
+    title: 'Dashboard',
+    tab: 'overview',
+    stats, stats_more, recentLeads, dueFollowUps, contentDrafts, activity, funnel,
     sourceBreakdown, integrationHealth, failed, pageTitle: 'Dashboard',
     pendingReviews: res.locals.navCounts?.pendingReviews ?? 0,
     rulesReview: res.locals.navCounts?.rulesReview ?? 0,
     failedJobs: res.locals.navCounts?.failedJobs ?? 0,
   });
+});
+
+/* =================================================== AI VISIBILITY ====== */
+router.get('/ai-visibility', (req, res) => {
+  const category = String(req.query.category || 'all');
+  const q = String(req.query.q || '').trim();
+  const botStats = botTracker.getBotStats({ category, q, limit: 60 });
+  view(res, 'ai-visibility', {
+    title: 'AI & Bot Visibility',
+    pageTitle: 'AI Visibility & Bot Crawling Logs',
+    tab: 'ai-visibility',
+    botStats,
+    selectedCategory: category,
+    q,
+  });
+});
+
+/* =================================================== SITE ANALYTICS ===== */
+router.get('/analytics', async (req, res) => {
+  const timeframe = String(req.query.timeframe || '30d');
+  const analytics = await siteAnalytics.getAnalyticsSummary(timeframe);
+  view(res, 'analytics', {
+    title: 'Site & SEO Analytics',
+    pageTitle: 'Traffic, Bounce Rate & Google SEO Performance',
+    tab: 'analytics',
+    analytics,
+    timeframe,
+  });
+});
+
+router.post('/api/sync-gsc', async (req, res) => {
+  try {
+    const result = await gsc.getSearchAnalytics(28);
+    res.json({ ok: true, result });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
 });
 
 /* ============================================================ PAGES ===== */
@@ -727,23 +804,24 @@ router.get('/leads', requirePermission('leads.view'), async (req, res) => {
       const { data: sbLeads } = await supabase.getClient().from('leads').select('*').order('created_at', { ascending: false }).limit(200);
       if (sbLeads && sbLeads.length > 0) {
         const insLead = db.prepare(`INSERT OR REPLACE INTO leads (
-          id, reference, idempotency_key, full_name, email, phone, whatsapp,
-          contact_preference, best_time, destination_intent, country_id, program_id,
-          timeline, budget_band, notes, source_type, source_page, utm_source,
-          utm_medium, utm_campaign, utm_term, utm_content, referrer, ip_hash,
-          user_agent, consent_notice_version, marketing_consent, status, stage,
-          stage_reason, score, owner_id, priority, first_response_at, next_follow_up_at,
-          last_activity_at, region, created_at, updated_at
-        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
+          id, reference, full_name, phone, whatsapp, email, contact_preference, interest,
+          service_context, program_id, country_id, requested_trainer, message, qualification,
+          estimated_budget, source_page, source_type, utm, owner_id, stage, stage_reason,
+          priority, consent_notice_version, marketing_consent, ip_hash, user_agent,
+          idempotency_key, spam_score, duplicate_of, first_response_at, next_follow_up_at,
+          created_at, updated_at, closed_at, region
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
         for (const l of sbLeads) {
           insLead.run(
-            l.id, l.reference, l.idempotency_key, l.full_name, l.email, l.phone, l.whatsapp,
-            l.contact_preference, l.best_time, l.destination_intent, l.country_id, l.program_id,
-            l.timeline, l.budget_band, l.notes, l.source_type, l.source_page, l.utm_source,
-            l.utm_medium, l.utm_campaign, l.utm_term, l.utm_content, l.referrer, l.ip_hash,
-            l.user_agent, l.consent_notice_version, l.marketing_consent, l.status, l.stage,
-            l.stage_reason, l.score, l.owner_id, l.priority, l.first_response_at, l.next_follow_up_at,
-            l.last_activity_at, l.region, l.created_at, l.updated_at
+            l.id, l.reference, l.full_name, l.phone, l.whatsapp, l.email, l.contact_preference, l.interest,
+            l.service_context, l.program_id, l.country_id, l.requested_trainer, l.message,
+            typeof l.qualification === 'object' ? JSON.stringify(l.qualification) : l.qualification,
+            l.estimated_budget, l.source_page, l.source_type,
+            typeof l.utm === 'object' ? JSON.stringify(l.utm) : l.utm,
+            l.owner_id, l.stage, l.stage_reason, l.priority, l.consent_notice_version,
+            l.marketing_consent ? 1 : 0, l.ip_hash, l.user_agent, l.idempotency_key,
+            l.spam_score || 0, l.duplicate_of, l.first_response_at, l.next_follow_up_at,
+            l.created_at, l.updated_at, l.closed_at, l.region
           );
         }
       }

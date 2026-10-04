@@ -1,5 +1,8 @@
 <div class="group">Overview</div>
-<a class="item {{#if eq path '/admin/'}}on{{/if}}{{#if eq path '/admin'}}on{{/if}}" href="/admin"><span class="ico">◈</span> Dashboard</a>
+<a class="item {{#if eq path '/admin'}}on{{/if}}{{#if eq path '/admin/'}}on{{/if}}" href="/admin"><span class="ico">◈</span> Dashboard</a>
+<a class="item {{#if in '/admin/ai-visibility' path}}on{{/if}}" href="/admin/ai-visibility"><span class="ico">🤖</span> AI &amp; Bot Visibility</a>
+<a class="item {{#if in '/admin/analytics' path}}on{{/if}}" href="/admin/analytics"><span class="ico">📊</span> Traffic &amp; SEO Analytics</a>
+<a class="item {{#if in '/admin/ai-agent' path}}on{{/if}}" href="/admin/ai-agent"><span class="ico">⚡</span> AI Agent Studio</a>
 {{#if can 'leads.view'}}<a class="item {{#if in '/admin/leads' path}}on{{/if}}" href="/admin/leads"><span class="ico">◉</span> Leads{{#if @root.navCounts.newLeads}}<span class="count">{{@root.navCounts.newLeads}}</span>{{/if}}</a>{{/if}}
 {{#if can 'reports.view'}}<a class="item {{#if eq path '/admin/reports'}}on{{/if}}" href="/admin/reports"><span class="ico">▤</span> Reports</a>{{/if}}
 
@@ -20,7 +23,6 @@
 
 {{#if can 'seo.manage'}}
 <div class="group">Growth &amp; AI</div>
-<a class="item {{#if eq path '/admin/ai-agent'}}on{{/if}}" href="/admin/ai-agent"><span class="ico">⚡</span> AI Agent Studio</a>
 <a class="item {{#if eq path '/admin/seo'}}on{{/if}}" href="/admin/seo"><span class="ico">⌕</span> SEO · AEO · GEO</a>
 {{/if}}
 {{#if can 'integrations.manage'}}<a class="item {{#if eq path '/admin/integrations'}}on{{/if}}" href="/admin/integrations"><span class="ico">⇄</span> Integrations</a>{{/if}}

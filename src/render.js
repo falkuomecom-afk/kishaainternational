@@ -185,8 +185,8 @@ function compile(src) {
           branches.push({ cond, body });
           while (tokens[pos] && tokens[pos].t === 'tag' && tokens[pos].v.startsWith('else')) {
             const tag = tokens[pos].v;
-            if (tag === 'else') { pos++; branches.push({ cond: true, body: parse(['/if', 'else if']) }); }
-            else if (tag.startsWith('else if')) { const c = tag.slice(7).trim(); pos++; branches.push({ cond: c, body: parse(['/if', 'else if']) }); }
+            if (tag === 'else') { pos++; branches.push({ cond: true, body: parse(['/if']) }); }
+            else if (tag.startsWith('else if')) { const c = tag.slice(7).trim(); pos++; branches.push({ cond: c, body: parse(['else', '/if', 'else if']) }); }
             else break;
           }
           if (tokens[pos] && tokens[pos].v === '/if') pos++;
@@ -195,9 +195,14 @@ function compile(src) {
         }
         if (kw === 'each') {
           pos++;
-          const body = parse(['/each']);
-          if (tokens[pos]) pos++;
-          nodes.push({ t: 'each', expr: rest, body });
+          const body = parse(['else', '/each']);
+          let elseBody = null;
+          if (tokens[pos] && tokens[pos].v === 'else') {
+            pos++;
+            elseBody = parse(['/each']);
+          }
+          if (tokens[pos] && tokens[pos].v === '/each') pos++;
+          nodes.push({ t: 'each', expr: rest, body, elseBody });
           continue;
         }
         if (kw === 'with') {
@@ -244,7 +249,9 @@ function render(nodes, ctx, opts) {
     }
     if (n.t === 'each') {
       const list = evalExpr(n.expr, ctx, opts);
-      if (Array.isArray(list)) {
+      let count = 0;
+      if (Array.isArray(list) && list.length > 0) {
+        count = list.length;
         list.forEach((item, i) => {
           const child = Object.create(ctx || {});
           child.__root = (ctx && ctx.__root) || ctx;
@@ -254,15 +261,20 @@ function render(nodes, ctx, opts) {
           child['@number'] = i + 1;
           out += render(n.body, child, opts);
         });
-      } else if (list && typeof list === 'object') {
+      } else if (list && typeof list === 'object' && Object.keys(list).length > 0) {
+        const keys = Object.keys(list);
+        count = keys.length;
         let i = 0;
-        for (const k of Object.keys(list)) {
+        for (const k of keys) {
           const child = Object.create(ctx || {});
           child.__root = (ctx && ctx.__root) || ctx;
           child.this = list[k]; child['@key'] = k; child['@index'] = i++;
           if (list[k] && typeof list[k] === 'object') Object.assign(child, list[k]);
           out += render(n.body, child, opts);
         }
+      }
+      if (count === 0 && n.elseBody) {
+        out += render(n.elseBody, ctx, opts);
       }
       continue;
     }

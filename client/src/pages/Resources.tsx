@@ -4,7 +4,7 @@ import { trpc } from "@/providers/trpc";
 import { Seo, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 import { useReveal } from "@/lib/reveal";
 import { PageHero, FaqAccordion } from "@/components/site/blocks";
-import { getGuideThumbnail } from "@/lib/guide-images";
+import { getGuideThumbnail, DEFAULT_GUIDE_THUMBNAIL } from "@/lib/guide-images";
 
 export default function Resources() {
   const { data: posts } = trpc.content.posts.list.useQuery();
@@ -61,6 +61,10 @@ export default function Resources() {
                     alt={p.title}
                     className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                     loading="lazy"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = DEFAULT_GUIDE_THUMBNAIL;
+                    }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-navy/60 via-transparent to-transparent opacity-30 transition-opacity group-hover:opacity-10" />
 

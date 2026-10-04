@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { MessageCircle } from "lucide-react";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
+import { Analytics } from "@/components/site/Analytics";
 import { waLink } from "@/lib/site";
 import Home from "./pages/Home";
 import CareerCounseling from "./pages/CareerCounseling";
@@ -48,6 +49,7 @@ function SiteLayout() {
       >
         <MessageCircle className="h-6 w-6" />
       </a>
+      <Analytics />
     </>
   );
 }

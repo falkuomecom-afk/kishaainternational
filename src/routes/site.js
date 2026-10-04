@@ -206,10 +206,18 @@ router.get('/destinations/:slug', (req, res) => {
     seo.faqNode(c.faqs),
     { '@type': 'Country', name: c.name, url: seo.siteBase(req) + '/destinations/' + c.slug },
     c.funds.length ? {
-      '@type': 'Dataset', name: `${c.name} statutory proof-of-funds requirement`,
+      '@type': 'Dataset',
+      name: `${c.name} statutory proof-of-funds requirement`,
       description: c.funds.map(f => `${f.route_name}: ${f.total_required ? f.total_currency + ' ' + f.total_required : 'route-specific'}, holding ${f.holding_period || 'n/a'}`).join(' | '),
-      creator: { '@id': seo.siteBase(req) + '/#organisation' },
-      variableMeasured: ['Statutory funds amount', 'Holding period'], isAccessibleForFree: true,
+      url: seo.siteBase(req) + '/destinations/' + c.slug,
+      creator: {
+        '@type': 'Organization',
+        name: setting('brand.name', 'Kishaa International'),
+        url: seo.siteBase(req),
+      },
+      license: 'https://creativecommons.org/licenses/by/4.0/',
+      variableMeasured: ['Statutory funds amount', 'Holding period'],
+      isAccessibleForFree: true,
     } : null,
   ]);
   renderPage(res, 'site/country', ctx);
@@ -295,7 +303,7 @@ router.get('/reviews', (req, res) => {
   });
   ctx.meta = seo.meta({ req, title: 'Verified Reviews & Success Stories', path: '/reviews', description: ctx.description });
   ctx.breadcrumb = [{ label: 'Home', url: '/' }, { label: 'Reviews', url: '/reviews' }];
-  ctx.jsonld = seo.graph([seo.organisationNode(req), seo.breadcrumbNode(ctx.breadcrumb, req), ...seo.reviewNodes(8)]);
+  ctx.jsonld = seo.graph([seo.organisationNode(req), seo.breadcrumbNode(ctx.breadcrumb, req), ...seo.reviewNodes(8, req)]);
   renderPage(res, 'site/reviews', ctx);
 });
 
@@ -355,7 +363,7 @@ router.get('/services/:slug', (req, res) => {
     seo.organisationNode(req), seo.courseNode(p, req), seo.faqNode(p.faqs),
     seo.howToNode(`${p.name} — how it works`, p.process_list, p.summary),
     seo.breadcrumbNode(ctx.breadcrumb, req),
-    ...seo.reviewNodes(3),
+    ...seo.reviewNodes(3, req),
   ]);
   renderPage(res, 'site/program', ctx);
 });

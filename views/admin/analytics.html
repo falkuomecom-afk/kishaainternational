@@ -1,0 +1,185 @@
+{{#if error}}<div class="notice bad">{{error}}</div>{{/if}}
+
+<div class="page-head">
+  <div>
+    <h1>Traffic, Bounce Rate &amp; SEO Performance</h1>
+    <p>First-party visitor analytics, engagement metrics, and verified Google Search Console keyword positions.</p>
+  </div>
+  <div class="spacer"></div>
+  <div class="row">
+    <a class="btn" href="/admin/api/sync-gsc">Sync Google Search Console</a>
+    <a class="btn primary" href="/admin/analytics">Refresh</a>
+  </div>
+</div>
+
+<!-- Tab Navigation -->
+<div class="tabs-nav" role="tablist">
+  <a class="tab-link" href="/admin">
+    <span>◈</span> Overview &amp; Pipeline
+  </a>
+  <a class="tab-link" href="/admin/ai-visibility">
+    <span>🤖</span> AI &amp; Bot Visibility
+  </a>
+  <a class="tab-link active" href="/admin/analytics">
+    <span>📊</span> Traffic &amp; SEO Analytics
+  </a>
+</div>
+
+<!-- =================================================== ANALYTICS & SEO =================================================== -->
+<div class="grid g4" style="margin-bottom:16px">
+  <div class="stat good">
+    <div class="k">Unique Visitors</div>
+    <div class="v">{{analytics.totals.visitors}}</div>
+    <div class="d">{{analytics.totals.uniqueSessions}} active sessions (30d)</div>
+  </div>
+  <div class="stat">
+    <div class="k">Total Pageviews</div>
+    <div class="v">{{analytics.totals.pageviews}}</div>
+    <div class="d">Average dwell: {{analytics.totals.avgDwellTime}}</div>
+  </div>
+  <div class="stat">
+    <div class="k">Bounce Rate</div>
+    <div class="v" style="color:var(--a-green)">{{analytics.totals.bounceRate}}</div>
+    <div class="d">Sessions with meaningful engagement</div>
+  </div>
+  <div class="stat">
+    <div class="k">Inquiry Conversion</div>
+    <div class="v" style="color:var(--a-teal-800)">{{analytics.totals.conversionRate}}</div>
+    <div class="d">{{analytics.totals.leads}} enquiries received</div>
+  </div>
+</div>
+
+<!-- GSC Live Connection Bar -->
+<div class="card" style="margin-bottom:18px;border-left:4px solid {{#if analytics.seo.connected}}var(--a-green){{else}}var(--a-gold-700){{/if}}">
+  <div class="body" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding:14px 18px">
+    <div>
+      <div style="font-weight:700;font-size:.9rem;color:var(--a-ink);display:flex;align-items:center;gap:8px">
+        <span>🔎 Google Search Console Status:</span>
+        <span class="badge {{#if analytics.seo.connected}}ok{{else}}info{{/if}}">
+          {{#if analytics.seo.connected}}Connected (API v3){{else}}Service Account Configured{{/if}}
+        </span>
+      </div>
+      <div class="tiny muted" style="margin-top:4px">
+        {{analytics.seo.statusMessage}}
+      </div>
+    </div>
+    <div class="row">
+      <span class="tiny mono muted">Site: sc-domain:kishaainternational.com</span>
+    </div>
+  </div>
+</div>
+
+<div class="split">
+  <div class="stack">
+    <!-- Google Search Console Keywords Table -->
+    <div class="card">
+      <header>
+        <h2>Google Search Keywords &amp; Ranking Positions</h2>
+        <div class="spacer"></div>
+        <span class="badge info">{{#if analytics.seo.keywords.length}}{{analytics.seo.keywords.length}} Live Queries{{else}}0 Live Queries Logged{{/if}}</span>
+      </header>
+      <div class="table-wrap">
+        <table class="table table-nowrap">
+          <thead>
+            <tr>
+              <th style="min-width:240px">Search Query (Google.com)</th>
+              <th style="width:75px">Clicks</th>
+              <th style="width:95px">Impressions</th>
+              <th style="width:75px">CTR</th>
+              <th style="width:75px">Avg Pos</th>
+              <th style="width:80px">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each analytics.seo.keywords}}
+            <tr>
+              <td>
+                <span class="truncate-cell" title="{{query}}" style="font-weight:600;color:var(--a-ink)">{{query}}</span>
+              </td>
+              <td><b>{{clicks}}</b></td>
+              <td class="muted">{{impressions}}</td>
+              <td><span class="badge ok">{{ctr}}</span></td>
+              <td class="mono font-bold">{{position}}</td>
+              <td>
+                <span class="badge {{#if eq status 'Top 3'}}good{{else if eq status 'Top 5'}}info{{else}}line{{/if}}">
+                  {{status}}
+                </span>
+              </td>
+            </tr>
+            {{else}}
+            <tr>
+              <td colspan="6" class="empty" style="padding:28px 16px;text-align:center">
+                <b>No Search Console query rows logged yet</b>
+                <div class="muted tiny" style="margin-top:6px">Google Search Console records queries after impressions occur on google.com. Verified search clicks, impressions, CTR, and SERP positions will stream directly into this table.</div>
+              </td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SEO & Performance Architecture Card -->
+    <div class="card">
+      <header>
+        <h3>How Kishaa International Measures SEO &amp; Performance</h3>
+      </header>
+      <div class="body" style="font-size:.85rem;line-height:1.6">
+        <p style="margin-top:0">
+          We fetch real performance metrics directly from official APIs using strict cryptographic credentials — without third-party trackers or privacy-invasive advertising cookies:
+        </p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:12px;margin-top:12px">
+          {{#each analytics.techStack.apiEndpoints}}
+          <div style="border:1px solid var(--a-line-soft);padding:10px 12px;border-radius:6px;background:#fafcfc">
+            <div style="font-weight:700;color:var(--a-ink);font-size:.83rem">{{name}}</div>
+            <div class="tiny muted" style="margin:4px 0">{{purpose}}</div>
+            <span class="badge sm line mono">{{endpoint}}</span>
+          </div>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stack">
+    <!-- Top Visited Content Pages -->
+    <div class="card">
+      <header>
+        <h3>Most Visited Content Pages</h3>
+      </header>
+      <div class="body" style="padding:8px 16px">
+        {{#each analytics.topPages}}
+        <div style="padding:10px 0;border-bottom:1px solid var(--a-line-soft);display:flex;justify-content:space-between;align-items:flex-start">
+          <div style="min-width:0;flex:1;padding-right:8px">
+            <a href="{{path}}" target="_blank" class="truncate-cell" style="font-size:.84rem;font-weight:600;color:var(--a-teal-800)">{{title}} ↗</a>
+            <div class="tiny muted" style="margin-top:2px">
+              URL: <span class="mono">{{path}}</span>
+            </div>
+          </div>
+          <span class="badge" style="font-weight:700">{{views}} views</span>
+        </div>
+        {{else}}
+        <p class="muted tiny" style="margin:12px 0">Page views will be recorded as visitors explore the site.</p>
+        {{/each}}
+      </div>
+    </div>
+
+    <!-- Traffic Channels -->
+    <div class="card">
+      <header>
+        <h3>Traffic Acquisition Channels</h3>
+      </header>
+      <div class="body">
+        {{#each analytics.trafficChannels}}
+        <div class="barrow" style="margin-bottom:10px">
+          <span class="tiny" style="font-weight:600">{{icon}} {{name}}</span>
+          <span class="bar"><span style="width:{{pctWidth percentage}}"></span></span>
+          <b class="right tiny">{{percentage}}% ({{count}})</b>
+        </div>
+        {{else}}
+        <p class="muted tiny" style="margin:12px 0">No traffic sources recorded yet.</p>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+</div>

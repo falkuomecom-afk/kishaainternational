@@ -33,27 +33,32 @@ export const GUIDE_THUMBNAIL_MAP: Record<string, string> = {
   "australia-subclass-500-financial-capacity-oshc-and-the-genuine-student-requirement":
     "/img/guides/australia-subclass-500-financial-capacity-oshc-and-the-genuine-student-requirement.svg",
   "canada-student-visa-proof-of-funds-living-costs-2026":
-    "/uploads/1791073931621-international-university-students-walkin.png",
+    "/img/guides/canada-student-visa-proof-of-funds-living-costs-2026.svg",
   "uk-student-visa-london-vs-outer-london-living-expenses-2027":
-    "/uploads/1791073940202-diverse-group-of-postgraduate-students-w.png",
+    "/img/guides/uk-student-visa-london-vs-outer-london-living-expenses-2027.svg",
   "germany-blocked-account-sperrkonto-statutory-requirement-2026":
-    "/uploads/1791073948097-modern-university-lecture-hall-and-glass.png",
+    "/img/guides/germany-blocked-account-sperrkonto-statutory-requirement-2026.svg",
+  "uae-golden-visa-green-visa-salary-property-criteria-2026":
+    "/img/guides/uae-golden-visa-green-visa-salary-property-criteria-2026.svg",
   "uae-golden-green-visa-dubai-residence-cost-calculator-2026":
-    "/uploads/1791073955588-executive-boardroom-overlooking-the-duba.png",
+    "/img/guides/uae-golden-green-visa-dubai-residence-cost-calculator-2026.svg",
 };
 
 export const DEFAULT_GUIDE_THUMBNAIL = "/img/guides/default-guide.svg";
 
 /**
  * Returns the best image URL for a guide post.
- * Checks for custom coverImage, known slug mapping, or falls back to default.
+ * Checks for known slug mapping, then verified custom coverImage, or falls back to default SVG.
  */
 export function getGuideThumbnail(slug?: string, coverImage?: string | null): string {
-  if (coverImage && coverImage.trim().length > 0) {
-    return coverImage;
-  }
   if (slug && GUIDE_THUMBNAIL_MAP[slug]) {
     return GUIDE_THUMBNAIL_MAP[slug];
+  }
+  if (coverImage && coverImage.trim().length > 0 && !coverImage.startsWith("/uploads/")) {
+    return coverImage;
+  }
+  if (slug) {
+    return `/img/guides/${slug}.svg`;
   }
   return DEFAULT_GUIDE_THUMBNAIL;
 }

@@ -166,9 +166,13 @@ export default function BankStatements() {
       name: "Kishaa International Statutory Proof of Funds & Bank Statement Rules 2026",
       description:
         "Official statutory maintenance-funds requirements, holding durations, and gazetted authorities for study and visit visas across the UK, Germany, Finland, Canada, Australia, Italy, USA, and UAE.",
-      creator: { "@id": "https://www.kishaainternational.com/#organization" },
+      creator: {
+        "@type": "Organization",
+        name: "Kishaa International",
+        url: "https://www.kishaainternational.com",
+      },
       temporalCoverage: "2026",
-      license: "https://www.kishaainternational.com/terms",
+      license: "https://creativecommons.org/licenses/by/4.0/",
       variableMeasured: [
         "Statutory Maintenance Rate",
         "Mandated Holding Period",
@@ -323,7 +327,7 @@ export default function BankStatements() {
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   loading="lazy"
                 />
-                <span className="absolute top-3 left-3 text-[10px] font-semibold uppercase tracking-wider text-gold-dark bg-navy/90 backdrop-blur-md px-2 py-0.5 rounded border border-gold/30">
+                <span className="absolute top-3 left-3 text-[10px] font-semibold uppercase tracking-wider text-[#ECC248] bg-navy/90 backdrop-blur-md px-2 py-0.5 rounded border border-gold/30">
                   UK 2026 Regulation
                 </span>
               </div>
@@ -353,7 +357,7 @@ export default function BankStatements() {
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   loading="lazy"
                 />
-                <span className="absolute top-3 left-3 text-[10px] font-semibold uppercase tracking-wider text-gold-dark bg-navy/90 backdrop-blur-md px-2 py-0.5 rounded border border-gold/30">
+                <span className="absolute top-3 left-3 text-[10px] font-semibold uppercase tracking-wider text-[#ECC248] bg-navy/90 backdrop-blur-md px-2 py-0.5 rounded border border-gold/30">
                   Germany Sperrkonto
                 </span>
               </div>
@@ -383,7 +387,7 @@ export default function BankStatements() {
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   loading="lazy"
                 />
-                <span className="absolute top-3 left-3 text-[10px] font-semibold uppercase tracking-wider text-gold-dark bg-navy/90 backdrop-blur-md px-2 py-0.5 rounded border border-gold/30">
+                <span className="absolute top-3 left-3 text-[10px] font-semibold uppercase tracking-wider text-[#ECC248] bg-navy/90 backdrop-blur-md px-2 py-0.5 rounded border border-gold/30">
                   Finland Family & PR
                 </span>
               </div>
