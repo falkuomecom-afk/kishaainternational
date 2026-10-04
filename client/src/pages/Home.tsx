@@ -404,170 +404,174 @@ export default function Home() {
             </span>
           </div>
 
-          {/* 4 Separate luxury Cards with animated numbers, hover glow, and blinking live badges */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 sm:gap-6">
+          {/* 4 Separate luxury Cards: 2 in one row on mobile (grid-cols-2), 4 on desktop (lg:grid-cols-4) */}
+          <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
             {/* Card 1: Countries */}
-            <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/15 bg-gradient-to-br from-[#0c284d]/90 via-[#071d38]/85 to-[#030e1d]/95 p-6 backdrop-blur-md transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#ECC248] hover:shadow-[0_16px_40px_rgba(201,162,39,0.25)]">
+            <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/15 bg-gradient-to-br from-[#0c284d]/90 via-[#071d38]/85 to-[#030e1d]/95 p-3.5 sm:p-6 backdrop-blur-md transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#ECC248] hover:shadow-[0_16px_40px_rgba(201,162,39,0.25)]">
               <div className="absolute inset-0 bg-gradient-to-br from-[#ECC248]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#ECC248]/40 to-transparent group-hover:via-[#ECC248] transition-all duration-500" />
               <div>
-                <div className="flex items-center justify-between">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 text-[10.5px] font-semibold uppercase tracking-wider text-emerald-400">
-                    <span className="relative flex h-2 w-2">
+                <div className="flex items-center justify-between gap-1">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[9.5px] sm:text-[10.5px] font-semibold uppercase tracking-wider text-emerald-400">
+                    <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2 shrink-0">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 bg-emerald-400"></span>
                     </span>
-                    Live Calculators
+                    <span className="truncate">Live Data</span>
                   </span>
-                  <Globe2 className="h-4 w-4 text-white/30 group-hover:text-gold transition-colors duration-300" />
+                  <Globe2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white/30 group-hover:text-gold transition-colors duration-300 shrink-0" />
                 </div>
-                <div className="mt-4 font-serif text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-[#ECC248] via-[#FFF3C4] to-[#C9A227] bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300 origin-left inline-block">
+                <div className="mt-3 sm:mt-4 font-serif text-2xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-[#ECC248] via-[#FFF3C4] to-[#C9A227] bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300 origin-left inline-block">
                   <AnimatedCounter end={countryList.length || 18} duration={1200} />
                 </div>
-                <p className="mt-2 text-[13.5px] sm:text-[14px] font-medium text-white/85 group-hover:text-white transition-colors">
+                <p className="mt-1.5 sm:mt-2 text-[12px] sm:text-[14px] font-medium leading-tight sm:leading-normal text-white/85 group-hover:text-white transition-colors">
                   Countries with sourced cost data
                 </p>
               </div>
-              <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
-                <span className="text-[11px] text-gold/80 font-mono">
-                  Live statutory calculators
+              <div className="mt-3 sm:mt-4 pt-2.5 sm:pt-3 border-t border-white/10 flex items-center justify-between text-[10px] sm:text-[11px]">
+                <span className="text-gold/80 font-mono truncate">
+                  Live calculators
                 </span>
-                <span className="text-[10px] uppercase tracking-wider text-emerald-400/80 font-semibold">Active</span>
+                <span className="uppercase tracking-wider text-emerald-400/80 font-semibold shrink-0 ml-1">Active</span>
               </div>
             </div>
 
             {/* Card 2: Processing Days */}
-            <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/15 bg-gradient-to-br from-[#0c284d]/90 via-[#071d38]/85 to-[#030e1d]/95 p-6 backdrop-blur-md transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#ECC248] hover:shadow-[0_16px_40px_rgba(201,162,39,0.25)]">
+            <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/15 bg-gradient-to-br from-[#0c284d]/90 via-[#071d38]/85 to-[#030e1d]/95 p-3.5 sm:p-6 backdrop-blur-md transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#ECC248] hover:shadow-[0_16px_40px_rgba(201,162,39,0.25)]">
               <div className="absolute inset-0 bg-gradient-to-br from-[#ECC248]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#ECC248]/40 to-transparent group-hover:via-[#ECC248] transition-all duration-500" />
               <div>
-                <div className="flex items-center justify-between">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 px-2.5 py-0.5 text-[10.5px] font-semibold uppercase tracking-wider text-[#ECC248]">
-                    <span className="relative flex h-2 w-2">
+                <div className="flex items-center justify-between gap-1">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 text-[9.5px] sm:text-[10.5px] font-semibold uppercase tracking-wider text-[#ECC248]">
+                    <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2 shrink-0">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ECC248] opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-[#ECC248]"></span>
+                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 bg-[#ECC248]"></span>
                     </span>
-                    IRCC Portal Sync
+                    <span className="truncate">IRCC Sync</span>
                   </span>
-                  <Clock className="h-4 w-4 text-white/30 group-hover:text-gold transition-colors duration-300" />
+                  <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white/30 group-hover:text-gold transition-colors duration-300 shrink-0" />
                 </div>
-                <div className="mt-4 font-serif text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-[#ECC248] via-[#FFF3C4] to-[#C9A227] bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300 origin-left inline-block">
+                <div className="mt-3 sm:mt-4 font-serif text-2xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-[#ECC248] via-[#FFF3C4] to-[#C9A227] bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300 origin-left inline-block">
                   <AnimatedCounter range={[60, 70]} duration={1400} />
                 </div>
-                <p className="mt-2 text-[13.5px] sm:text-[14px] font-medium text-white/85 group-hover:text-white transition-colors">
+                <p className="mt-1.5 sm:mt-2 text-[12px] sm:text-[14px] font-medium leading-tight sm:leading-normal text-white/85 group-hover:text-white transition-colors">
                   Days typical Canada visit processing
                 </p>
               </div>
-              <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
-                <span className="text-[11px] text-gold/80 font-mono">
-                  Business LOI &amp; IRCC portal
+              <div className="mt-3 sm:mt-4 pt-2.5 sm:pt-3 border-t border-white/10 flex items-center justify-between text-[10px] sm:text-[11px]">
+                <span className="text-gold/80 font-mono truncate">
+                  IRCC portal
                 </span>
-                <span className="text-[10px] uppercase tracking-wider text-amber-300/80 font-semibold">Fast-track</span>
+                <span className="uppercase tracking-wider text-amber-300/80 font-semibold shrink-0 ml-1">Fast-track</span>
               </div>
             </div>
 
             {/* Card 3: Dual Offices */}
-            <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/15 bg-gradient-to-br from-[#0c284d]/90 via-[#071d38]/85 to-[#030e1d]/95 p-6 backdrop-blur-md transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#ECC248] hover:shadow-[0_16px_40px_rgba(201,162,39,0.25)]">
+            <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/15 bg-gradient-to-br from-[#0c284d]/90 via-[#071d38]/85 to-[#030e1d]/95 p-3.5 sm:p-6 backdrop-blur-md transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#ECC248] hover:shadow-[0_16px_40px_rgba(201,162,39,0.25)]">
               <div className="absolute inset-0 bg-gradient-to-br from-[#ECC248]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#ECC248]/40 to-transparent group-hover:via-[#ECC248] transition-all duration-500" />
               <div>
-                <div className="flex items-center justify-between">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 px-2.5 py-0.5 text-[10.5px] font-semibold uppercase tracking-wider text-cyan-400">
-                    <span className="relative flex h-2 w-2">
+                <div className="flex items-center justify-between gap-1">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 px-2 py-0.5 text-[9.5px] sm:text-[10.5px] font-semibold uppercase tracking-wider text-cyan-400">
+                    <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2 shrink-0">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-400"></span>
+                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 bg-cyan-400"></span>
                     </span>
-                    Dual Hub HQ
+                    <span className="truncate">Dual Hub HQ</span>
                   </span>
-                  <Building2 className="h-4 w-4 text-white/30 group-hover:text-gold transition-colors duration-300" />
+                  <Building2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white/30 group-hover:text-gold transition-colors duration-300 shrink-0" />
                 </div>
-                <div className="mt-4 font-serif text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-[#ECC248] via-[#FFF3C4] to-[#C9A227] bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300 origin-left inline-block">
+                <div className="mt-3 sm:mt-4 font-serif text-2xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-[#ECC248] via-[#FFF3C4] to-[#C9A227] bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300 origin-left inline-block">
                   <AnimatedCounter end={2} duration={1000} />
                 </div>
-                <p className="mt-2 text-[13.5px] sm:text-[14px] font-medium text-white/85 group-hover:text-white transition-colors">
+                <p className="mt-1.5 sm:mt-2 text-[12px] sm:text-[14px] font-medium leading-tight sm:leading-normal text-white/85 group-hover:text-white transition-colors">
                   Offices — Dubai HQ &amp; Pakistan
                 </p>
               </div>
-              <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
-                <span className="text-[11px] text-gold/80 font-mono">
-                  PRO &amp; British Council registered
+              <div className="mt-3 sm:mt-4 pt-2.5 sm:pt-3 border-t border-white/10 flex items-center justify-between text-[10px] sm:text-[11px]">
+                <span className="text-gold/80 font-mono truncate">
+                  PRO registered
                 </span>
-                <span className="text-[10px] uppercase tracking-wider text-cyan-300/80 font-semibold">Registered</span>
+                <span className="uppercase tracking-wider text-cyan-300/80 font-semibold shrink-0 ml-1">Registered</span>
               </div>
             </div>
 
             {/* Card 4: Reviews Rating */}
-            <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/15 bg-gradient-to-br from-[#0c284d]/90 via-[#071d38]/85 to-[#030e1d]/95 p-6 backdrop-blur-md transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#ECC248] hover:shadow-[0_16px_40px_rgba(201,162,39,0.25)]">
+            <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-white/15 bg-gradient-to-br from-[#0c284d]/90 via-[#071d38]/85 to-[#030e1d]/95 p-3.5 sm:p-6 backdrop-blur-md transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#ECC248] hover:shadow-[0_16px_40px_rgba(201,162,39,0.25)]">
               <div className="absolute inset-0 bg-gradient-to-br from-[#ECC248]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#ECC248]/40 to-transparent group-hover:via-[#ECC248] transition-all duration-500" />
               <div>
-                <div className="flex items-center justify-between">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/15 border border-gold/30 px-2.5 py-0.5 text-[10.5px] font-semibold uppercase tracking-wider text-gold">
-                    <span className="relative flex h-2 w-2">
+                <div className="flex items-center justify-between gap-1">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/15 border border-gold/30 px-2 py-0.5 text-[9.5px] sm:text-[10.5px] font-semibold uppercase tracking-wider text-gold">
+                    <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2 shrink-0">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ECC248] opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-[#ECC248]"></span>
+                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 bg-[#ECC248]"></span>
                     </span>
-                    200+ Verified
+                    <span className="truncate">200+ Verified</span>
                   </span>
-                  <Star className="h-4 w-4 text-gold fill-gold/30 group-hover:fill-gold transition-colors duration-300" />
+                  <Star className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gold fill-gold/30 group-hover:fill-gold transition-colors duration-300 shrink-0" />
                 </div>
-                <div className="mt-4 font-serif text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-[#ECC248] via-[#FFF3C4] to-[#C9A227] bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300 origin-left inline-block">
+                <div className="mt-3 sm:mt-4 font-serif text-2xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-[#ECC248] via-[#FFF3C4] to-[#C9A227] bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300 origin-left inline-block">
                   <AnimatedCounter end={4.9} decimals={1} suffix=" ★" duration={1400} />
                 </div>
-                <p className="mt-2 text-[13.5px] sm:text-[14px] font-medium text-white/85 group-hover:text-white transition-colors">
+                <p className="mt-1.5 sm:mt-2 text-[12px] sm:text-[14px] font-medium leading-tight sm:leading-normal text-white/85 group-hover:text-white transition-colors">
                   Average rating across 200+ reviews
                 </p>
               </div>
-              <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
-                <span className="text-[11px] text-gold/80 font-mono">
-                  Google &amp; Trustpilot verified
+              <div className="mt-3 sm:mt-4 pt-2.5 sm:pt-3 border-t border-white/10 flex items-center justify-between text-[10px] sm:text-[11px]">
+                <span className="text-gold/80 font-mono truncate">
+                  Trustpilot
                 </span>
-                <span className="text-[10px] uppercase tracking-wider text-gold font-semibold">100% Legit</span>
+                <span className="uppercase tracking-wider text-gold font-semibold shrink-0 ml-1">100% Legit</span>
               </div>
             </div>
           </div>
 
-          {/* Triad cards with deep sapphire gradients, glowing hover, and animated arrow */}
-          <div className="mt-8 sm:mt-10 grid gap-6 md:grid-cols-3">
-            {TRIAD.map((t) => (
+          {/* Triad cards: 2 in row 1 on mobile, 3rd in the mid (centered), 3 in one row on desktop */}
+          <div className="mt-8 sm:mt-10 grid grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-6">
+            {TRIAD.map((t, idx) => (
               <Link
                 key={t.title}
                 to={t.to}
-                className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gold/30 bg-gradient-to-br from-[#0c284d] via-[#071d38] to-[#030e1d] p-7 sm:p-8 transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#ECC248] hover:shadow-[0_20px_50px_rgba(201,162,39,0.25)]"
+                className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gold/30 bg-gradient-to-br from-[#0c284d] via-[#071d38] to-[#030e1d] p-4 sm:p-7 sm:p-8 transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#ECC248] hover:shadow-[0_20px_50px_rgba(201,162,39,0.25)] ${
+                  idx === 2
+                    ? "col-span-2 lg:col-span-1 max-w-sm sm:max-w-md lg:max-w-none mx-auto w-full"
+                    : "col-span-1"
+                }`}
               >
                 {/* Decorative radial card glow */}
                 <div className="absolute top-0 right-0 h-40 w-40 bg-gradient-to-bl from-gold/15 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#ECC248]/40 to-transparent group-hover:via-[#ECC248] transition-all duration-500" />
 
                 <div>
-                  <div className="flex items-center justify-between">
-                    <div className="inline-flex h-13 w-13 items-center justify-center rounded-xl bg-gradient-to-br from-gold/25 via-gold/10 to-transparent border border-gold/40 text-[#ECC248] shadow-[0_4px_20px_rgba(201,162,39,0.2)] group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                      <t.icon className="h-6 w-6" strokeWidth={1.75} />
+                  <div className="flex items-center justify-between gap-1">
+                    <div className="inline-flex h-9 w-9 sm:h-13 sm:w-13 items-center justify-center rounded-xl bg-gradient-to-br from-gold/25 via-gold/10 to-transparent border border-gold/40 text-[#ECC248] shadow-[0_4px_20px_rgba(201,162,39,0.2)] group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shrink-0">
+                      <t.icon className="h-4 w-4 sm:h-6 sm:w-6" strokeWidth={1.75} />
                     </div>
                     {t.badge && (
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/15 px-3 py-1 text-[10.5px] font-bold uppercase tracking-wider text-gold border border-gold/30">
-                        <span className="relative flex h-1.5 w-1.5">
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-gold/15 px-2 py-0.5 sm:px-3 sm:py-1 text-[9px] sm:text-[10.5px] font-bold uppercase tracking-wider text-gold border border-gold/30">
+                        <span className="relative flex h-1.5 w-1.5 shrink-0">
                           <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${t.pulseColor || 'bg-gold'} opacity-75`}></span>
                           <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${t.pulseColor || 'bg-gold'}`}></span>
                         </span>
-                        {t.badge}
+                        <span className="truncate">{t.badge}</span>
                       </span>
                     )}
                   </div>
 
-                  <h2 className="mt-6 font-serif text-2xl font-medium text-white group-hover:text-[#ECC248] transition-colors leading-snug">
+                  <h2 className="mt-3.5 sm:mt-6 font-serif text-base sm:text-2xl font-medium text-white group-hover:text-[#ECC248] transition-colors leading-snug">
                     {t.title}
                   </h2>
 
-                  <p className="mt-3 text-[14px] leading-relaxed text-white/70">
+                  <p className="mt-2 sm:mt-3 text-[12px] sm:text-[14px] leading-relaxed text-white/70 line-clamp-3 sm:line-clamp-none">
                     {t.text}
                   </p>
 
                   {/* Highlights list */}
                   {t.highlights && (
-                    <div className="mt-4 flex flex-wrap gap-1.5">
+                    <div className="mt-3 sm:mt-4 flex flex-wrap gap-1 sm:gap-1.5">
                       {t.highlights.map((h: string) => (
-                        <span key={h} className="rounded-md bg-white/5 px-2.5 py-1 text-[11px] font-medium text-white/80 border border-white/10 group-hover:border-gold/30 group-hover:text-gold transition-colors">
+                        <span key={h} className="rounded-md bg-white/5 px-1.5 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-[11px] font-medium text-white/80 border border-white/10 group-hover:border-gold/30 group-hover:text-gold transition-colors">
                           {h}
                         </span>
                       ))}
@@ -575,13 +579,14 @@ export default function Home() {
                   )}
                 </div>
 
-                <div className="mt-8 pt-5 border-t border-white/10 flex items-center justify-between">
-                  <span className="inline-flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#ECC248]">
-                    Explore Route <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-2 text-gold" />
+                <div className="mt-5 sm:mt-8 pt-3 sm:pt-5 border-t border-white/10 flex items-center justify-between text-[11px] sm:text-[12px]">
+                  <span className="inline-flex items-center gap-1.5 font-semibold uppercase tracking-[0.14em] text-[#ECC248]">
+                    Explore <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform group-hover:translate-x-1.5 text-gold shrink-0" />
                   </span>
-                  <span className="text-[10.5px] font-semibold uppercase tracking-wider text-white/40 flex items-center gap-1.5">
+                  <span className="text-[9.5px] sm:text-[10.5px] font-semibold uppercase tracking-wider text-white/40 flex items-center gap-1 shrink-0">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
-                    Official advisory
+                    <span className="hidden sm:inline">Official advisory</span>
+                    <span className="sm:hidden">Advisory</span>
                   </span>
                 </div>
               </Link>
@@ -730,7 +735,72 @@ export default function Home() {
               Airfare, monthly living costs and the official embassy bank statement — calculated
               separately, sourced transparently, and tailored to your destination and visa purpose.
             </p>
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
+            {/* Mobile Zigzag Timeline */}
+            <div className="relative mt-8 sm:hidden">
+              {/* Connecting Zigzag SVG Line */}
+              <svg className="absolute inset-0 h-full w-full pointer-events-none z-0" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="budgetZigzagGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#C9A227" stopOpacity="0.85" />
+                    <stop offset="50%" stopColor="#ECC248" stopOpacity="0.95" />
+                    <stop offset="100%" stopColor="#C9A227" stopOpacity="0.85" />
+                  </linearGradient>
+                </defs>
+                <path
+                  d="M 16,18 L 84,50 L 16,82"
+                  fill="none"
+                  stroke="url(#budgetZigzagGrad)"
+                  strokeWidth="2"
+                  strokeDasharray="4,3"
+                  vectorEffect="non-scaling-stroke"
+                />
+              </svg>
+
+              <div className="space-y-4 relative z-10">
+                {[
+                  { icon: Plane, label: "Flight tickets", desc: "Live IATA route estimates", num: "01" },
+                  { icon: Wallet, label: "Living costs", desc: "City rent & utility indexes", num: "02" },
+                  { icon: Landmark, label: "Bank statements", desc: "Statutory embassy rules", num: "03" },
+                ].map((x, idx) => {
+                  const isRight = idx % 2 === 0; // 0: right, 1: left, 2: right
+                  return (
+                    <div
+                      key={x.label}
+                      className={`relative w-[84%] ${isRight ? "ml-auto" : "mr-auto"}`}
+                    >
+                      {/* Timeline Node */}
+                      <div
+                        className={`absolute top-1/2 -translate-y-1/2 z-20 flex h-7 w-7 items-center justify-center rounded-full bg-navy text-gold text-[10.5px] font-bold border-2 border-gold shadow-[0_0_12px_rgba(201,162,39,0.4)] ${
+                          isRight ? "-left-3.5 -translate-x-1/2" : "-right-3.5 translate-x-1/2"
+                        }`}
+                      >
+                        {x.num}
+                      </div>
+
+                      <div className="group relative overflow-hidden rounded-xl border border-navy/10 bg-white/95 p-4 text-left shadow-xs backdrop-blur-xs transition-all duration-300 hover:border-gold hover:shadow-md">
+                        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-gold/40 to-transparent group-hover:via-gold transition-all" />
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gold/10 border border-gold/30 text-gold-dark group-hover:scale-105 group-hover:bg-gold/20 transition-all duration-300">
+                            <x.icon className="h-5 w-5" strokeWidth={1.75} />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-[12.5px] font-semibold uppercase tracking-[0.08em] text-navy group-hover:text-gold-dark transition-colors">
+                              {x.label}
+                            </p>
+                            <p className="mt-0.5 text-[11px] text-navy/65 line-clamp-1">
+                              {x.desc}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Desktop 3-column Grid */}
+            <div className="mt-8 hidden sm:grid sm:grid-cols-3 sm:gap-4">
               {[
                 { icon: Plane, label: "Flight tickets", desc: "Live IATA route estimates" },
                 { icon: Wallet, label: "Living costs", desc: "City rent & utility indexes" },
@@ -838,32 +908,32 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4 relative">
+          <div className="mt-10 sm:mt-14 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 relative">
             {/* Desktop connector line */}
             <div className="hidden lg:block absolute top-1/2 left-8 right-8 h-0.5 bg-gradient-to-r from-gold/30 via-gold/60 to-gold/30 -translate-y-8 z-0 pointer-events-none" />
 
             {PROCESS_STEPS.map((p, idx) => (
               <div
                 key={p.step}
-                className="reveal group relative z-10 flex flex-col justify-between rounded-2xl border border-navy/10 bg-white/95 p-7 shadow-xs backdrop-blur-xs transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#C9A227] hover:shadow-[0_16px_40px_rgba(201,162,39,0.18)]"
+                className="reveal group relative z-10 flex flex-col justify-between rounded-xl sm:rounded-2xl border border-navy/10 bg-white/95 p-3.5 sm:p-7 shadow-xs backdrop-blur-xs transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#C9A227] hover:shadow-[0_16px_40px_rgba(201,162,39,0.18)]"
               >
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#C9A227]/30 to-transparent group-hover:via-[#C9A227] transition-all duration-300" />
                 <div>
-                  <div className="flex items-center justify-between">
-                    <span className="font-serif text-4xl font-bold bg-gradient-to-br from-gold-dark via-gold to-[#ECC248] bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300 origin-left inline-block">
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="font-serif text-2xl sm:text-4xl font-bold bg-gradient-to-br from-gold-dark via-gold to-[#ECC248] bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300 origin-left inline-block">
                       {p.step}
                     </span>
-                    <span className="inline-flex items-center gap-1 rounded-full bg-gold/15 border border-gold/30 px-2.5 py-0.5 text-[10.5px] font-semibold uppercase tracking-wider text-gold-dark">
-                      <span className="h-1.5 w-1.5 rounded-full bg-gold-dark"></span>
+                    <span className="inline-flex items-center gap-1 rounded-full bg-gold/15 border border-gold/30 px-1.5 sm:px-2.5 py-0.5 text-[9px] sm:text-[10.5px] font-semibold uppercase tracking-wider text-gold-dark truncate">
+                      <span className="h-1.5 w-1.5 rounded-full bg-gold-dark shrink-0"></span>
                       {p.badge}
                     </span>
                   </div>
-                  <h3 className="mt-4 font-serif text-xl font-medium text-navy group-hover:text-gold-dark transition-colors">{p.title}</h3>
-                  <p className="mt-3 text-[14px] leading-relaxed text-navy/70">{p.detail}</p>
+                  <h3 className="mt-2.5 sm:mt-4 font-serif text-base sm:text-xl font-medium text-navy group-hover:text-gold-dark transition-colors">{p.title}</h3>
+                  <p className="mt-1.5 sm:mt-3 text-[12px] sm:text-[14px] leading-snug sm:leading-relaxed text-navy/70 line-clamp-3 sm:line-clamp-none">{p.detail}</p>
                 </div>
-                <div className="mt-6 pt-4 border-t border-navy/5 flex items-center justify-between text-[11px] font-mono text-navy/50">
+                <div className="mt-3 sm:mt-6 pt-2.5 sm:pt-4 border-t border-navy/5 flex items-center justify-between text-[10px] sm:text-[11px] font-mono text-navy/50">
                   <span>STAGE 0{idx + 1}</span>
-                  <span className="group-hover:text-gold-dark transition-colors font-sans font-semibold">Verified Step →</span>
+                  <span className="group-hover:text-gold-dark transition-colors font-sans font-semibold">Step →</span>
                 </div>
               </div>
             ))}
@@ -992,8 +1062,8 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {countryList.slice(0, 8).map((c) => {
+          {(() => {
+            const renderCountryCard = (c: any, isCompact = false) => {
               let living = null;
               try {
                 if (c.livingCosts) living = typeof c.livingCosts === "string" ? JSON.parse(c.livingCosts) : c.livingCosts;
@@ -1002,35 +1072,112 @@ export default function Home() {
                 <Link
                   key={c.slug}
                   to={`/destinations/${c.slug}`}
-                  className="reveal group relative flex flex-col justify-between rounded-2xl border border-navy/10 bg-white p-6 transition-all duration-300 ease-out hover:-translate-y-2 hover:border-[#C9A227] hover:shadow-[0_16px_36px_rgba(201,162,39,0.18)]"
+                  className={`group relative flex flex-col justify-between rounded-xl sm:rounded-2xl border border-navy/10 bg-white transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-[#C9A227] hover:shadow-[0_16px_36px_rgba(201,162,39,0.18)] ${
+                    isCompact ? "p-3.5 sm:p-5" : "reveal p-6"
+                  }`}
                 >
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#C9A227]/30 to-transparent group-hover:via-[#C9A227] transition-all duration-300" />
                   <div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-3xl group-hover:scale-110 transition-transform duration-300 origin-left inline-block">{c.flag}</span>
-                      <span className="text-[11px] font-semibold uppercase tracking-wider text-navy/60 bg-paper px-2.5 py-0.5 rounded-full border border-navy/10">
+                    <div className="flex items-center justify-between gap-1.5">
+                      <span className={`${isCompact ? "text-2xl" : "text-3xl"} group-hover:scale-110 transition-transform duration-300 origin-left inline-block shrink-0`}>
+                        {c.flag}
+                      </span>
+                      <span className="text-[9.5px] sm:text-[11px] font-semibold uppercase tracking-wider text-navy/60 bg-paper px-2 py-0.5 rounded-full border border-navy/10 truncate">
                         {c.region || "Destination"}
                       </span>
                     </div>
-                    <h3 className="mt-4 font-serif text-xl font-medium text-navy group-hover:text-gold-dark transition-colors">
+                    <h3 className={`mt-2.5 sm:mt-4 font-serif ${isCompact ? "text-base sm:text-lg" : "text-xl"} font-medium text-navy group-hover:text-gold-dark transition-colors`}>
                       {c.name}
                     </h3>
-                    <p className="mt-2 text-[13px] text-navy/60 line-clamp-2">
+                    <p className={`mt-1 sm:mt-2 ${isCompact ? "text-[11.5px]" : "text-[13px]"} text-navy/60 line-clamp-2`}>
                       {c.summary || "Complete visa guidelines, living costs and university admission routes."}
                     </p>
                   </div>
-                  <div className="mt-6 border-t border-navy/10 pt-4 flex items-center justify-between text-[13px]">
-                    <span className="font-semibold text-navy bg-gold/10 px-2 py-0.5 rounded text-[12px] text-gold-dark border border-gold/20">
+                  <div className={`mt-3.5 sm:mt-6 border-t border-navy/10 pt-3 sm:pt-4 flex items-center justify-between gap-1 ${isCompact ? "text-[11px] sm:text-[12px]" : "text-[13px]"}`}>
+                    <span className="font-semibold text-navy bg-gold/10 px-2 py-0.5 rounded text-[10.5px] sm:text-[12px] text-gold-dark border border-gold/20 truncate max-w-[110px]">
                       {living?.standard ? `${living.currency || ""} ${Number(living.standard).toLocaleString()}/mo` : "Cost data inside"}
                     </span>
-                    <span className="text-gold-dark font-medium inline-flex items-center gap-1 group-hover:translate-x-1.5 transition-transform text-[12.5px]">
-                      View Guide <ArrowRight className="h-3.5 w-3.5" />
+                    <span className="text-gold-dark font-medium inline-flex items-center gap-0.5 group-hover:translate-x-1.5 transition-transform text-[11px] sm:text-[12.5px] shrink-0">
+                      Guide <ArrowRight className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                     </span>
                   </div>
                 </Link>
               );
-            })}
-          </div>
+            };
+
+            const topEight = countryList.slice(0, 8);
+
+            return (
+              <>
+                {/* Mobile Hybrid Layout: Top 2 in Grid -> Timeline starts left -> Middle 4 in Zigzag -> Bottom 2 in Grid */}
+                <div className="mt-8 space-y-4 sm:hidden">
+                  {/* 1. First two countries in 2-column grid */}
+                  <div className="grid grid-cols-2 gap-3 relative z-10">
+                    {topEight.slice(0, 2).map((c) => renderCountryCard(c, true))}
+                  </div>
+
+                  {/* 2. Timeline connector & Middle 4 Countries in Zigzag */}
+                  <div className="relative py-2">
+                    {/* Connecting Zigzag SVG Line starting from left side (under UK) */}
+                    <svg className="absolute inset-0 h-full w-full pointer-events-none z-0" viewBox="0 0 100 100" preserveAspectRatio="none">
+                      <defs>
+                        <linearGradient id="flagZigzagGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#C9A227" stopOpacity="0.85" />
+                          <stop offset="50%" stopColor="#ECC248" stopOpacity="0.95" />
+                          <stop offset="100%" stopColor="#C9A227" stopOpacity="0.85" />
+                        </linearGradient>
+                      </defs>
+                      <path
+                        d="M 25,0 L 16,13 L 84,38 L 16,63 L 84,88 L 25,100"
+                        fill="none"
+                        stroke="url(#flagZigzagGrad)"
+                        strokeWidth="2"
+                        strokeDasharray="4,3"
+                        vectorEffect="non-scaling-stroke"
+                      />
+                    </svg>
+
+                    <div className="space-y-4 relative z-10">
+                      {topEight.slice(2, 6).map((c, idx) => {
+                        // idx 0 (3rd flag - Finland): right side
+                        // idx 1 (4th flag - Georgia): left side
+                        // idx 2 (5th flag - Germany): right side
+                        // idx 3 (6th flag - Canada): left side
+                        const isRight = idx % 2 === 0;
+                        return (
+                          <div
+                            key={c.slug}
+                            className={`relative w-[85%] ${isRight ? "ml-auto" : "mr-auto"}`}
+                          >
+                            {/* Timeline Node */}
+                            <div
+                              className={`absolute top-1/2 -translate-y-1/2 z-20 flex h-6 w-6 items-center justify-center rounded-full bg-navy text-gold text-[10px] font-bold border-2 border-gold shadow-[0_0_10px_rgba(201,162,39,0.35)] ${
+                                isRight ? "-left-3 -translate-x-1/2" : "-right-3 translate-x-1/2"
+                              }`}
+                            >
+                              <div className="h-2 w-2 rounded-full bg-gold animate-pulse" />
+                            </div>
+
+                            {renderCountryCard(c, true)}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* 3. Last two countries in 2-column grid */}
+                  <div className="grid grid-cols-2 gap-3 relative z-10">
+                    {topEight.slice(6, 8).map((c) => renderCountryCard(c, true))}
+                  </div>
+                </div>
+
+                {/* Desktop 4-column Grid */}
+                <div className="mt-12 hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {topEight.map((c) => renderCountryCard(c, false))}
+                </div>
+              </>
+            );
+          })()}
         </div>
       </section>
 
